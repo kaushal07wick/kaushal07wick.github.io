@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Post — Kaushal</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #000;
+      --text: #d8fbe3;
+      --accent: #00ffb7;
+      --border: rgba(0, 255, 170, 0.25);
+    }
+
+    .light {
+      --bg: #f4fef8;
+      --text: #002e22;
+      --accent: #008d66;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "JetBrains Mono", monospace;
+      margin: 0;
+      padding: 40px;
+    }
+
+    #content h1 {
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    #content h2 {
+      color: var(--accent);
+      margin-top: 24px;
+      margin-bottom: 14px;
+    }
+
+    #content p {
+      opacity: 0.9;
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    pre, code {
+      background: rgba(0,255,170,0.05);
+      border: 1px solid var(--border);
+      padding: 10px;
+      border-radius: 6px;
+      display: block;
+      overflow-x: auto;
+    }
+
+    a { color: var(--accent); text-decoration: underline; }
+  </style>
+</head>
+
+<body>
+
+  <div id="content">Loading...</div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const file = params.get("file");
+
+    if (!file) {
+      document.getElementById("content").innerHTML = "<p>No file specified.</p>";
+    } else {
+      fetch(`posts/${file}`)
+        .then(res => res.text())
+        .then(md => {
+          document.getElementById("content").innerHTML = marked.parse(md);
+        })
+        .catch(err => {
+          document.getElementById("content").innerHTML = "<p>Error loading post.</p>";
+        });
+    }
+  </script>
+
+</body>
+</html>

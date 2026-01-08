@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog — Kaushal</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="header.js" defer></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --bg: #000;
+      --text: #d8fbe3;
+      --accent: #00ffb7;
+      --border: rgba(0,255,170,0.18);
+      --shadow: 0 2px 4px rgba(0,255,170,0.10);
+    }
+
+    .light {
+      --bg: #f4fef8;
+      --text: #002e22;
+      --accent: #008d66;
+      --border: rgba(0,141,102,0.22);
+      --shadow: 0 2px 4px rgba(0,141,102,0.10);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "JetBrains Mono", monospace;
+      margin: 0;
+    }
+
+    .section-title {
+      font-size: 20px;
+      color: var(--accent);
+      border-right: 2px solid var(--accent);
+      padding-right: 8px;
+      margin-bottom: 20px;
+      white-space: nowrap;
+      animation: typing 2s steps(26) forwards;
+      overflow: hidden;
+    }
+
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+
+    /* CARD STYLE FIXED */
+    .post-card {
+      border: 1px solid var(--border);
+      padding: 18px;
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--bg) 90%, var(--accent) 7%);
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: 0.15s ease;
+      box-shadow: var(--shadow);
+    }
+
+    .post-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      background: color-mix(in srgb, var(--bg) 80%, var(--accent) 15%);
+    }
+
+    .post-title {
+      color: var(--accent);
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .post-date {
+      opacity: 0.6;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="max-w-5xl mx-auto px-6">
+  <div id="header-container"></div>
+
+  <section class="mt-10">
+    <div class="section-title">$ cat blog_index.txt</div>
+    <div id="post-list"></div>
+  </section>
+</div>
+
+<script>
+  async function loadBlogIndex() {
+    const container = document.getElementById("post-list");
+
+    let files = [];
+
+    try {
+      files = await fetch("posts/index.json?v=" + Date.now(), {
+        cache: "no-store"
+      }).then(r => r.json());
+    } catch (e) {
+      container.innerHTML = "<p>Error loading index.json</p>";
+      return;
+    }
+
+    container.innerHTML = "";
+
+    for (const file of files) {
+      try {
+        const md = await fetch("posts/" + file + "?v=" + Date.now(), {
+          cache: "no-store"
+        }).then(r => r.text());
+
+        const title = md.match(/^#\s+(.*)/)?.[1] || file.replace(".md", "");
+        const date = md.match(/^date:\s*(.*)/i)?.[1] || "Unknown";
+
+        container.innerHTML += `
+          <div class="post-card" onclick="location.href='blog-post.html?file=${file}'">
+            <div class="post-title">${title}</div>
+            <div class="post-date">${date}</div>
+          </div>
+        `;
+
+      } catch (err) {
+        console.warn("Could not load post:", file);
+
+        container.innerHTML += `
+          <div class="post-card" onclick="location.href='blog-post.html?file=${file}'">
+            <div class="post-title">${file}</div>
+            <div class="post-date">Unavailable</div>
+          </div>
+        `;
+      }
+    }
+  }
+
+  loadBlogIndex();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog Post — Kaushal</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="header.js" defer></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --bg: #000;
+      --text: #d8fbe3;
+      --accent: #00ffb7;
+      --border: rgba(0,255,170,0.25);
+      --code-bg: rgba(0,255,170,0.07);
+      --code-inline-bg: rgba(0,255,170,0.12);
+    }
+
+    .light {
+      --bg: #f4fef8;
+      --text: #002e22;
+      --accent: #008d66;
+      --border: rgba(0,141,102,0.35);
+      --code-bg: rgba(0,141,102,0.10);
+      --code-inline-bg: rgba(0,141,102,0.18);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    #content {
+      margin-top: 40px;
+      line-height: 1.85;
+      font-size: 17px;
+    }
+
+    /* CLEAN HEADINGS */
+    #content h1 { font-size: 32px; margin-bottom: 20px; color: var(--accent); }
+    #content h2 { font-size: 26px; margin-top: 32px; margin-bottom: 16px; color: var(--accent); }
+    #content h3 { font-size: 22px; margin-top: 24px; margin-bottom: 12px; color: var(--accent); }
+
+    /* INLINE LINKS */
+    #content a {
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: 0.2s;
+    }
+    #content a:hover { opacity: .8; text-shadow: 0 0 6px var(--accent); }
+
+    /* INLINE CODE ( `example` ) */
+    code:not(pre code) {
+      background: var(--code-inline-bg);
+      border: 1px solid var(--border);
+      padding: 3px 6px;
+      font-size: 14px;
+      border-radius: 4px;
+    }
+
+    /* BLOCK CODE */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      margin: 28px 0;
+      position: relative;
+    }
+
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      white-space: pre;
+      font-size: 15px;
+      line-height: 1.6;
+      display: block;
+    }
+
+    /* COPY BUTTON */
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      opacity: 0.85;
+      transition: 0.2s;
+    }
+    .copy-btn:hover {
+      opacity: 1;
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+       /* IMAGE STYLE — NO TINT + CENTERED */
+    #content img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: 32px auto;
+      padding: 0;
+      border: none !important;
+      background: transparent !important;
+      border-radius: 10px;
+      mix-blend-mode: normal !important;
+    }
+
+    /* CAPTION STYLE */
+    figure {
+      margin: 32px auto;
+      text-align: center;
+    }
+
+    figcaption {
+      font-size: 14px;
+      opacity: 0.7;
+      margin-top: 6px;
+    }
+
+    /* BACK BUTTON */
+    .back-btn {
+      display: inline-block;
+      margin: 60px 0 90px 0;
+      padding: 10px 18px;
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      color: var(--accent);
+      text-decoration: none;
+      transition: 0.25s;
+    }
+    .back-btn:hover {
+      background: var(--accent);
+      color: #000;
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="max-w-3xl mx-auto px-6 pb-24">
+  <div id="header-container"></div>
+
+  <div id="content"></div>
+
+  <a class="back-btn" href="blog.html">&larr; Back to Blog</a>
+</div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const file = params.get("file");
+
+  async function loadPost() {
+    if (!file) return;
+
+    const md = await fetch("posts/" + file).then(r => r.text());
+    const html = marked.parse(md);
+
+    const container = document.getElementById("content");
+    container.innerHTML = html;
+
+    enhanceCodeBlocks();
+  }
+
+  function enhanceCodeBlocks() {
+    const blocks = document.querySelectorAll("pre");
+
+    blocks.forEach(pre => {
+      const btn = document.createElement("button");
+      btn.className = "copy-btn";
+      btn.textContent = "Copy";
+
+      btn.onclick = () => {
+        const code = pre.querySelector("code").innerText;
+        navigator.clipboard.writeText(code);
+        btn.textContent = "Copied!";
+        setTimeout(() => (btn.textContent = "Copy"), 1500);
+      };
+
+      pre.appendChild(btn);
+    });
+  }
+  function convertImagesToFigures() {
+    document.querySelectorAll("#content img").forEach(img => {
+      const alt = img.getAttribute("alt")?.trim();
+      if (!alt) return;
+
+      const figure = document.createElement("figure");
+      const caption = document.createElement("figcaption");
+      caption.textContent = alt;
+
+      img.parentNode.insertBefore(figure, img);
+      figure.appendChild(img);
+      figure.appendChild(caption);
+    });
+  }
+
+  loadPost();
+</script>
+
+</body>
+</html>

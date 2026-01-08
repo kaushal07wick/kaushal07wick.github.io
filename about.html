@@ -1,107 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>About</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — Kaushal</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Shared Header Loader -->
+  <script src="header.js" defer></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
   <style>
-    body, html {
-      font-family: "Inter", sans-serif;
-      background-color: #f5f5f5;
-      scroll-behavior: smooth;
-    }
+  :root {
+    --bg: #000;
+    --text: #d8fbe3;
+    --accent: #00ffb7;
+    --border: rgba(0, 255, 170, 0.18);
+    --card-bg: rgba(0, 255, 170, 0.04);
+    --card-shadow: 0 2px 6px rgba(0,255,170,0.12); /* subtle shadow */
+  }
 
-    * {
-      padding: 0;
-      margin: 0;
-      box-sizing: border-box;
-    }
+  .light {
+    --bg: #f4fef8;
+    --text: #002e22;
+    --accent: #008d66;
+    --border: rgba(0,141,102,0.22);
+    --card-bg: rgba(0,141,102,0.05);
+    --card-shadow: 0 2px 6px rgba(0,141,102,0.12);
+  }
 
-    .grid-background {
-      background-image: linear-gradient(to right, #e5e7eb 1px, transparent 1px),
-                        linear-gradient(to bottom, #e5e7eb 1px, transparent 1px);
-      background-size: 100px 100px;
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-    }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "JetBrains Mono", monospace;
+    height: 100%;
+  }
 
-    .animate-from-bottom {
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeInUp 0.4s forwards;
-      animation-delay: var(--delay, 0s);
-    }
+  .section-title {
+    font-size: 20px;
+    color: var(--accent);
+    border-right: 2px solid var(--accent);
+    padding-right: 6px;
+    overflow: hidden;
+    white-space: nowrap;
+    animation: typewriter 2s steps(32) forwards;
+  }
 
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-        filter: blur(4px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-        filter: blur(0);
-      }
-    }
+  @keyframes typewriter {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
+  /* CLEANER ABOUT CARD */
+  .about-card {
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    padding: 24px;
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+    transition: 0.2s ease;
+  }
+
+  .about-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 3px 10px rgba(0,255,170,0.18); /* subtle hover shadow */
+    transform: translateY(-2px); /* smaller lift */
+  }
+
+  /* CONTACT LINKS — remove glow */
+  .contact-link {
+    color: var(--accent);
+    position: relative;
+    text-decoration: none;
+  }
+
+  .contact-link::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    height: 1px;
+    width: 0;
+    background: var(--accent);
+    transition: width 0.2s ease;
+  }
+
+  .contact-link:hover::after {
+    width: 100%;
+  }
+</style>
+
   </style>
 </head>
+
 <body>
 
-  <!-- Centered wrapper -->
-  <div class="relative min-h-screen max-w-4xl mx-auto px-6 md:px-12 py-20 flex items-center">
+<div class="max-w-5xl mx-auto px-6">
 
-    <!-- Grid Background -->
-    <div class="grid-background rounded-3xl"></div>
+  <!-- SHARED HEADER INCLUDE -->
+  <div id="header-container"></div>
 
-    <!-- Content Layer -->
-    <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center animate-from-bottom" style="--delay: 0.2s">
-      
-      <!-- Text Content -->
+  <!-- ABOUT CONTENT -->
+  <section class="mt-12">
+    <div class="section-title">$ cat about.txt</div>
+
+    <div class="about-card mt-6 grid grid-cols-1 md:grid-cols-2 gap-10">
+
       <div>
-        <p class="text-sm uppercase tracking-wider text-gray-500 mb-3">Who I Am</p>
-        <h1 class="text-4xl font-bold text-gray-900 mb-6">About <span class="text-black">Me</span></h1>
-        <p class="text-lg text-gray-700 leading-relaxed">
-          I'm <span class="text-black font-medium">Kaushal</span>, a developer and writer
-          <span class="text-black font-semibold">engineering</span> with 
-          <span class="text-black font-semibold">keeping utility and scalability in mind</span>. I help teams craft fast, accessible data pipelines and ops for ML models.
-        </p>
-        <p class="mt-4 text-gray-500">
-          I enjoy playing basketaball, building visual tools, and exploring the edge of tech and finance too.
+        <h2 class="text-3xl text-[var(--accent)] mb-4">Who Am I?</h2>
+
+        <p class="leading-relaxed opacity-90">
+          I'm <span class="text-[var(--accent)]">Kaushal Choudhary</span>,
+          a machine learning engineer & systems builder focused on
+          <span class="text-[var(--accent)]">agents, infra, GPU pipelines, and high-velocity iteration loops</span>.
         </p>
 
-        <!-- Social Section -->
-        <div class="mt-12 animate-from-bottom" style="--delay: 1.2s">
-          <p class="text-sm uppercase tracking-wider text-gray-500 mb-3">OR FIND ME COOKING ON</p>
-          <div class="flex space-x-6 mt-4 items-center">
-            <a href="mailto:kaushalc64@gmail.com" class="hover:opacity-80 transition" target="_blank" title="Email">
-              <img src="https://cdn-icons-png.flaticon.com/512/732/732200.png" alt="Email" class="h-6 w-6 grayscale" />
-            </a>
-            <a href="https://linkedin.com/in/11kaushalkumar" target="_blank" class="hover:opacity-80 transition" title="LinkedIn">
-              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-plain.svg" alt="LinkedIn" class="h-6 w-6" />
-            </a>
-            <a href="https://twitter.com/ofcboogeyman" target="_blank" class="hover:opacity-80 transition" title="Twitter">
-              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/twitter/twitter-original.svg" alt="Twitter" class="h-6 w-6"/>
-            </a>
-            <a href="https://github.com/kaushal07wick" target="_blank" class="hover:opacity-80 transition" title="GitHub">
-              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub" class="h-6 w-6" />
-            </a>
-            <a href="https://medium.com/@kaushalc64" target="_blank" class="hover:opacity-80 transition" title="Medium">
-              <img src="https://cdn-icons-png.flaticon.com/512/2111/2111505.png" alt="Medium" class="h-6 w-6 grayscale" />
-            </a>
+        <p class="leading-relaxed opacity-60 mt-4">
+          I build autonomous agents, code-search systems, browser automation flows,
+          and performance-optimized GPU backends.
+        </p>
+
+        <p class="leading-relaxed opacity-60 mt-4">
+          Outside work: I explore visual tools, write deep-dive tech breakdowns,
+          and build ML infra experiments.
+        </p>
+
+        <div class="mt-8">
+          <p class="mb-2 text-[var(--accent)] opacity-80">Links</p>
+
+          <div class="flex space-x-6 mt-3">
+            <a href="mailto:kaushalc64@gmail.com" class="contact-link">Email</a>
+            <a href="https://linkedin.com/in/11kaushalkumar" class="contact-link">LinkedIn</a>
+            <a href="https://twitter.com/ofcboogeyman" class="contact-link">Twitter</a>
+            <a href="https://github.com/kaushal07wick" class="contact-link">GitHub</a>
+            <a href="https://medium.com/@kaushalc64" class="contact-link">Medium</a>
           </div>
         </div>
       </div>
 
-      <!-- Image / GIF -->
-      <div class="flex justify-center md:justify-end items-center">
-        <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDBlNHU0MXI4d3o3eXY0OWszdTY1MzY2eGlqaHFqM3k1NzFta3B5MSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/hDSy8w6rGHeTe/giphy.gif" alt="Working Kaushal" class="rounded-2xl shadow w-80 h-auto object-cover">
+      <div class="flex justify-center items-center">
+        <img src="https://media4.giphy.com/media/hDSy8w6rGHeTe/giphy.gif"
+             class="rounded-lg border border-[var(--border)] shadow-md max-w-xs"
+             alt="Kaushal working">
       </div>
+
     </div>
-  </div>
+  </section>
+
+</div>
 
 </body>
 </html>
