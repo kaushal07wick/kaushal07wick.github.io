@@ -2,8 +2,6 @@
   { "name": "TabMate",           "file": "tabmate.txt",          "repo": "https://github.com/kaushal07wick/tabmate" },
   { "name": "FinSight",          "file": "finsight.txt",         "repo": "https://github.com/kaushal07wick/FinSight" },
   { "name": "FamAgent",          "file": "famagent.txt",         "repo": "https://github.com/kaushal07wick/FamAgent" },
-  { "name": "Zepto Revamp",      "file": "zepto.txt",            "repo": "https://github.com/kaushal07wick/zepto" },
-
   { "name": "OsmoGrep",          "file": "osmogrep.txt",         "repo": "https://github.com/kaushal07wick/OsmoGrep" },
   { "name": "Captions",          "file": "captions.txt",         "repo": "https://github.com/kaushal07wick/Captions" },
   { "name": "StreamSSN",         "file": "streamssn.txt",        "repo": "https://github.com/kaushal07wick/StreamSSN" },
