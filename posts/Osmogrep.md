@@ -37,6 +37,8 @@ This makes it resilient and predictable, even when dealing with multi-file chang
 
 # OsmoGrep Architecture
 
+![osmogrep-architecture](/images/osmo-arch.svg)
+
 ## Pipeline Breakdown
 
 ### 1. Diff Scoping
