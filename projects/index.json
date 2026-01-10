@@ -1,11 +1,37 @@
 [
-  { "name": "TabMate",           "file": "tabmate.txt",          "repo": "https://github.com/kaushal07wick/tabmate" },
-  { "name": "FinSight",          "file": "finsight.txt",         "repo": "https://github.com/kaushal07wick/FinSight" },
-  { "name": "FamAgent",          "file": "famagent.txt",         "repo": "https://github.com/kaushal07wick/FamAgent" },
-  { "name": "OsmoGrep",          "file": "osmogrep.txt",         "repo": "https://github.com/kaushal07wick/OsmoGrep" },
-  { "name": "Captions",          "file": "captions.txt",         "repo": "https://github.com/kaushal07wick/Captions" },
-  { "name": "StreamSSN",         "file": "streamssn.txt",        "repo": "https://github.com/kaushal07wick/StreamSSN" },
-  { "name": "mem0 Analytics",    "file": "mem0-analytics.txt",   "repo": "https://github.com/kaushal07wick/mem0-analytics" },
-  { "name": "BreeBoost",         "file": "breeboost.txt",        "repo": "https://github.com/kaushal07wick/breeboost" },
-  { "name": "LiteLLM Aggregator","file": "litellm-aggregator.txt","repo": "https://github.com/kaushal07wick/litellm-aggregator" }
+  {
+    "name": "OsmoGrep",
+    "intro": "Terminal-native execution based agent, run full tests in parallel with sub-agents. ",
+    "repo": "https://github.com/kaushal07wick/OsmoGrep"
+  },
+  {
+    "name": "Captions",
+    "intro": "Automatic Caption Generation for YT shorts and raw videos. ",
+    "repo": "https://github.com/kaushal07wick/Captions"
+  },
+  {
+    "name": "StreamSSN",
+    "intro": "Real-time ASR with Whisper, optimized for real-time streaming with Adaptive chunking, similar to carteisa's ink-whisper",
+    "repo": "https://github.com/kaushal07wick/StreamSSN"
+  },
+  {
+    "name": "mem0 Analytics",
+    "intro": "Observability and performance telemetry for Mem0 memory systems. Aggregates metrics from LLM + vector pipelines into actionable insights.",
+    "repo": "https://github.com/kaushal07wick/mem0-analytics"
+  },
+  {
+    "name": "BreeBoost",
+    "intro": "BreeBoost is a full-stack, end-to-end real-time fraud detection system built using machine learning and statistical monitoring. ",
+    "repo": "https://github.com/kaushal07wick/breeboost"
+  },
+  {
+    "name": "LiteLLM Aggregator",
+    "intro": "High-performance, async-first system that computes and monitors LLM API spend across millions of requests with PostgreSQL and Prometheus. ",
+    "repo": "https://github.com/kaushal07wick/litellm-aggregator"
+  },
+  {
+    "name" : "TabMate",
+    "intro": "Playful and practical Chrome extension for saving, organizing, and exporting your open browser tabs.",
+    "repo" : "https://github.com/kaushal07wick/tabmate"
+  }
 ]

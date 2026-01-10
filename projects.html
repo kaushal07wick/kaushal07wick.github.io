@@ -4,11 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Projects — Kaushal</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="header.js" defer></script>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet"/>
-
   <style>
     :root {
       --bg: #000;
@@ -17,8 +15,10 @@
       --border: rgba(0, 255, 170, 0.22);
       --card-bg: rgba(0, 255, 170, 0.06);
       --shadow: 0 0 8px rgba(0, 255, 170, 0.25);
+      --proj-card-bg: #000;
+      --proj-overlay: rgba(0, 0, 0, 0.95);
+      --proj-desc-text: #d8fbe3;
     }
-
     .light {
       --bg: #f4fef8;
       --text: #002e22;
@@ -26,15 +26,16 @@
       --border: rgba(0, 141, 102, 0.22);
       --card-bg: rgba(0, 141, 102, 0.06);
       --shadow: 0 0 8px rgba(0, 141, 102, 0.20);
+      --proj-card-bg: #ffffff;
+      --proj-overlay: rgba(255, 255, 255, 0.95);
+      --proj-desc-text: #002e22;
     }
-
     body {
       margin: 0;
       background: var(--bg);
       color: var(--text);
       font-family: "JetBrains Mono", monospace;
     }
-
     .section-title {
       font-size: 20px;
       color: var(--accent);
@@ -46,11 +47,10 @@
       margin-bottom: 24px;
     }
     @keyframes typing { from { width: 0; } to { width: 100%; } }
-
     /* PROJECT CARD */
     .proj-box {
       border: 1px solid var(--border);
-      background: black;
+      background: var(--proj-card-bg);
       border-radius: 10px;
       overflow: hidden;
       height: 180px;
@@ -59,12 +59,10 @@
       transition: 0.25s ease;
       cursor: pointer;
     }
-
     .proj-box:hover {
       border-color: var(--accent);
       box-shadow: 0 0 14px var(--accent);
     }
-
     .proj-icon {
       height: 100%;
       display: flex;
@@ -73,66 +71,67 @@
       filter: drop-shadow(0 0 6px var(--accent));
       transition: 0.2s;
     }
-
     .proj-box:hover .proj-icon {
       animation: glitch 0.35s steps(2, end) infinite;
     }
-
     @keyframes glitch {
       0% { transform: translate(0); }
       33% { transform: translate(-2px, 1px); }
       66% { transform: translate(2px, -1px); }
       100% { transform: translate(0); }
     }
-
-    .view-link {
+    .proj-desc-overlay {
       position: absolute;
-      bottom: 0;
+      top: 0;
+      left: 0;
       width: 100%;
-      padding: 10px;
-      text-align: center;
-      background: rgba(0,0,0,0.5);
-      color: var(--accent);
+      height: 100%;
+      background: var(--proj-overlay);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
       opacity: 0;
       transition: 0.25s ease;
-      text-decoration: underline;
     }
-
-    .proj-box:hover .view-link {
+    .proj-box:hover .proj-desc-overlay {
       opacity: 1;
     }
-
+    .proj-desc-text {
+      color: var(--proj-desc-text);
+      font-size: 13px;
+      line-height: 1.5;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .view-link {
+      color: var(--accent);
+      text-decoration: underline;
+      font-size: 14px;
+    }
   </style>
 </head>
-
 <body>
-
 <div class="max-w-5xl mx-auto px-6">
-
   <!-- SHARED HEADER -->
   <div id="header-container"></div>
-
   <!-- PROJECT LIST -->
   <section class="mt-12">
     <div class="section-title">$ cat projects.txt</div>
-
     <div id="projects-grid" 
          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
     </div>
   </section>
-
 </div>
-
 <script>
 async function loadProjects() {
   const grid = document.getElementById("projects-grid");
   grid.innerHTML = "";
-
   // Load JSON with cache busted
   const projects = await fetch("projects/index.json", { cache: "no-store" })
     .then(r => r.json())
     .catch(err => console.error("Failed loading project index:", err));
-
   projects.forEach(p => {
     const html = `
       <div>
@@ -142,18 +141,18 @@ async function loadProjects() {
               <text x="60" y="90" fill="var(--accent)" font-size="72">>_</text>
             </svg>
           </div>
-          <div class="view-link">View →</div>
+          <div class="proj-desc-overlay">
+            <div class="proj-desc-text">${p.intro}</div>
+            <div class="view-link">View →</div>
+          </div>
         </div>
         <p class="mt-2 text-[var(--accent)]">${p.name}</p>
       </div>
     `;
-
     grid.insertAdjacentHTML("beforeend", html);
   });
 }
-
 document.addEventListener("DOMContentLoaded", loadProjects);
 </script>
-
 </body>
 </html>

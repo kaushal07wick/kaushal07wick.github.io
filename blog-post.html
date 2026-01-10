@@ -44,9 +44,9 @@
     }
 
     /* CLEAN HEADINGS */
-    #content h1 { font-size: 32px; margin-bottom: 20px; color: var(--accent); }
-    #content h2 { font-size: 26px; margin-top: 32px; margin-bottom: 16px; color: var(--accent); }
-    #content h3 { font-size: 22px; margin-top: 24px; margin-bottom: 12px; color: var(--accent); }
+    #content h1 { font-size: 32px; margin-bottom: 20px; color: var(--accent); font-weight: 700;  ; }
+    #content h2 { font-size: 26px; margin-top: 32px; margin-bottom: 16px; color: var(--accent); font-weight: 500;   }
+    #content h3 { font-size: 22px; margin-top: 24px; margin-bottom: 12px; color: var(--accent); font-weight: 400;   }
 
     /* INLINE LINKS */
     #content a {
@@ -130,6 +130,41 @@
       font-size: 14px;
       opacity: 0.7;
       margin-top: 6px;
+    }
+    /* BEAUTIFUL MAIN TITLE */
+    #content h1:first-of-type {
+      text-align: center;
+      font-size: 60px;                 /* clean large size */
+      font-weight: 700;                /* strong bold */
+      letter-spacing: -0.5px;          /* tighter, modern */
+      margin-bottom: 28px;             /* more breathing room */
+      color: var(--accent);            /* your accent green */
+    }
+
+    /* CUSTOM BULLET POINTS ▹ — SHIFTED RIGHT */
+    #content ul {
+      padding-top: 20px;
+      list-style: none;
+      padding-left: 0;
+      margin-left: 0;
+    }
+
+    #content ul li {
+      position: relative;
+      padding-left: 32px;      /* moved text right */
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+
+    #content ul li::before {
+      content: "▹";
+      position: absolute;
+      left: 8px;               /* move bullet right */
+      top: 0.2em;
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 1;
     }
 
     /* BACK BUTTON */
