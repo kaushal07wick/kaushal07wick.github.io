@@ -30,9 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       initThemeToggle();
 });
-/* ============================================================
-   PEGASUS SHELL v2.1 — KaushalOS Interactive Terminal Kernel
-============================================================ */
+
 
 const panel  = document.getElementById("terminal-wrapper");
 const output = document.getElementById("console-output");
@@ -45,10 +43,6 @@ let blogsIndex = [];
 let projectsIndex = [];
 let currentPath = "/";
 let vfsReady = false;
-
-/* ============================================================
-   BOOT SEQUENCE (prints once)
-============================================================ */
 
 function bootScreen() {
   print(`
@@ -64,10 +58,6 @@ For terminal lovers and geeks, Type 'help' to begin.
 }
 bootScreen();
 
-/* ============================================================
-   PRINT HELPERS
-============================================================ */
-
 function print(text) {
   output.innerHTML += text + "\n";
   output.scrollTop = output.scrollHeight;
@@ -81,16 +71,9 @@ function error(msg) {
   print(`❌ ${msg}`);
 }
 
-/* ============================================================
-   FOCUS CONTROL
-============================================================ */
-
 panel.addEventListener("click", () => input.focus());
 document.addEventListener("keydown", e => { if (e.key === "~") input.focus(); });
 
-/* ============================================================
-   VFS STRUCTURE
-============================================================ */
 
 let vfs = {
   "/": {
@@ -103,9 +86,6 @@ let vfs = {
   }
 };
 
-/* ============================================================
-   LOAD DYNAMIC INDEXES (BLOGS + PROJECTS)
-============================================================ */
 
 async function loadDynamicData() {
   try {
@@ -134,11 +114,6 @@ async function loadDynamicData() {
   }
 }
 loadDynamicData();
-
-/* ============================================================
-   DIRECTORY RESOLUTION
-============================================================ */
-
 function getDir(path) {
   const parts = path.split("/").filter(Boolean);
   let node = vfs["/"];
@@ -148,10 +123,6 @@ function getDir(path) {
   }
   return node;
 }
-
-/* ============================================================
-   COMMANDS
-============================================================ */
 
 const commands = {
 
@@ -262,9 +233,6 @@ Info: ${p.desc}
   }
 };
 
-/* ============================================================
-   EXECUTION HANDLER
-============================================================ */
 
 function runCommand(text) {
   if (!text.trim()) return;
@@ -288,9 +256,6 @@ input.addEventListener("keydown", e => {
   }
 });
 
-/* ============================================================
-   HISTORY
-============================================================ */
 
 input.addEventListener("keydown", e => {
   if (e.key === "ArrowUp") {
@@ -302,9 +267,7 @@ input.addEventListener("keydown", e => {
     input.value = history[historyIndex] || "";
   }
 });
-/* ============================================================
-   FIXED TAB AUTOCOMPLETE (captures tab before browser focus)
-============================================================ */
+
 input.addEventListener("keydown", function(e) {
   if (e.key !== "Tab") return;
 
@@ -364,90 +327,37 @@ document.querySelectorAll(".sound-hover").forEach((el) => {
     clickSound.play();
   });
 });
-
-/* ========== MOBILE MENU ========== */
+// mobile menu
 document.getElementById("mobile-menu-button").addEventListener("click", () => {
   document.getElementById("mobile-menu").classList.toggle("hidden");
 });
 
-/* ========== PLUTONIUM ATOM RENDERING ========== */
+//parallax mouse
+document.addEventListener("mousemove", (e) => {
 
-const puCanvas = document.getElementById("plutonium-atom");
-const ctx = puCanvas.getContext("2d");
+  /* PARALLAX BACKGROUND */
+  const layer = document.getElementById("parallax-layer");
+  if (layer) {
+    const dx = (e.clientX / window.innerWidth - 0.5) * 12;
+    const dy = (e.clientY / window.innerHeight - 0.5) * 12;
+    layer.style.transform = `translate(${dx}px, ${dy}px)`;
+  }
 
-puCanvas.width = 400;
-puCanvas.height = 400;
+  /* JARVIS ORB INTERACTION */
+  const orb = document.querySelector(".jarvis-orb");
+  if (orb) {
+    const rect = orb.getBoundingClientRect();
+    const x = e.clientX - (rect.left + rect.width / 2);
+    const y = e.clientY - (rect.top + rect.height / 2);
 
-let t = 0;
-let mouseX = 0;
-let mouseY = 0;
+    const tiltX = (y / rect.height) * -10;  
+    const tiltY = (x / rect.width) * 10;
 
-const shells = [
-  { r: 45, speed: 0.04, count: 2, tiltY: 0.5 },
-  { r: 65, speed: 0.03, count: 4, tiltY: 0.8 },
-  { r: 85, speed: 0.025, count: 6, tiltY: -0.3 },
-  { r: 105, speed: 0.02, count: 8, tiltY: -0.9 },
-  { r: 125, speed: 0.015, count: 6, tiltY: 0.2 },
-  { r: 145, speed: 0.012, count: 4, tiltY: 0.4 },
-  { r: 165, speed: 0.01, count: 2, tiltY: -0.6 },
-];
+    orb.style.transform = `
+      rotateX(${tiltX}deg)
+      rotateY(${tiltY}deg)
+      scale(1.10)
+    `;
+  }
 
-function drawPlutonium() {
-  const cx = puCanvas.width / 2;
-  const cy = puCanvas.height / 2;
-
-  ctx.clearRect(0, 0, puCanvas.width, puCanvas.height);
-
-  const nucleus = ctx.createRadialGradient(cx, cy, 0, cx, cy, 35);
-  nucleus.addColorStop(0, "#ff4d4d");
-  nucleus.addColorStop(0.4, "#b30000");
-  nucleus.addColorStop(1, "transparent");
-
-  ctx.fillStyle = nucleus;
-  ctx.beginPath();
-  ctx.arc(cx, cy, 35, 0, Math.PI * 2);
-  ctx.fill();
-
-  shells.forEach((shell) => {
-    ctx.beginPath();
-    ctx.strokeStyle = "rgba(0, 255, 200, 0.15)";
-    ctx.lineWidth = 1;
-    ctx.ellipse(cx, cy, shell.r, shell.r * 0.4, shell.tiltY, 0, Math.PI * 2);
-    ctx.stroke();
-
-    for (let i = 0; i < shell.count; i++) {
-      const angle = t * shell.speed + (i * Math.PI * 2) / shell.count;
-      const x = cx + shell.r * Math.cos(angle);
-      const y = cy + (shell.r * 0.4) * Math.sin(angle);
-
-      drawElectron(x, y);
-    }
-  });
-
-  t += 1;
-  requestAnimationFrame(drawPlutonium);
-}
-
-function drawElectron(x, y) {
-  const glow = ctx.createRadialGradient(x, y, 0, x, y, 8);
-  glow.addColorStop(0, "rgba(0, 255, 255, 1)");
-  glow.addColorStop(1, "transparent");
-
-  ctx.fillStyle = glow;
-  ctx.beginPath();
-  ctx.arc(x, y, 8, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = "#fff";
-  ctx.beginPath();
-  ctx.arc(x, y, 2.5, 0, Math.PI * 2);
-  ctx.fill();
-}
-
-window.addEventListener("mousemove", (e) => {
-  const rect = puCanvas.getBoundingClientRect();
-  mouseX = e.clientX - rect.left - rect.width / 2;
-  mouseY = e.clientY - rect.top - rect.height / 2;
 });
-
-drawPlutonium();

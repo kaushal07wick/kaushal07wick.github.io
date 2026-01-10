@@ -1,9 +1,10 @@
+title: Image Scraping
+subtitle: AI driven image-scraping with Firecrawl🔥
+author: Kaushal Choudhary
+date: 2026-01-01
 # How to Scrape Images from Websites
 
 ![Firecrawl can scrape images from websites, either static or dynamic.](/images/firecrawl.png)
-
-Meta-title: How to Scrape Images from Websites (2025 Guide) | Firecrawl
-Meta-description: Learn how to scrape images from websites using Python, Selenium, and Firecrawl. Compare methods, handle dynamic content, and extract images at scale.
 
 Scraping images from websites is essential for collecting and analyzing data at scale. While many tools exist for this purpose, most traditional approaches struggle to keep up with how modern websites are built and delivered.
 

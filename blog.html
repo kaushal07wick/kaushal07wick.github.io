@@ -88,7 +88,7 @@
   <div id="header-container"></div>
 
   <section class="mt-10">
-    <div class="section-title">$ cat blog_index.txt</div>
+    <div class="section-title">$ cat blogs.txt</div>
     <div id="post-list"></div>
   </section>
 </div>
@@ -116,22 +116,35 @@
           cache: "no-store"
         }).then(r => r.text());
 
-        const title = md.match(/^#\s+(.*)/)?.[1] || file.replace(".md", "");
-        const date = md.match(/^date:\s*(.*)/i)?.[1] || "Unknown";
+        // Read metadata fields — title, subtitle, author, date
+        const title = md.match(/^title:\s*(.*)$/mi)?.[1]?.trim() || "Untitled";
+        const subtitle = md.match(/^subtitle:\s*(.*)$/mi)?.[1]?.trim() || "";
+        const author = md.match(/^author:\s*(.*)$/mi)?.[1]?.trim() || "";
+        const date = md.match(/^date:\s*(.*)$/mi)?.[1]?.trim() || "";
+
+        // Combine author + date
+        let metaLine = "";
+        if (author && date) metaLine = `${author} — ${date}`;
+        else if (author) metaLine = author;
+        else if (date) metaLine = date;
 
         container.innerHTML += `
           <div class="post-card" onclick="location.href='blog-post.html?file=${file}'">
             <div class="post-title">${title}</div>
-            <div class="post-date">${date}</div>
+            ${
+              subtitle
+                ? `<div class="post-subtitle" style="opacity:0.8; font-size:14px; margin-bottom:6px;">${subtitle}</div>`
+                : ""
+            }
+            <div class="post-date">${metaLine || "Unknown"}</div>
           </div>
         `;
-
       } catch (err) {
         console.warn("Could not load post:", file);
 
         container.innerHTML += `
           <div class="post-card" onclick="location.href='blog-post.html?file=${file}'">
-            <div class="post-title">${file}</div>
+            <div class="post-title">Untitled</div>
             <div class="post-date">Unavailable</div>
           </div>
         `;

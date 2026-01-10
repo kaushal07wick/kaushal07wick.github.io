@@ -11,7 +11,12 @@
   <script src="header.js" defer></script>
 
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet"/>
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
   <style>
     :root {
       --bg: #000;
@@ -41,6 +46,11 @@
       margin-top: 40px;
       line-height: 1.85;
       font-size: 17px;
+    }
+    /* Improve paragraph spacing for Markdown */
+    #content p {
+      margin: 22px 0;     /* add vertical spacing */
+      line-height: 1.75;  /* smoother readability */
     }
 
     /* CLEAN HEADINGS */
@@ -143,7 +153,7 @@
 
     /* CUSTOM BULLET POINTS ▹ — SHIFTED RIGHT */
     #content ul {
-      padding-top: 20px;
+      padding-top: 10px;
       list-style: none;
       padding-left: 0;
       margin-left: 0;
@@ -165,6 +175,17 @@
       font-weight: 700;
       font-size: 18px;
       line-height: 1;
+    }
+    /* FIX ORDERED LIST NUMBERING */
+    #content ol {
+      list-style: decimal;
+      padding-left: 32px;  /* align with your custom bullets */
+      margin-left: 0;
+    }
+
+    #content ol li {
+      margin-bottom: 10px;
+      line-height: 1.6;
     }
 
     /* BACK BUTTON */
@@ -205,10 +226,32 @@
     if (!file) return;
 
     const md = await fetch("posts/" + file).then(r => r.text());
-    const html = marked.parse(md);
 
+    marked.setOptions({
+      breaks: true,
+      gfm: true,
+      highlight: function(code, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          return hljs.highlight(code, { language: lang }).value;
+        }
+        return hljs.highlightAuto(code).value;
+      }
+    });
+
+    // Strip top metadata lines (title:, subtitle:, author:, date:)
+    const cleaned = md.replace(/^(title:.*\n|subtitle:.*\n|author:.*\n|date:.*\n)+/i, "").trim();
+    const html = marked.parse(cleaned);
     const container = document.getElementById("content");
     container.innerHTML = html;
+
+    // RUN HIGHLIGHTING
+    hljs.highlightAll();
+
+    // ensure links open in new tab
+    container.querySelectorAll("a").forEach(a => {
+      a.setAttribute("target", "_blank");
+      a.setAttribute("rel", "noopener noreferrer");
+    });
 
     enhanceCodeBlocks();
   }
