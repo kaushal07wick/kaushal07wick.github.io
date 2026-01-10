@@ -172,36 +172,40 @@ Available commands:
     print(node.real ? "Markdown file — use: open " + node.filename : node.content);
   },
 
-  open(target) {
-    if (!target) return warn("Specify what to open");
-    if (!vfsReady) return warn("Filesystem loading…");
+open(target) {
+  if (!target) return warn("Specify what to open");
+  if (!vfsReady) return warn("Filesystem loading…");
 
-    const t = target.toLowerCase();
+  const t = target.toLowerCase();
 
-    if (t === "posts") {
-      window.location.href = "blog.html";
-      return print("→ Opening blog.html");
-    }
+  if (t === "posts") {
+    window.location.href = "blog.html";
+    return print("→ Opening blog.html");
+  }
 
-    if (t === "projects") {
-      window.location.href = "projects.html";
-      return print("→ Opening projects.html");
-    }
+  if (t === "projects") {
+    window.location.href = "projects.html";
+    return print("→ Opening projects.html");
+  }
 
-    let fname = t.endsWith(".md") ? t : t + ".md";
-    if (blogsIndex.includes(fname)) {
-      window.location.href = `blog-post.html?file=${fname}`;
-      return print("→ Opening blog article: " + fname);
-    }
+  let fname = t.endsWith(".md") ? t : t + ".md";
 
-    const proj = projectsIndex.find(p => p.name.toLowerCase() === t);
-    if (proj) {
-      window.open(proj.repo, "_blank");
-      return print("→ Opening GitHub repo: " + proj.repo);
-    }
+  // FIX: normalize to lowercase during lookup
+  const blogList = blogsIndex.map(f => f.toLowerCase());
 
-    error("Nothing found to open.");
-  },
+  if (blogList.includes(fname)) {
+    window.location.href = `blog-post.html?file=${fname}`;
+    return print("→ Opening blog article: " + fname);
+  }
+
+  const proj = projectsIndex.find(p => p.name.toLowerCase() === t);
+  if (proj) {
+    window.open(proj.repo, "_blank");
+    return print("→ Opening GitHub repo: " + proj.repo);
+  }
+
+  error("Nothing found to open.");
+},
 
   posts() {
     if (!vfsReady) return warn("Loading…");
