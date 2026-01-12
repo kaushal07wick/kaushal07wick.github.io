@@ -4,11 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kaushal — Minimal Terminal</title>
-
+  <title>Kaushal's Website</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet" />
-
   <style>
     :root {
       --bg: #000;
@@ -187,6 +185,17 @@
     .contact-link:hover::after {
       width: 100%;
     }
+    #console-output::-webkit-scrollbar {
+      width: 6px;
+    }
+    #console-output::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 8px;
+    }
+    #console-output::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
     .jarvis-orb-container {
       position: relative;
       width: 200px;
@@ -299,60 +308,104 @@
       animation: hex-float 8s ease-in-out infinite;
     }
 
-    @keyframes hex-float {
-      0%   { transform: translateY(0px); opacity: 0.15; }
-      50%  { transform: translateY(-8px); opacity: 0.30; }
-      100% { transform: translateY(0px); opacity: 0.15; }
-    }
-
-    .jarvis-orb:hover {
-      transform: scale(1.18) rotate(8deg);
-      box-shadow:
-        0 0 38px rgba(0,255,175,0.55),
-        inset 0 0 22px rgba(0,255,175,0.35);
-    }
-
-    /* Light Mode Adjustments */
-    .light .jarvis-orb {
-      background:
-        radial-gradient(circle at 50% 40%, rgba(0,120,80,0.35), rgba(0,120,80,0.15)),
-        conic-gradient(from 0deg, rgba(0,120,80,0.50), rgba(0,150,100,0.85), rgba(0,120,80,0.50));
-      box-shadow:
-        0 0 28px rgba(0,150,100,0.35),
-        inset 0 0 18px rgba(0,100,60,0.30);
-    }
-
-    .light .hex-grid {
-      opacity: 0.35; /* darker hex grid */
-      filter: brightness(0.7) contrast(1.3);
-    }
-  .nav-link {
-    font-size: 16px;
-    color: var(--text);
-    transition: 0.2s ease;
+  @keyframes hex-float {
+    0%   { transform: translateY(0px); opacity: 0.15; }
+    50%  { transform: translateY(-8px); opacity: 0.30; }
+    100% { transform: translateY(0px); opacity: 0.15; }
   }
 
-  .nav-link:hover {
-    color: var(--accent);
-    text-shadow: 0 0 6px var(--accent);
+  .jarvis-orb:hover {
+    transform: scale(1.18) rotate(8deg);
+    box-shadow:
+      0 0 38px rgba(0,255,175,0.55),
+      inset 0 0 22px rgba(0,255,175,0.35);
   }
 
-  .nav-icon {
-    width: 18px;
-    height: 18px;
-    stroke: var(--accent);
-    stroke-width: 2;
-    fill: none;
-    display: block;
+  /* Light Mode Adjustments */
+  .light .jarvis-orb {
+    background:
+      radial-gradient(circle at 50% 40%, rgba(0,120,80,0.35), rgba(0,120,80,0.15)),
+      conic-gradient(from 0deg, rgba(0,120,80,0.50), rgba(0,150,100,0.85), rgba(0,120,80,0.50));
+    box-shadow:
+      0 0 28px rgba(0,150,100,0.35),
+      inset 0 0 18px rgba(0,100,60,0.30);
   }
 
-  .mobile-link {
-    padding: 10px 0;
-    display: block;
-    font-size: 16px;
-    color: var(--accent);
-    text-decoration: underline;
-    border-bottom: 1px solid var(--border);
+  .light .hex-grid {
+    opacity: 0.35; /* darker hex grid */
+    filter: brightness(0.7) contrast(1.3);
+  }
+.nav-link {
+  font-size: 16px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  transition: 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--accent);
+  text-shadow: 0 0 6px var(--accent);
+}
+
+.nav-icon {
+  width: 18px;
+  height: 18px;
+  stroke: var(--accent);
+  stroke-width: 2;
+  fill: none;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+#theme-toggle {
+  font-size: 18px;
+  line-height: 18px;
+}
+
+.mobile-link {
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  color: var(--accent);
+  text-decoration: underline;
+  border-bottom: 1px solid var(--border);
+}
+
+.mobile-link:last-child {
+  border-bottom: none;
+}
+
+  .ascii {
+    display: inline-block;
+    transform-origin: left top;
+  }
+
+  /* Scale ASCII on smaller screens */
+  @media (max-width: 900px) {
+    .ascii {
+      transform: scale(0.85);
+    }
+  }
+
+  @media (max-width: 700px) {
+    .ascii {
+      transform: scale(0.70);
+    }
+  }
+
+  @media (max-width: 500px) {
+    .ascii {
+      transform: scale(0.55);
+    }
+  }
+
+  @media (max-width: 400px) {
+    .ascii {
+      transform: scale(0.45);
+    }
   }
 
   </style>
@@ -361,93 +414,8 @@
 <body>
   <div id="parallax-layer"></div>
   <div class="max-w-5xl mx-auto px-6">
-  <header class="py-6">
-    <nav class="flex justify-between items-center border-b border-[var(--border)] pb-3">
 
-      <!-- LOGO -->
-      <a href="index.html" class="text-xl font-bold cursor sound-hover flex items-center gap-1">
-        Kaushal
-      </a>
-
-      <!-- DESKTOP NAV -->
-      <div class="hidden md:flex gap-8 items-center">
-
-        <!-- PROJECTS -->
-        <a href="projects.html" class="sound-hover flex items-center gap-2 nav-link">
-          <svg class="nav-icon" viewBox="0 0 24 24">
-            <rect x="3" y="4" width="18" height="14" rx="2"/>
-            <path d="M3 9h18"/>
-          </svg>
-          Projects
-        </a>
-
-        <!-- BLOG -->
-        <a href="blog.html" class="sound-hover flex items-center gap-2 nav-link">
-          <svg class="nav-icon" viewBox="0 0 24 24">
-            <rect x="3" y="4" width="18" height="16" rx="2"/>
-            <path d="M7 9h10M7 13h6"/>
-          </svg>
-          Blog
-        </a>
-
-        <!-- ABOUT -->
-        <a href="about.html" class="sound-hover flex items-center gap-2 nav-link">
-          <svg class="nav-icon" viewBox="0 0 24 24">
-            <circle cx="12" cy="8" r="4"/>
-            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
-          </svg>
-          About
-        </a>
-
-        <!-- THEME TOGGLE -->
-        <span id="theme-toggle" class="cursor-pointer text-[var(--accent)] ml-2">☾</span>
-      </div>
-
-      <!-- MOBILE MENU BUTTON -->
-      <button id="mobile-menu-button" class="md:hidden text-[var(--accent)] text-2xl">
-        ☰
-      </button>
-    </nav>
-
-    <!-- MOBILE MENU -->
-  <div id="mobile-menu"
-      class="hidden flex-col mt-3 border border-[var(--border)] p-4 bg-[var(--bg)] md:hidden">
-
-    <a href="projects.html" class="mobile-link flex items-center gap-3">
-      <svg class="nav-icon" viewBox="0 0 24 24">
-        <rect x="3" y="4" width="18" height="14" rx="2"/>
-        <path d="M3 9h18"/>
-      </svg>
-      Projects
-    </a>
-
-    <a href="blog.html" class="mobile-link flex items-center gap-3">
-      <svg class="nav-icon" viewBox="0 0 24 24">
-        <rect x="3" y="4" width="18" height="16" rx="2"/>
-        <path d="M7 9h10M7 13h6"/>
-      </svg>
-      Blog
-    </a>
-
-    <a href="about.html" class="mobile-link flex items-center gap-3">
-      <svg class="nav-icon" viewBox="0 0 24 24">
-        <circle cx="12" cy="8" r="4"/>
-        <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
-      </svg>
-      About
-    </a>
-
-    <a href="index.html#Contact" class="mobile-link flex items-center gap-2">
-    <svg class="nav-icon" viewBox="0 0 24 24">
-      <rect x="3" y="5" width="18" height="14" rx="2"/>
-      <path d="M3 7l9 6 9-6"/>
-    </svg>
-    Contact
-  </a>
-  </div>
-
-  </header>
-
+  <div id="header-container"></div>
     <!-- HERO -->
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
       <div class="col-span-2">
@@ -573,10 +541,12 @@
         <pre id="console-output" style="
           color:var(--term-text);
           padding:12px;
-          min-height:150px;
           white-space:pre-wrap;
-        "></pre>
-
+          min-height:150px;
+          max-height:350px;
+          overflow-y:auto;
+        ">
+        </pre>
         <!-- Input Row -->
         <div id="console-input-wrapper" style="
           display:flex;
@@ -585,11 +555,17 @@
           padding:8px 0;
           font-family:JetBrains Mono, monospace;
           color:var(--term-text);
+          position:relative;
         ">
+
           <span style="color:var(--term-text);">$</span>
-          <input id="console-input" 
+
+          <input id="console-input"
                 placeholder="type a command..."
                 autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
                 style="
                   flex:1;
                   background:transparent;
@@ -597,12 +573,44 @@
                   outline:none;
                   color:var(--term-text);
                   font-family:JetBrains Mono, monospace;
+                  z-index:3;
                 ">
-        </div>
 
+          <span id="console-hint"
+                style="
+                  position:absolute;
+                  left:28px;
+                  top:50%;
+                  transform:translateY(-50%);
+                  opacity:0.35;
+                  pointer-events:none;
+                  color:var(--term-dim);
+                  font-family:JetBrains Mono, monospace;
+                  z-index:1;
+                ">
+          </span>
+
+          <span id="console-info"
+                style="
+                  position:absolute;
+                  left:28px;
+                  top:105%;
+                  font-size:11px;
+                  opacity:0.55;
+                  color:var(--term-dim);
+                  pointer-events:none;
+                  font-family:JetBrains Mono, monospace;
+                  z-index:1;
+                ">
+          </span>
+        </div>
+        <canvas id="runner-game"
+          width="600"
+          height="200"
+          style="display:none;margin-top:12px;border:1px solid var(--border);">
+        </canvas>
       </div>
     </section>
-
 
     <!-- CONTACT -->
     <section id="Contact" class="mt-20 mb-20">
@@ -619,6 +627,8 @@
 
     </section>
   </div>
-  <script src="index.js"></script>
+  <script src="header.js" defer></script>
+  <script src="terminal.js?v=2" defer></script>
+  <script src="index.js" defer></script>
 </body>
 </html>
