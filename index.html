@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/images/kkc.svg">
   <title>Kaushal's Website</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet" />
@@ -387,6 +388,21 @@
       letter-spacing: 0;
       font-variant-ligatures: none;
     }
+    @media (max-width: 768px) {
+    .jarvis-orb-container {
+      display: none !important;
+    }
+    section.grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+  .ascii-sub {
+    display: block;
+    margin-top: 6px;
+    font-size: clamp(16px, 2.2vw, 22px);
+    line-height: 1.3;
+    color: var(--term-dim);
+  }
   </style>
 </head>
 
@@ -400,7 +416,7 @@
       <div class="col-span-2">
         <h1 class="text-4xl leading-tight">
           Hi, I'm <span style="color: var(--accent); opacity: 0.85;">Kaushal</span>,<br>
-          <span style="color: var(--accent);">a Systems Engineer</span> always<br>
+          <span style="color: var(--accent);">a Systems Engineer,</span> always<br>
           cooking something new<span class="cursor"></span>
         </h1>
 
@@ -492,6 +508,7 @@
     </section>
     <!-- TERMINAL -->
     <section class="mt-24 mb-20">
+      <div class="section-title">$ cat terminal.exe</div>
       <div id="terminal-wrapper" style="
         background: var(--term-bg);
         border: 1px solid var(--border);

@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
 ██║     ███████╗╚██████╔╝██║  ██║███████║╚██████╔╝███████║
 ╚═╝     ╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚══════╝
 
-Pegasus Terminal v2.1. Type 'help' to begin.
+<span class="ascii-sub">Pegasus Terminal v2.1. Type 'help' to begin.</span>
 </span>
 `)
     asciiScale()
