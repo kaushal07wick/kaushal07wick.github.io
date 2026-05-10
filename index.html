@@ -1071,7 +1071,7 @@
         document.getElementById("dispatch-title").textContent = title;
         document.getElementById("dispatch-sub").textContent   = subtitle;
         document.getElementById("dispatch-date").textContent  = date || "—";
-        document.getElementById("latest-dispatch").href = `blog-post.html?file=${file}`;
+        document.getElementById("latest-dispatch").href = `blog-post.html?file=${file.replace(/\.md$/, "")}`;
       })
       .catch(() => {
         document.getElementById("dispatch-title").textContent = "(failed to load)";

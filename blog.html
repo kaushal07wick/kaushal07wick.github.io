@@ -400,7 +400,7 @@
 
       const card = document.createElement("a");
       card.className = "tx-card tx-anim-init";
-      card.href = `blog-post.html?file=${file}`;
+      card.href = `blog-post.html?file=${file.replace(/\.md$/, "")}`;
       card.dataset.search = (title + " " + subtitle).toLowerCase();
       card.innerHTML = `
         <div class="tx-meta">

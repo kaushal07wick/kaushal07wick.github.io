@@ -220,7 +220,8 @@
 
 <script>
   const params = new URLSearchParams(location.search);
-  const file = params.get("file");
+  const slug = (params.get("file") || "").replace(/\.md$/, "");
+  const file = slug ? slug + ".md" : "";
 
   async function loadPost() {
     if (!file) return;
