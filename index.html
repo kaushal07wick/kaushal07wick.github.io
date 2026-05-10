@@ -6,6 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="/images/kkc.svg">
   <title>Kaushal's Website</title>
+  <script>
+    // mark already-booted sessions so the boot overlay doesn't replay
+    if (sessionStorage.getItem("booted")) document.documentElement.classList.add("booted");
+    else sessionStorage.setItem("booted", "1");
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <style>
@@ -24,7 +29,7 @@
     }
 
     .light {
-      --bg: #f4fef8;
+      --bg: #ffffff;
       --text: #002e22;
       --accent: #008d66;
       --border: rgba(0, 141, 102, 0.35);
@@ -52,12 +57,7 @@
     }
 
     #parallax-layer {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      background: radial-gradient(circle at 40% 20%, rgba(0, 141, 102, 0.15), transparent 85%);
-      transition: transform 0.2s ease-out;
+      display: none;
     }
 
     .cursor::after {
@@ -103,6 +103,69 @@
       border-color: var(--accent);
       box-shadow: 0 0 24px rgba(0, 141, 102, 0.35);
       transform: translateY(-4px);
+    }
+
+    /* TIMELINE — git-log feel */
+    .timeline {
+      list-style: none;
+      margin: 0;
+      padding: 4px 0 4px 28px;
+      border-left: 1px solid var(--border);
+      position: relative;
+    }
+    .tl-item {
+      position: relative;
+      padding-bottom: 32px;
+    }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-item::before {
+      content: "";
+      position: absolute;
+      left: -34px;
+      top: 8px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .tl-item:hover::before {
+      box-shadow: 0 0 16px var(--accent);
+      transform: scale(1.25);
+    }
+    .tl-item.tl-current::before {
+      animation: tl-pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes tl-pulse {
+      0%, 100% { box-shadow: 0 0 6px var(--accent); }
+      50%      { box-shadow: 0 0 18px var(--accent); }
+    }
+    .tl-date {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      opacity: 0.7;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .tl-title {
+      font-size: 17px;
+      font-weight: 500;
+      margin: 0;
+      line-height: 1.4;
+    }
+    .tl-title strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .tl-desc {
+      margin-top: 8px;
+      opacity: 0.78;
+      line-height: 1.65;
+      max-width: 70ch;
+      font-size: 14.5px;
     }
     /* neon button */
     .neon-btn {
@@ -294,10 +357,444 @@
     line-height: 1.3;
     color: var(--term-dim);
   }
+
+  /* ── SECTION GUTTER NUMBERS ──────────────────────────── */
+  .sec-num {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    opacity: 0.5;
+    margin-right: 10px;
+    padding-right: 10px;
+    border-right: 1px solid var(--border);
+    color: var(--accent);
+  }
+
+  /* ── HERO STATS STRIP ────────────────────────────────── */
+  .stat-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    border-top: 1px dashed var(--border);
+    border-bottom: 1px dashed var(--border);
+    padding: 18px 0;
+    margin-top: 28px;
+  }
+  .stat { text-align: center; padding: 0 6px; }
+  .stat + .stat { border-left: 1px dashed var(--border); }
+  .stat-num {
+    font-size: clamp(22px, 3vw, 30px);
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    text-shadow: 0 0 12px rgba(0,255,175,0.25);
+  }
+  .stat-label {
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-top: 6px;
+  }
+  @media (max-width: 640px) {
+    .stat-strip { grid-template-columns: repeat(2, 1fr); }
+    .stat:nth-child(3) { border-left: none; }
+  }
+
+  /* ── SELECTED WORK GRID ──────────────────────────────── */
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+    margin-top: 24px;
+  }
+  .work-card {
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    padding: 20px 20px 18px 20px;
+    border-radius: 6px;
+    display: block;
+    position: relative;
+    overflow: hidden;
+    transition: 0.2s ease;
+    color: inherit;
+    text-decoration: none;
+  }
+  .work-card::before {
+    content: "↗";
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    color: var(--accent);
+    opacity: 0.45;
+    font-size: 16px;
+    transition: 0.2s ease;
+  }
+  .work-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 0 24px var(--card-shadow);
+  }
+  .work-card:hover::before {
+    opacity: 1;
+    transform: translate(2px, -2px);
+  }
+  .work-name {
+    color: var(--accent);
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-right: 24px;
+  }
+  .work-desc {
+    font-size: 13.5px;
+    opacity: 0.78;
+    line-height: 1.55;
+  }
+  .work-all {
+    display: inline-block;
+    margin-top: 18px;
+    color: var(--accent);
+    opacity: 0.8;
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .work-all:hover { opacity: 1; text-shadow: 0 0 6px var(--accent); }
+
+  /* ── LATEST DISPATCH ─────────────────────────────────── */
+  .dispatch-card {
+    display: block;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    padding: 28px 32px;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    transition: 0.2s ease;
+    margin-top: 24px;
+    color: inherit;
+    text-decoration: none;
+  }
+  .dispatch-card::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.55;
+  }
+  .dispatch-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px var(--card-shadow);
+  }
+  .dispatch-meta {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0.7;
+    margin-bottom: 10px;
+  }
+  .dispatch-title {
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+  .dispatch-sub {
+    opacity: 0.72;
+    font-size: 14.5px;
+    line-height: 1.55;
+    max-width: 60ch;
+  }
+  .dispatch-cta {
+    margin-top: 14px;
+    color: var(--accent);
+    font-size: 13px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── PEGASUS TERMINAL v2.2 ───────────────────────────── */
+  .pterm {
+    background: var(--term-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 0 28px rgba(0,255,170,0.14),
+                inset 0 0 24px rgba(0,255,170,0.03);
+    overflow: hidden;
+    font-family: "JetBrains Mono", monospace;
+  }
+  .pterm-bar {
+    background: var(--term-bar);
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .pterm-dots { display: flex; gap: 7px; }
+  .pterm-bar .dot {
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    box-shadow: 0 0 5px currentColor;
+  }
+  .pterm-bar .dot.r { background: #ff5f56; color: #ff5f56; }
+  .pterm-bar .dot.y { background: #ffbd2e; color: #ffbd2e; }
+  .pterm-bar .dot.g { background: #27c93f; color: #27c93f; }
+  .pterm-title {
+    color: var(--term-dim);
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+  }
+  .pterm-title .ver {
+    font-size: 10.5px;
+    margin-left: 6px;
+    padding: 1px 6px;
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    opacity: 0.7;
+    color: var(--accent);
+  }
+  .pterm-meta {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    color: var(--term-dim);
+  }
+  .pterm-meta .status {
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .pterm-meta .pulse {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--accent);
+    animation: pterm-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pterm-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; box-shadow: 0 0 12px var(--accent); }
+  }
+  .pterm-meta .cmd-count #pterm-cmd-count { color: var(--accent); }
+  .pterm-meta .path { color: var(--accent); opacity: 0.85; }
+  .pterm-meta .hint-key { opacity: 0.45; }
+  @media (max-width: 760px) {
+    .pterm-meta .hint-key, .pterm-meta .path { display: none; }
+  }
+  @media (max-width: 540px) {
+    .pterm-meta .cmd-count { display: none; }
+    .pterm-bar { gap: 8px; padding: 8px 10px; }
+  }
+
+  .pterm-output {
+    color: var(--term-text);
+    padding: 14px 16px;
+    white-space: pre-wrap;
+    min-height: 220px;
+    max-height: 400px;
+    overflow-y: auto;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .pterm-output::-webkit-scrollbar { width: 8px; }
+  .pterm-output::-webkit-scrollbar-track { background: transparent; }
+  .pterm-output::-webkit-scrollbar-thumb {
+    background: rgba(0,255,170,0.14);
+    border-radius: 99px;
+  }
+  .pterm-output::-webkit-scrollbar-thumb:hover { background: rgba(0,255,170,0.30); }
+
+  /* output color classes */
+  .pterm-output .t-cmd  { color: var(--accent); font-weight: 500; }
+  .pterm-output .t-out  { color: var(--term-text); opacity: 0.92; }
+  .pterm-output .t-warn { color: #ffbd2e; }
+  .pterm-output .t-err  { color: #ff6c6c; }
+  .pterm-output .t-dim  { opacity: 0.55; }
+  .pterm-output .t-ok   { color: #27c93f; }
+  .pterm-output .t-key  { color: #fff; opacity: 0.95; }
+  .pterm-output .t-link {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+  .pterm-output .t-pill {
+    display: inline-block;
+    padding: 0 6px;
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    font-size: 11px;
+    margin: 0 2px;
+    color: var(--accent);
+  }
+
+  .pterm-input-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 16px 14px 16px;
+    font-family: "JetBrains Mono", monospace;
+    position: relative;
+    font-size: 13px;
+    color: var(--term-text);
+    border-top: 1px dashed var(--border);
+  }
+  .pterm-input-row .prompt-user { color: var(--accent); font-weight: 500; }
+  .pterm-input-row .prompt-sep  { opacity: 0.5; padding: 0 1px; }
+  .pterm-input-row .prompt-path { color: var(--accent); opacity: 0.85; }
+  .pterm-input-row #console-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--term-text);
+    font-family: inherit;
+    font-size: inherit;
+    z-index: 3;
+    padding: 0 4px;
+    caret-color: var(--accent);
+  }
+  .pterm-input-row #console-input::placeholder {
+    color: var(--term-dim);
+    opacity: 0.5;
+  }
+  .pterm-input-row #console-hint {
+    position: absolute;
+    pointer-events: none;
+    color: var(--term-dim);
+    opacity: 0.32;
+    font-family: inherit;
+    font-size: inherit;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .pterm-input-row #console-info {
+    position: absolute;
+    font-size: 10.5px;
+    opacity: 0.55;
+    color: var(--term-dim);
+    pointer-events: none;
+    top: 100%;
+    left: 16px;
+  }
+
+  /* ── BOOT SCREEN OVERLAY ─────────────────────────────── */
+  #boot-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: clamp(20px, 8vw, 100px);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13.5px;
+    color: var(--accent);
+    animation: bootFadeOut 0.5s ease 1.7s forwards;
+  }
+  .booted #boot-screen { display: none !important; }
+  .boot-line {
+    opacity: 0;
+    margin: 4px 0;
+    animation: bootLine 0.3s ease forwards;
+  }
+  .boot-line:nth-child(1) { animation-delay: 0.05s; }
+  .boot-line:nth-child(2) { animation-delay: 0.40s; }
+  .boot-line:nth-child(3) { animation-delay: 0.75s; }
+  .boot-line:nth-child(4) { animation-delay: 1.10s; }
+  .boot-line .ok  { color: #00ffb7; margin-left: 8px; }
+  .boot-line .ts  { opacity: 0.55; margin-right: 10px; }
+  .boot-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: var(--accent);
+    margin-left: 6px;
+    vertical-align: middle;
+    animation: blink 0.8s infinite;
+  }
+  @keyframes bootLine {
+    from { opacity: 0; transform: translateX(-8px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes bootFadeOut {
+    from { opacity: 1; }
+    to   { opacity: 0; visibility: hidden; pointer-events: none; }
+  }
+
+  /* ── FOOTER (minimal one-liner) ──────────────────────── */
+  .site-footer {
+    border-top: 1px dashed var(--border);
+    margin-top: 56px;
+    padding: 18px 0 44px 0;
+    font-size: 12px;
+  }
+  .footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .footer-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .footer-links a {
+    color: var(--text);
+    opacity: 0.78;
+    text-decoration: none;
+    transition: 0.2s ease;
+    padding: 0 4px;
+  }
+  .footer-links a:hover { color: var(--accent); text-shadow: 0 0 6px var(--accent); }
+  .footer-links .sep { opacity: 0.25; padding: 0 2px; user-select: none; }
+  .footer-build {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11.5px;
+    opacity: 0.7;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .footer-build .k { opacity: 0.55; }
+  .footer-build .v { color: var(--accent); opacity: 0.85; }
+  .footer-build .sep { opacity: 0.3; }
+  .footer-tag {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    opacity: 0.42;
+  }
+  @media (max-width: 600px) {
+    .footer-row { justify-content: flex-start; }
+    .footer-build { font-size: 11px; }
+  }
   </style>
 </head>
 
 <body>
+  <!-- BOOT SEQUENCE -->
+  <div id="boot-screen" aria-hidden="true">
+    <div class="boot-line"><span class="ts">[0.001s]</span> mounting filesystems<span class="ok">[ OK ]</span></div>
+    <div class="boot-line"><span class="ts">[0.142s]</span> initializing arc reactor<span class="ok">[ OK ]</span></div>
+    <div class="boot-line"><span class="ts">[0.380s]</span> establishing comm link<span class="ok">[ OK ]</span></div>
+    <div class="boot-line"><span class="ts">[0.621s]</span> welcome, visitor<span class="boot-cursor"></span></div>
+  </div>
+
   <div id="parallax-layer"></div>
   <div class="max-w-5xl mx-auto px-6">
 
@@ -334,160 +831,138 @@
       </div>
     </section>
 
+    <!-- STATS STRIP -->
+    <section class="stat-strip" id="stats" aria-label="stats">
+      <div class="stat">
+        <div class="stat-num" data-target="3">0</div>
+        <div class="stat-label">years shipping ML</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" data-target="7" data-suffix="+">0</div>
+        <div class="stat-label">open-source projects</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" data-target="5" data-suffix="+">0</div>
+        <div class="stat-label">production ML systems</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" data-target="10" data-suffix="+">0</div>
+        <div class="stat-label">languages known</div>
+      </div>
+    </section>
+
     <!-- EXPERIENCE -->
     <section id="Experience" class="mt-20">
-      <div class="section-title">$ cat experience.txt</div>
+      <div class="section-title"><span class="sec-num">01</span>$ cat experience.txt</div>
 
-      <div class="space-y-6 mt-10">
+      <ol class="timeline mt-10">
 
-        <div class="tech-card">
-          <h3>Wiredleap.ai — <strong>Forward Deployed ML Engineer</strong></h3>
-          <p class="text-gray-600 opacity-70">Jan 26 – Present</p>
-          <p class="mt-3">
+        <li class="tl-item tl-current">
+          <div class="tl-date">Jan 26 — Present</div>
+          <h3 class="tl-title">Wiredleap.ai · <strong>Forward Deployed ML Engineer</strong></h3>
+          <p class="tl-desc">
             Building ML systems and distributed inference for edge deployments. Training, tuning,
             and researching VLMs and LLMs, with applied work on robotic manipulation using deep
             learning algorithms.
           </p>
-        </div>
+        </li>
 
-        <div class="tech-card">
-          <h3>Quartermaster Labs — <strong>Backend/Data Engineer</strong></h3>
-          <p class="text-gray-600 opacity-70"> Jan 25 – Dec 25</p>
-          <p class="mt-3">
-            Designed and maintained scalable pipelines processing 2M+ on-chain records. 
+        <li class="tl-item">
+          <div class="tl-date">Jan 25 — Dec 25</div>
+          <h3 class="tl-title">Quartermaster Labs · <strong>Backend / Data Engineer</strong></h3>
+          <p class="tl-desc">
+            Designed and maintained scalable pipelines processing 2M+ on-chain records.
             Built automated data quality checks, optimized ETL throughput, and delivered analytics.
           </p>
-        </div>
+        </li>
 
-        <div class="tech-card">
-          <h3>FISClouds — <strong>ML Engineer</strong></h3>
-          <p class="text-gray-600 opacity-70">Sep 24 – Jan 25</p>
-          <p class="mt-3">
-            Migrated legacy ML workflows to GCP with autoscaling, monitoring, and optimized 
+        <li class="tl-item">
+          <div class="tl-date">Sep 24 — Jan 25</div>
+          <h3 class="tl-title">FISClouds · <strong>ML Engineer</strong></h3>
+          <p class="tl-desc">
+            Migrated legacy ML workflows to GCP with autoscaling, monitoring, and optimized
             training/inference pipelines for faster data access and deployment.
           </p>
-        </div>
+        </li>
 
-        <div class="tech-card">
-          <h3>TurboML — <strong>SWE Intern</strong></h3>
-          <p class="text-gray-600 opacity-70">Mar 24 – Jun 25</p>
-          <p class="mt-3">
-            Contributed to API definition, debugging, and internal tooling. Improved developer 
+        <li class="tl-item">
+          <div class="tl-date">Mar 24 — Jun 25</div>
+          <h3 class="tl-title">TurboML · <strong>SWE Intern</strong></h3>
+          <p class="tl-desc">
+            Contributed to API definition, debugging, and internal tooling. Improved developer
             workflows, strengthened documentation, and supported deployment of early ML features.
           </p>
-        </div>
+        </li>
 
-        <div class="tech-card">
-          <h3>LanceDB (YC W22) — <strong>ML Consultant</strong></h3>
-          <p class="text-gray-600 opacity-70">Sep 23 – Mar 24</p>
-          <p class="mt-3">
-            Worked on vector database integrations, usage guides, and benchmarking. 
+        <li class="tl-item">
+          <div class="tl-date">Sep 23 — Mar 24</div>
+          <h3 class="tl-title">LanceDB (YC W22) · <strong>ML Consultant</strong></h3>
+          <p class="tl-desc">
+            Worked on vector database integrations, usage guides, and benchmarking.
             Helped refine workflows around large-scale embeddings and retrieval efficiency.
           </p>
-        </div>
+        </li>
 
-        <div class="tech-card">
-          <h3>IIIT Hyderabad (RRC) — <strong>Research Intern (Deep Learning)</strong></h3>
-          <p class="text-gray-600 opacity-70">Sep 22 – Jun 23</p>
-          <p class="mt-3">
-            Conducted applied research on UAV perception and deep vision models. 
+        <li class="tl-item">
+          <div class="tl-date">Sep 22 — Jun 23</div>
+          <h3 class="tl-title">IIIT Hyderabad (RRC) · <strong>Research Intern (Deep Learning)</strong></h3>
+          <p class="tl-desc">
+            Conducted applied research on UAV perception and deep vision models.
             Implemented training pipelines, dataset preprocessing, and evaluation experiments.
           </p>
-        </div>
-      </div>
+        </li>
+      </ol>
     </section>
+
+    <!-- SELECTED WORK -->
+    <section id="Work" class="mt-20">
+      <div class="section-title"><span class="sec-num">02</span>$ cat selected_work.json</div>
+      <div id="work-grid" class="work-grid"></div>
+      <a href="projects.html" class="work-all">view all projects ▹</a>
+    </section>
+
+    <!-- LATEST DISPATCH -->
+    <section id="Dispatch" class="mt-20">
+      <div class="section-title"><span class="sec-num">03</span>$ tail -1 dispatches.log</div>
+      <a id="latest-dispatch" href="#" class="dispatch-card">
+        <div class="dispatch-meta">▹ latest · <span id="dispatch-date">—</span></div>
+        <div class="dispatch-title" id="dispatch-title">Loading...</div>
+        <div class="dispatch-sub" id="dispatch-sub"></div>
+        <div class="dispatch-cta">read post →</div>
+      </a>
+    </section>
+
     <!-- TERMINAL -->
     <section class="mt-24 mb-20">
-      <div class="section-title">$ cat terminal.exe</div>
-      <div id="terminal-wrapper" style="
-        background: var(--term-bg);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 18px;
-        box-shadow: 0 0 12px var(--card-shadow);
-      ">
-
-        <!-- Top Bar -->
-        <div style="
-          background: var(--term-bar);
-          padding: 6px 12px;
-          border-radius: 8px;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        ">
-          <span style="width:12px;height:12px;border-radius:50%;background:#ff5f56"></span>
-          <span style="width:12px;height:12px;border-radius:50%;background:#ffbd2e"></span>
-          <span style="width:12px;height:12px;border-radius:50%;background:#27c93f"></span>
-
-          <span style="margin-left:8px;color:var(--term-dim);font-size:14px;">Pegasus Terminal</span>
+      <div class="section-title"><span class="sec-num">04</span>$ ./pegasus.sh</div>
+      <div id="terminal-wrapper" class="pterm">
+        <div class="pterm-bar">
+          <div class="pterm-dots">
+            <span class="dot r"></span>
+            <span class="dot y"></span>
+            <span class="dot g"></span>
+          </div>
+          <div class="pterm-title">Pegasus Terminal <span class="ver">v2.2</span></div>
+          <div class="pterm-meta">
+            <span class="status"><span class="pulse"></span>online</span>
+            <span class="cmd-count"><span id="pterm-cmd-count">0</span> cmds</span>
+            <span class="path">~/<span id="pterm-path-seg">root</span></span>
+            <span class="hint-key">↑↓ history · TAB autocomplete · /focus</span>
+          </div>
         </div>
 
-        <pre id="console-output" style="
-          color:var(--term-text);
-          padding:12px;
-          white-space:pre-wrap;
-          min-height:150px;
-          max-height:350px;
-          overflow-y:auto;
-        ">
-        </pre>
-        <!-- Input Row -->
-        <div id="console-input-wrapper" style="
-          display:flex;
-          align-items:center;
-          gap:8px;
-          padding:8px 0;
-          font-family:JetBrains Mono, monospace;
-          color:var(--term-text);
-          position:relative;
-        ">
+        <pre id="console-output" class="pterm-output"></pre>
 
-          <span style="color:var(--term-text);">$</span>
-
+        <div id="console-input-wrapper" class="pterm-input-row">
+          <span class="prompt-user">kaushal@pegasus</span><span class="prompt-sep">:</span><span class="prompt-path" id="pterm-prompt-path">~</span><span class="prompt-sep">$</span>
           <input id="console-input"
-                placeholder="type a command..."
+                placeholder="type 'help' to begin..."
                 autocomplete="off"
                 autocorrect="off"
                 autocapitalize="off"
-                spellcheck="false"
-                style="
-                  flex:1;
-                  background:transparent;
-                  border:none;
-                  outline:none;
-                  color:var(--term-text);
-                  font-family:JetBrains Mono, monospace;
-                  z-index:3;
-                ">
-
-          <span id="console-hint"
-                style="
-                  position:absolute;
-                  left:28px;
-                  top:50%;
-                  transform:translateY(-50%);
-                  opacity:0.35;
-                  pointer-events:none;
-                  color:var(--term-dim);
-                  font-family:JetBrains Mono, monospace;
-                  z-index:1;
-                ">
-          </span>
-
-          <span id="console-info"
-                style="
-                  position:absolute;
-                  left:28px;
-                  top:105%;
-                  font-size:11px;
-                  opacity:0.55;
-                  color:var(--term-dim);
-                  pointer-events:none;
-                  font-family:JetBrains Mono, monospace;
-                  z-index:1;
-                ">
-          </span>
+                spellcheck="false">
+          <span id="console-hint"></span>
+          <span id="console-info"></span>
         </div>
         <canvas id="runner-game"
           width="600"
@@ -499,7 +974,7 @@
 
     <!-- CONTACT -->
     <section id="Contact" class="mt-20 mb-20">
-      <div class="section-title">$ cat contact.txt</div>
+      <div class="section-title"><span class="sec-num">05</span>$ cat contact.txt</div>
 
       <h2 class="text-2xl">Email: <span class="cursor">kaushalc64@gmail.com</span></h2>
 
@@ -511,7 +986,117 @@
       </div>
 
     </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <div class="footer-row">
+        <div class="footer-links">
+          <a href="https://github.com/kaushal07wick">github</a><span class="sep">·</span>
+          <a href="https://twitter.com/ofcboogeyman">twitter</a><span class="sep">·</span>
+          <a href="https://linkedin.com/in/11kaushalkumar">linkedin</a><span class="sep">·</span>
+          <a href="mailto:kaushalc64@gmail.com">email</a>
+        </div>
+        <div class="footer-build">
+          <span class="k">commit</span><span class="v" id="ftr-commit">--</span>
+          <span class="sep">·</span>
+          <span class="v" id="ftr-size">--</span>
+          <span class="sep">·</span>
+          <span class="v" id="ftr-render">--</span>
+          <span class="sep">·</span>
+          <span class="k">visits</span><span class="v" data-visit-count>--</span>
+        </div>
+      </div>
+      <div class="footer-tag">© 2026 kaushal choudhary · built with vim, terminal, and coffee</div>
+    </footer>
   </div>
+
+  <script>
+    // ── COUNTER ANIMATIONS ───────────────────────────────
+    function animateCounter(el) {
+      const target = parseFloat(el.dataset.target);
+      const suffix = el.dataset.suffix || "";
+      const duration = 1400;
+      const start = performance.now();
+      const isInt = Number.isInteger(target);
+      function tick(t) {
+        const p = Math.min((t - start) / duration, 1);
+        // easeOutCubic
+        const eased = 1 - Math.pow(1 - p, 3);
+        const v = target * eased;
+        el.textContent = (isInt ? Math.round(v) : v.toFixed(1)) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          animateCounter(e.target);
+          counterObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll(".stat-num").forEach(el => counterObserver.observe(el));
+
+    // ── SELECTED WORK (top 3 projects) ────────────────────
+    fetch("projects/index.json?v=" + Date.now())
+      .then(r => r.json())
+      .then(list => {
+        const grid = document.getElementById("work-grid");
+        list.slice(0, 3).forEach(p => {
+          const a = document.createElement("a");
+          a.className = "work-card";
+          a.href = p.repo;
+          a.target = "_blank";
+          a.rel = "noopener";
+          a.innerHTML = `
+            <div class="work-name">${p.name}</div>
+            <div class="work-desc">${p.intro.trim()}</div>
+          `;
+          grid.appendChild(a);
+        });
+      })
+      .catch(() => {});
+
+    // ── LATEST DISPATCH (newest blog post) ────────────────
+    fetch("posts/index.json?v=" + Date.now())
+      .then(r => r.json())
+      .then(async (list) => {
+        if (!list.length) return;
+        const file = list[0];
+        const md = await fetch("posts/" + file + "?v=" + Date.now()).then(r => r.text());
+        const title    = md.match(/^title:\s*(.+)$/mi)?.[1]?.trim() || "Untitled";
+        const subtitle = md.match(/^subtitle:\s*(.+)$/mi)?.[1]?.trim() || "";
+        const date     = md.match(/^date:\s*(.+)$/mi)?.[1]?.trim() || "";
+        document.getElementById("dispatch-title").textContent = title;
+        document.getElementById("dispatch-sub").textContent   = subtitle;
+        document.getElementById("dispatch-date").textContent  = date || "—";
+        document.getElementById("latest-dispatch").href = `blog-post.html?file=${file}`;
+      })
+      .catch(() => {
+        document.getElementById("dispatch-title").textContent = "(failed to load)";
+      });
+
+    // ── BOOT SCREEN CLEANUP ──────────────────────────────
+    setTimeout(() => document.getElementById("boot-screen")?.remove(), 2400);
+
+    // ── FOOTER BUILD INFO ────────────────────────────────
+    (function buildInfo() {
+      const sizeKb  = (document.documentElement.outerHTML.length / 1024).toFixed(1);
+      const renderMs = Math.round(performance.now());
+      document.getElementById("ftr-size").textContent   = sizeKb + " kb";
+      document.getElementById("ftr-render").textContent = renderMs + " ms";
+      // best-effort live commit hash from GitHub
+      fetch("https://api.github.com/repos/kaushal07wick/kaushal07wick.github.io/commits/master")
+        .then(r => r.ok ? r.json() : null)
+        .then(d => {
+          document.getElementById("ftr-commit").textContent =
+            d?.sha ? d.sha.substring(0, 7) : "local";
+        })
+        .catch(() => { document.getElementById("ftr-commit").textContent = "local"; });
+    })();
+  </script>
+
   <script src="header.js" defer></script>
   <script src="terminal.js?v=2" defer></script>
   <script src="index.js" defer></script>

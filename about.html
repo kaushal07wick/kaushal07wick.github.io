@@ -4,96 +4,366 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About — Kaushal</title>
+  <title>whoami — Kaushal</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Shared Header Loader -->
   <script src="header.js" defer></script>
 
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet" />
 
   <style>
-  :root {
-    --bg: #000;
-    --text: #d8fbe3;
-    --accent: #00ffb7;
-    --border: rgba(0, 255, 170, 0.18);
-    --card-bg: rgba(0, 255, 170, 0.04);
-    --card-shadow: 0 2px 6px rgba(0,255,170,0.12); /* subtle shadow */
-  }
+    :root {
+      --bg: #000;
+      --text: #d8fbe3;
+      --accent: #00ffb7;
+      --border: rgba(0,255,170,0.20);
+      --card-bg: rgba(0,255,170,0.03);
+      --term-bg: #050707;
+      --term-bar: #161818;
+    }
+    .light {
+      --bg: #ffffff;
+      --text: #002e22;
+      --accent: #008d66;
+      --border: rgba(0,141,102,0.25);
+      --card-bg: rgba(0,141,102,0.04);
+      --term-bg: #0d1311;
+      --term-bar: #0f1815;
+    }
 
-  .light {
-    --bg: #f4fef8;
-    --text: #002e22;
-    --accent: #008d66;
-    --border: rgba(0,141,102,0.22);
-    --card-bg: rgba(0,141,102,0.05);
-    --card-shadow: 0 2px 6px rgba(0,141,102,0.12);
-  }
+    html, body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "JetBrains Mono", monospace;
+      min-height: 100%;
+    }
 
-  html, body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: "JetBrains Mono", monospace;
-    height: 100%;
-  }
+    /* ── HERO ──────────────────────────────────────────── */
+    .meta-bar {
+      font-size: 11.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.75;
+      margin-top: 32px;
+      margin-bottom: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 14px;
+      align-items: center;
+    }
+    .meta-bar .k { opacity: 0.5; margin-right: 4px; }
+    .meta-bar .v { color: var(--accent); }
+    .meta-bar .sep { opacity: 0.25; }
+    .pulse-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent);
+      margin-right: 4px;
+      animation: dot-pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes dot-pulse {
+      0%, 100% { opacity: 0.5; box-shadow: 0 0 4px var(--accent); }
+      50%      { opacity: 1;   box-shadow: 0 0 14px var(--accent); }
+    }
 
-  .section-title {
-    font-size: 20px;
-    color: var(--accent);
-    border-right: 2px solid var(--accent);
-    padding-right: 6px;
-    overflow: hidden;
-    white-space: nowrap;
-    animation: typewriter 2s steps(32) forwards;
-  }
+    .about-title {
+      font-size: clamp(44px, 8vw, 80px);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      line-height: 1;
+      margin: 0;
+      text-shadow: 0 0 28px rgba(0,255,175,0.30);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .about-title .blink-bar {
+      display: inline-block;
+      width: 14px;
+      height: clamp(38px, 6vw, 64px);
+      background: var(--accent);
+      box-shadow: 0 0 18px var(--accent);
+      animation: bar-blink 1.05s steps(2) infinite;
+    }
+    @keyframes bar-blink { 50% { opacity: 0; } }
 
-  @keyframes typewriter {
-    from { width: 0; }
-    to { width: 100%; }
-  }
+    /* ── HERO GRID (text + terminal) ───────────────────── */
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 44px;
+      align-items: start;
+      margin-top: 30px;
+    }
+    @media (max-width: 880px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 28px; }
+    }
 
-  /* CLEANER ABOUT CARD */
-  .about-card {
-    border: 1px solid var(--border);
-    background: var(--card-bg);
-    padding: 24px;
-    border-radius: 10px;
-    box-shadow: var(--card-shadow);
-    transition: 0.2s ease;
-  }
+    .profile-name {
+      font-size: 22px;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .profile-role {
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      opacity: 0.7;
+      margin-bottom: 18px;
+    }
+    .profile-role .accent { color: var(--accent); opacity: 1; }
+    .profile-bio {
+      line-height: 1.75;
+      opacity: 0.88;
+      font-size: 15px;
+      max-width: 60ch;
+    }
+    .profile-bio + .profile-bio { margin-top: 14px; opacity: 0.65; }
+    .profile-bio .accent { color: var(--accent); opacity: 1; }
 
-  .about-card:hover {
-    border-color: var(--accent);
-    box-shadow: 0 3px 10px rgba(0,255,170,0.18); /* subtle hover shadow */
-    transform: translateY(-2px); /* smaller lift */
-  }
+    .status-row {
+      margin-top: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .status-pill {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      opacity: 0.85;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-pill.on { color: var(--accent); border-color: var(--accent); }
 
-  /* CONTACT LINKS — remove glow */
-  .contact-link {
-    color: var(--accent);
-    position: relative;
-    text-decoration: none;
-  }
+    /* ── TYPING TERMINAL (right column) ────────────────── */
+    .about-term {
+      width: 100%;
+      max-width: 420px;
+      margin-left: auto;
+      background: var(--term-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      font-family: "JetBrains Mono", monospace;
+      box-shadow: 0 0 28px rgba(0, 255, 170, 0.15),
+                  inset 0 0 22px rgba(0, 255, 170, 0.04);
+    }
+    @media (max-width: 880px) {
+      .about-term { margin-left: 0; max-width: 100%; }
+    }
+    .about-term-bar {
+      background: var(--term-bar);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      border-bottom: 1px solid var(--border);
+    }
+    .about-term-bar .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      box-shadow: 0 0 4px currentColor;
+    }
+    .about-term-bar .dot.r { background: #ff5f56; color: #ff5f56; }
+    .about-term-bar .dot.y { background: #ffbd2e; color: #ffbd2e; }
+    .about-term-bar .dot.g { background: #27c93f; color: #27c93f; }
+    .about-term-bar .label {
+      margin-left: 10px;
+      opacity: 0.6;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+    }
+    .about-term-bar .live {
+      margin-left: auto;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      opacity: 0.85;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .about-term-body {
+      position: relative;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(0,255,170,0.08), transparent 60%),
+        var(--term-bg);
+      padding: 16px 18px 22px 18px;
+      min-height: 280px;
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: #d8fbe3;
+      margin: 0;
+      white-space: pre-wrap;
+      overflow: hidden;
+    }
+    .about-term-body::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 2px,
+        rgba(0, 0, 0, 0.18) 3px,
+        rgba(0, 0, 0, 0.18) 4px
+      );
+      mix-blend-mode: multiply;
+    }
+    .about-term-body .cmd { color: var(--accent); }
+    .about-term-body .out { color: #d8fbe3; opacity: 0.88; }
+    .about-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 14px;
+      background: var(--accent);
+      vertical-align: -2px;
+      margin-left: 2px;
+      animation: term-blink 0.85s steps(2) infinite;
+    }
+    @keyframes term-blink { 50% { opacity: 0; } }
 
-  .contact-link::after {
-    content: "";
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    height: 1px;
-    width: 0;
-    background: var(--accent);
-    transition: width 0.2s ease;
-  }
+    /* ── PANEL GRID ────────────────────────────────────── */
+    .panel-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 56px;
+    }
+    @media (max-width: 720px) {
+      .panel-grid { grid-template-columns: 1fr; }
+    }
 
-  .contact-link:hover::after {
-    width: 100%;
-  }
-</style>
+    .panel {
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 22px 22px 20px 22px;
+      transition: 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .panel::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.45;
+    }
+    .panel:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 0 28px rgba(0,255,170,0.14);
+    }
 
+    .panel-h {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0.85;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-h::before {
+      content: "▹";
+      color: var(--accent);
+    }
+
+    .panel-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .panel-list li {
+      padding: 6px 0 6px 16px;
+      font-size: 14px;
+      line-height: 1.55;
+      position: relative;
+      opacity: 0.88;
+    }
+    .panel-list li::before {
+      content: "→";
+      color: var(--accent);
+      position: absolute;
+      left: 0;
+      opacity: 0.65;
+    }
+    .panel-list.dim-list li { opacity: 0.78; }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+    .chip {
+      font-size: 12px;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      opacity: 0.82;
+      transition: 0.2s;
+      background: rgba(0,255,170,0.02);
+    }
+    .chip:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      opacity: 1;
+      box-shadow: 0 0 8px rgba(0,255,170,0.2);
+    }
+
+    .link-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 18px;
+      align-items: center;
+    }
+    .link-list a {
+      color: var(--text);
+      text-decoration: none;
+      opacity: 0.85;
+      position: relative;
+      padding: 2px 0;
+      transition: 0.2s;
+    }
+    .link-list a::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 100%;
+      bottom: -2px;
+      height: 1px;
+      background: var(--accent);
+      transition: right 0.25s;
+    }
+    .link-list a:hover {
+      color: var(--accent);
+      text-shadow: 0 0 6px var(--accent);
+    }
+    .link-list a:hover::after { right: 0; }
+
+    .end-mark {
+      margin-top: 56px;
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      opacity: 0.4;
+      text-transform: uppercase;
+    }
+    .end-mark::before, .end-mark::after {
+      content: " ───── ";
+      opacity: 0.6;
+    }
   </style>
 </head>
 
@@ -101,57 +371,182 @@
 
 <div class="max-w-5xl mx-auto px-6">
 
-  <!-- SHARED HEADER INCLUDE -->
   <div id="header-container"></div>
 
-  <!-- ABOUT CONTENT -->
-  <section class="mt-12">
-    <div class="section-title">$ cat about.txt</div>
+  <section>
+    <div class="meta-bar">
+      <span><span class="k">file</span><span class="v">~/about.md</span></span>
+      <span class="sep">·</span>
+      <span><span class="k">access</span><span class="v">read</span></span>
+      <span class="sep">·</span>
+      <span><span class="pulse-dot"></span><span class="v">online</span></span>
+    </div>
 
-    <div class="about-card mt-6 grid grid-cols-1 md:grid-cols-2 gap-10">
+    <h1 class="about-title">whoami<span class="blink-bar"></span></h1>
+
+    <div class="hero-grid">
 
       <div>
-        <h2 class="text-3xl text-[var(--accent)] mb-4">Who Am I?</h2>
+        <div class="profile-name">kaushal choudhary</div>
+        <div class="profile-role"><span class="accent">forward deployed ML engineer</span> · @ wiredleap.ai</div>
 
-        <p class="leading-relaxed opacity-90">
-          I'm <span class="text-[var(--accent)]">Kaushal Choudhary</span>,
-          a machine learning engineer & systems builder focused on
-          <span class="text-[var(--accent)]">agents, infra, GPU pipelines, and high-velocity iteration loops</span>.
+        <p class="profile-bio">
+          I build ML systems that have to <span class="accent">actually work</span> —
+          distributed inference, edge deployment, VLMs and LLMs that survive contact
+          with real cameras, real users, and the failure modes benchmarks forget.
+        </p>
+        <p class="profile-bio">
+          Recent obsessions: tightening end-to-end inference latency on constrained
+          GPUs, fine-tuning vision-language models for fielded systems, and applying
+          deep RL to robotic manipulation.
         </p>
 
-        <p class="leading-relaxed opacity-60 mt-4">
-          I build autonomous agents, code-search systems, browser automation flows,
-          and performance-optimized GPU backends.
-        </p>
-
-        <p class="leading-relaxed opacity-60 mt-4">
-          Outside work: I explore visual tools, write deep-dive tech breakdowns,
-          and build ML infra experiments.
-        </p>
-
-        <div class="mt-8">
-          <p class="mb-2 text-[var(--accent)] opacity-80">Links</p>
-
-          <div class="flex space-x-6 mt-3">
-            <a href="mailto:kaushalc64@gmail.com" class="contact-link">Email</a>
-            <a href="https://linkedin.com/in/11kaushalkumar" class="contact-link">LinkedIn</a>
-            <a href="https://twitter.com/ofcboogeyman" class="contact-link">Twitter</a>
-            <a href="https://github.com/kaushal07wick" class="contact-link">GitHub</a>
-            <a href="https://medium.com/@kaushalc64" class="contact-link">Medium</a>
-          </div>
+        <div class="status-row">
+          <span class="status-pill on"><span class="pulse-dot"></span>open to interesting problems</span>
+          <span class="status-pill">india · UTC+5:30</span>
+          <span class="status-pill">ships fast · debugs faster</span>
         </div>
       </div>
 
-      <div class="flex justify-center items-center">
-        <img src="https://media4.giphy.com/media/hDSy8w6rGHeTe/giphy.gif"
-             class="rounded-lg border border-[var(--border)] shadow-md max-w-xs"
-             alt="Kaushal working">
+      <div>
+        <div class="about-term" aria-label="terminal animation">
+          <div class="about-term-bar">
+            <span class="dot r"></span>
+            <span class="dot y"></span>
+            <span class="dot g"></span>
+            <span class="label">~/about.sh</span>
+            <span class="live"><span class="pulse-dot"></span>LIVE</span>
+          </div>
+          <pre class="about-term-body" id="about-typer"></pre>
+        </div>
       </div>
 
     </div>
+
+    <!-- PANELS -->
+    <div class="panel-grid">
+
+      <div class="panel">
+        <div class="panel-h">now</div>
+        <ul class="panel-list">
+          <li>training VLMs for edge inference</li>
+          <li>building distributed inference pipelines</li>
+          <li>research on robotic manipulation w/ deep RL</li>
+          <li>writing dispatches from production</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h">stack</div>
+        <div class="chip-row">
+          <span class="chip">python</span>
+          <span class="chip">rust</span>
+          <span class="chip">go</span>
+          <span class="chip">pytorch</span>
+          <span class="chip">cuda</span>
+          <span class="chip">tensorrt</span>
+          <span class="chip">onnx</span>
+          <span class="chip">vllm</span>
+          <span class="chip">postgres</span>
+          <span class="chip">gcp</span>
+          <span class="chip">docker</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h">principles</div>
+        <ul class="panel-list dim-list">
+          <li>tests &gt; tweets</li>
+          <li>prod &gt; demos</li>
+          <li>small surfaces, sharp blades</li>
+          <li>read code, not changelogs</li>
+          <li>shipping is the feature</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h">find me</div>
+        <div class="link-list">
+          <a href="mailto:kaushalc64@gmail.com">email</a>
+          <a href="https://github.com/kaushal07wick">github</a>
+          <a href="https://twitter.com/ofcboogeyman">twitter</a>
+          <a href="https://linkedin.com/in/11kaushalkumar">linkedin</a>
+          <a href="https://medium.com/@kaushalc64">medium</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="end-mark">end of about</div>
   </section>
 
 </div>
+
+<script>
+  // ── Self-typing terminal ─────────────────────────────────
+  (function () {
+    const out = document.getElementById("about-typer");
+    if (!out) return;
+
+    const lines = [
+      { t: "$ whoami",                                 cls: "cmd" },
+      { t: "> kaushal · forward deployed ml engineer", cls: "out" },
+      { t: "",                                         cls: "out" },
+      { t: "$ uptime",                                 cls: "cmd" },
+      { t: "> 3 yrs shipping ml · ∞ coffee consumed",  cls: "out" },
+      { t: "",                                         cls: "out" },
+      { t: "$ stack",                                  cls: "cmd" },
+      { t: "> python · rust · go · cuda · tensorrt",   cls: "out" },
+      { t: "",                                         cls: "out" },
+      { t: "$ now",                                    cls: "cmd" },
+      { t: "> tuning vlms for edge inference",         cls: "out" },
+      { t: "",                                         cls: "out" },
+      { t: "$ contact",                                cls: "cmd" },
+      { t: "> kaushalc64@gmail.com",                   cls: "out" },
+    ];
+
+    let html = "";
+    let li = 0, ci = 0;
+
+    function render() {
+      out.innerHTML = html + '<span class="about-cursor"></span>';
+    }
+
+    function step() {
+      if (li >= lines.length) {
+        setTimeout(() => { html = ""; li = 0; ci = 0; render(); step(); }, 2400);
+        return;
+      }
+      const ln = lines[li];
+
+      if (ln.t === "") {
+        html += "\n";
+        li++;
+        render();
+        return setTimeout(step, 220);
+      }
+
+      if (ci === 0) html += `<span class="${ln.cls}">`;
+      html += ln.t.charAt(ci);
+      ci++;
+
+      if (ci >= ln.t.length) {
+        html += "</span>\n";
+        li++;
+        ci = 0;
+        render();
+        return setTimeout(step, 380);
+      }
+
+      out.innerHTML = html + '</span><span class="about-cursor"></span>';
+      const delay = ln.cls === "cmd" ? 55 : 28;
+      setTimeout(step, delay);
+    }
+
+    render();
+    setTimeout(step, 400);
+  })();
+</script>
 
 </body>
 </html>

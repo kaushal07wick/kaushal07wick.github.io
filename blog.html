@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Blog — Kaushal</title>
+  <title>Dispatches — Kaushal</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="header.js" defer></script>
@@ -16,68 +16,294 @@
       --bg: #000;
       --text: #d8fbe3;
       --accent: #00ffb7;
-      --border: rgba(0,255,170,0.18);
-      --shadow: 0 2px 4px rgba(0,255,170,0.10);
+      --border: rgba(0,255,170,0.20);
+      --card-bg: rgba(0,255,170,0.03);
     }
-
     .light {
-      --bg: #f4fef8;
+      --bg: #ffffff;
       --text: #002e22;
       --accent: #008d66;
-      --border: rgba(0,141,102,0.22);
-      --shadow: 0 2px 4px rgba(0,141,102,0.10);
+      --border: rgba(0,141,102,0.25);
+      --card-bg: rgba(0,141,102,0.04);
     }
 
-    body {
+    html, body {
+      margin: 0;
       background: var(--bg);
       color: var(--text);
       font-family: "JetBrains Mono", monospace;
-      margin: 0;
+      min-height: 100%;
     }
 
-    .section-title {
-      font-size: 20px;
+    /* ── HERO ──────────────────────────────────────────── */
+    .dispatch-hero {
+      margin-top: 32px;
+      padding-bottom: 26px;
+      border-bottom: 1px dashed var(--border);
+      position: relative;
+    }
+
+    .meta-bar {
+      font-size: 11.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.75;
+      margin-bottom: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 14px;
+      align-items: center;
+    }
+    .meta-bar .k { opacity: 0.5; margin-right: 4px; }
+    .meta-bar .v { color: var(--accent); }
+    .meta-bar .sep { opacity: 0.25; }
+
+    .dispatch-title {
+      font-size: clamp(44px, 9vw, 88px);
+      font-weight: 700;
+      letter-spacing: 0.16em;
       color: var(--accent);
-      border-right: 2px solid var(--accent);
-      padding-right: 8px;
-      margin-bottom: 20px;
-      white-space: nowrap;
-      animation: typing 2s steps(26) forwards;
+      line-height: 1;
+      margin: 0;
+      text-shadow: 0 0 28px rgba(0,255,175,0.30);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .dispatch-title .blink-bar {
+      display: inline-block;
+      width: 14px;
+      height: clamp(38px, 7vw, 70px);
+      background: var(--accent);
+      box-shadow: 0 0 18px var(--accent);
+      animation: bar-blink 1.05s steps(2) infinite;
+    }
+    @keyframes bar-blink { 50% { opacity: 0; } }
+
+    .dispatch-sub {
+      margin-top: 18px;
+      opacity: 0.78;
+      line-height: 1.7;
+      max-width: 60ch;
+      font-size: 14.5px;
+    }
+    .dispatch-sub .accent { color: var(--accent); }
+
+    .stat-bar {
+      margin-top: 22px;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      opacity: 0.85;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .stat-bar .n { font-weight: 600; }
+    .stat-bar .label { opacity: 0.6; }
+    .stat-bar .sep { opacity: 0.35; }
+
+    /* ── GREP / FILTER ─────────────────────────────────── */
+    .controls {
+      margin-top: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .grep-prompt { color: var(--accent); font-size: 13px; opacity: 0.85; user-select: none; }
+    #dispatch-grep {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 7px 12px;
+      font-family: inherit;
+      font-size: 13px;
+      border-radius: 4px;
+      flex: 0 0 320px;
+      max-width: 100%;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    #dispatch-grep::placeholder { color: var(--text); opacity: 0.35; }
+    #dispatch-grep:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 14px rgba(0,255,175,0.18);
+      background: rgba(0,255,170,0.03);
+    }
+    .controls .hint {
+      font-size: 11px;
+      opacity: 0.45;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── LIST + SCAN BEAM ──────────────────────────────── */
+    .dispatch-list-wrap {
+      position: relative;
+      margin-top: 36px;
+      padding: 12px 0;
       overflow: hidden;
     }
-
-    @keyframes typing {
-      from { width: 0 }
-      to { width: 100% }
+    .dispatch-list-wrap::before {
+      /* slow downward scan-beam */
+      content: "";
+      position: absolute;
+      left: 0; right: 0;
+      height: 80px;
+      pointer-events: none;
+      background: linear-gradient(to bottom, transparent, rgba(0,255,175,0.09), transparent);
+      filter: blur(6px);
+      animation: scan-beam 11s linear infinite;
+      z-index: 2;
+      top: -80px;
+    }
+    @keyframes scan-beam {
+      0%   { transform: translateY(0); opacity: 0.0; }
+      8%   { opacity: 1; }
+      92%  { opacity: 1; }
+      100% { transform: translateY(120vh); opacity: 0; }
     }
 
-    /* CARD STYLE FIXED */
-    .post-card {
-      border: 1px solid var(--border);
-      padding: 18px;
-      border-radius: 8px;
-      background: color-mix(in srgb, var(--bg) 90%, var(--accent) 7%);
-      margin-bottom: 16px;
+    .tx-list {
+      position: relative;
+      padding-left: 28px;
+      border-left: 1px dashed var(--border);
+    }
+
+    /* ── TRANSMISSION CARD ─────────────────────────────── */
+    .tx-card {
+      position: relative;
+      display: block;
+      padding: 22px 0 30px 0;
+      border-bottom: 1px dashed var(--border);
+      text-decoration: none;
+      color: inherit;
       cursor: pointer;
-      transition: 0.15s ease;
-      box-shadow: var(--shadow);
+      transition: transform 0.30s cubic-bezier(.2,.7,.3,1);
+    }
+    .tx-card:last-child { border-bottom: none; }
+
+    .tx-card::before {
+      content: "";
+      position: absolute;
+      left: -33px;
+      top: 30px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.45;
+      box-shadow: 0 0 6px var(--accent);
+      transition: 0.3s ease;
+    }
+    .tx-card:hover { transform: translateX(8px); }
+    .tx-card:hover::before {
+      opacity: 1;
+      transform: scale(1.4);
+      box-shadow: 0 0 14px var(--accent);
     }
 
-    .post-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
-      background: color-mix(in srgb, var(--bg) 80%, var(--accent) 15%);
+    .tx-meta {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0.62;
+      margin-bottom: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    .tx-meta .id { color: var(--accent); opacity: 1; font-weight: 600; }
+    .tx-meta .sep { opacity: 0.3; }
+    .tx-meta .pill {
+      display: inline-block;
+      padding: 1px 7px;
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      opacity: 0.78;
+      font-size: 10.5px;
     }
 
-    .post-title {
+    .tx-title {
+      color: var(--text);
+      font-size: clamp(20px, 2.5vw, 26px);
+      font-weight: 500;
+      line-height: 1.28;
+      margin-bottom: 8px;
+      transition: color 0.25s ease, text-shadow 0.25s ease;
+    }
+    .tx-card:hover .tx-title {
       color: var(--accent);
-      font-size: 18px;
-      margin-bottom: 6px;
+      text-shadow: 0 0 14px rgba(0,255,175,0.30);
     }
 
-    .post-date {
-      opacity: 0.6;
+    .tx-sub {
+      opacity: 0.74;
+      font-size: 14.5px;
+      line-height: 1.55;
+      max-width: 64ch;
+    }
+
+    .tx-cta {
+      margin-top: 14px;
       font-size: 12px;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      opacity: 0;
+      transform: translateX(-10px);
+      transition: 0.3s ease;
+    }
+    .tx-cta::after {
+      content: "▸";
+      margin-left: 4px;
+      transition: 0.25s ease;
+    }
+    .tx-card:hover .tx-cta {
+      opacity: 0.95;
+      transform: translateX(0);
+    }
+    .tx-card:hover .tx-cta::after { transform: translateX(3px); }
+
+    .tx-card.tx-hidden { display: none; }
+
+    /* stagger reveal — independent of header.js observer */
+    .tx-anim-init {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    .tx-anim-in {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+
+    .tx-empty {
+      padding: 36px 0;
+      text-align: center;
+      opacity: 0.5;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+    }
+    .tx-empty::before { content: "// "; opacity: 0.55; }
+
+    /* ── ASCII FOOTER FRAME ────────────────────────────── */
+    .end-of-feed {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      opacity: 0.4;
+      text-transform: uppercase;
+    }
+    .end-of-feed::before, .end-of-feed::after {
+      content: " ───── ";
+      opacity: 0.6;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .dispatch-list-wrap::before { display: none; }
+      .tx-anim-init { opacity: 1; transform: none; }
     }
   </style>
 </head>
@@ -87,72 +313,166 @@
 <div class="max-w-5xl mx-auto px-6">
   <div id="header-container"></div>
 
-  <section class="mt-10">
-    <div class="section-title">$ cat blogs.txt</div>
-    <div id="post-list"></div>
+  <!-- HERO -->
+  <section class="dispatch-hero">
+    <div class="meta-bar">
+      <span><span class="k">file</span><span class="v">~/dispatches.log</span></span>
+      <span class="sep">·</span>
+      <span><span class="k">mode</span><span class="v">read-only</span></span>
+      <span class="sep">·</span>
+      <span><span class="k">channel</span><span class="v">field-reports</span></span>
+    </div>
+
+    <h1 class="dispatch-title">DISPATCHES<span class="blink-bar"></span></h1>
+
+    <p class="dispatch-sub">
+      <span class="accent">field reports</span> from the production trenches.
+      notes on shipping ML to real systems — real cameras, real users,
+      real failure modes that don't show up in benchmarks.
+    </p>
+
+    <div class="stat-bar">
+      <span><span class="n" id="dt-count">--</span> <span class="label">transmissions</span></span>
+      <span class="sep">·</span>
+      <span><span class="n" id="dt-words">--</span> <span class="label">words</span></span>
+      <span class="sep">·</span>
+      <span><span class="n" id="dt-mins">--</span> <span class="label">min total</span></span>
+      <span class="sep">·</span>
+      <span><span class="label">last</span> <span class="n" id="dt-last">—</span></span>
+    </div>
+
+    <div class="controls">
+      <span class="grep-prompt">grep:</span>
+      <input id="dispatch-grep" type="text" placeholder="filter transmissions..." autocomplete="off" spellcheck="false" />
+      <span class="hint">type to filter · esc to clear</span>
+    </div>
+  </section>
+
+  <!-- LIST -->
+  <section class="dispatch-list-wrap">
+    <div id="post-list" class="tx-list"></div>
+    <div class="end-of-feed">end of feed</div>
   </section>
 </div>
 
 <script>
-  async function loadBlogIndex() {
-    const container = document.getElementById("post-list");
+  async function loadBlog() {
+    const list = document.getElementById("post-list");
 
     let files = [];
-
     try {
-      files = await fetch("posts/index.json?v=" + Date.now(), {
-        cache: "no-store"
-      }).then(r => r.json());
+      files = await fetch("posts/index.json?v=" + Date.now(), { cache: "no-store" })
+        .then(r => r.json());
     } catch (e) {
-      container.innerHTML = "<p>Error loading index.json</p>";
+      list.innerHTML = `<div class="tx-empty">failed to load index.json</div>`;
       return;
     }
 
-    container.innerHTML = "";
+    list.innerHTML = "";
 
-    for (const file of files) {
+    let totalWords = 0;
+    let totalMins  = 0;
+    const dates    = [];
+    const total    = files.length;
+
+    for (let idx = 0; idx < files.length; idx++) {
+      const file = files[idx];
+      let md;
       try {
-        const md = await fetch("posts/" + file + "?v=" + Date.now(), {
-          cache: "no-store"
-        }).then(r => r.text());
+        md = await fetch("posts/" + file + "?v=" + Date.now(), { cache: "no-store" })
+          .then(r => r.text());
+      } catch { continue; }
 
-        // Read metadata fields — title, subtitle, author, date
-        const title = md.match(/^title:\s*(.*)$/mi)?.[1]?.trim() || "Untitled";
-        const subtitle = md.match(/^subtitle:\s*(.*)$/mi)?.[1]?.trim() || "";
-        const author = md.match(/^author:\s*(.*)$/mi)?.[1]?.trim() || "";
-        const date = md.match(/^date:\s*(.*)$/mi)?.[1]?.trim() || "";
+      const title    = md.match(/^title:\s*(.+)$/mi)?.[1]?.trim() || "Untitled";
+      const subtitle = md.match(/^subtitle:\s*(.+)$/mi)?.[1]?.trim() || "";
+      const date     = md.match(/^date:\s*(.+)$/mi)?.[1]?.trim() || "";
 
-        // Combine author + date
-        let metaLine = "";
-        if (author && date) metaLine = `${author} — ${date}`;
-        else if (author) metaLine = author;
-        else if (date) metaLine = date;
+      // strip frontmatter for word count
+      const body  = md.replace(/^(title:.*\n|subtitle:.*\n|author:.*\n|date:.*\n)+/i, "");
+      const words = body.split(/\s+/).filter(Boolean).length;
+      const mins  = Math.max(1, Math.round(words / 220));
+      totalWords += words;
+      totalMins  += mins;
+      if (date) dates.push(date);
 
-        container.innerHTML += `
-          <div class="post-card" onclick="location.href='blog-post.html?file=${file}'">
-            <div class="post-title">${title}</div>
-            ${
-              subtitle
-                ? `<div class="post-subtitle" style="opacity:0.8; font-size:14px; margin-bottom:6px;">${subtitle}</div>`
-                : ""
-            }
-            <div class="post-date">${metaLine || "Unknown"}</div>
-          </div>
-        `;
-      } catch (err) {
-        console.warn("Could not load post:", file);
+      // newest first → highest id
+      const id = String(total - idx).padStart(2, "0");
 
-        container.innerHTML += `
-          <div class="post-card" onclick="location.href='blog-post.html?file=${file}'">
-            <div class="post-title">Untitled</div>
-            <div class="post-date">Unavailable</div>
-          </div>
-        `;
-      }
+      const card = document.createElement("a");
+      card.className = "tx-card tx-anim-init";
+      card.href = `blog-post.html?file=${file}`;
+      card.dataset.search = (title + " " + subtitle).toLowerCase();
+      card.innerHTML = `
+        <div class="tx-meta">
+          <span class="id">▹ ${id}</span>
+          <span class="sep">·</span>
+          <span>${date || "—"}</span>
+          <span class="sep">·</span>
+          <span class="pill">~${mins} min · ${words.toLocaleString()} words</span>
+        </div>
+        <div class="tx-title">${title}</div>
+        ${subtitle ? `<div class="tx-sub">${subtitle}</div>` : ""}
+        <div class="tx-cta">read transmission</div>
+      `;
+      list.appendChild(card);
     }
+
+    // header stats
+    const lastDate = dates.sort().reverse()[0] || "—";
+    document.getElementById("dt-count").textContent = total;
+    document.getElementById("dt-words").textContent = totalWords.toLocaleString();
+    document.getElementById("dt-mins").textContent  = totalMins;
+    document.getElementById("dt-last").textContent  = lastDate;
+
+    // stagger fade-in
+    requestAnimationFrame(() => {
+      document.querySelectorAll(".tx-card.tx-anim-init").forEach((c, i) => {
+        setTimeout(() => {
+          c.classList.remove("tx-anim-init");
+          c.classList.add("tx-anim-in");
+        }, 80 + i * 90);
+      });
+    });
+
+    // live filter
+    const input = document.getElementById("dispatch-grep");
+    input.addEventListener("input", e => {
+      const q = e.target.value.trim().toLowerCase();
+      let visible = 0;
+      document.querySelectorAll(".tx-card").forEach(c => {
+        const match = !q || c.dataset.search.includes(q);
+        c.classList.toggle("tx-hidden", !match);
+        if (match) visible++;
+      });
+      let empty = list.querySelector(".tx-empty");
+      if (visible === 0) {
+        if (!empty) {
+          empty = document.createElement("div");
+          empty.className = "tx-empty";
+          empty.textContent = "no transmissions match";
+          list.appendChild(empty);
+        }
+      } else if (empty) empty.remove();
+    });
+
+    input.addEventListener("keydown", e => {
+      if (e.key === "Escape") {
+        input.value = "";
+        input.dispatchEvent(new Event("input"));
+        input.blur();
+      }
+    });
+
+    // global "/" focuses the grep field, like vim search
+    document.addEventListener("keydown", e => {
+      if (e.key === "/" && document.activeElement !== input) {
+        e.preventDefault();
+        input.focus();
+      }
+    });
   }
 
-  loadBlogIndex();
+  loadBlog();
 </script>
 
 </body>

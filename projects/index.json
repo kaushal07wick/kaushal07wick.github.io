@@ -1,37 +1,58 @@
 [
   {
     "name": "OsmoGrep",
-    "intro": "Terminal-native execution based agent, run full tests in parallel with sub-agents. ",
-    "repo": "https://github.com/kaushal07wick/OsmoGrep"
+    "intro": "Terminal-native execution-based agent. Run full tests in parallel with sub-agents.",
+    "repo": "https://github.com/kaushal07wick/OsmoGrep",
+    "lang": "python",
+    "status": "active",
+    "tags": ["agents", "testing", "tui", "execution"]
   },
   {
     "name": "Captions",
-    "intro": "Automatic Caption Generation for YT shorts and raw videos. ",
-    "repo": "https://github.com/kaushal07wick/Captions"
+    "intro": "Automatic caption generation for YT shorts and raw videos.",
+    "repo": "https://github.com/kaushal07wick/Captions",
+    "lang": "python",
+    "status": "active",
+    "tags": ["asr", "video", "whisper"]
   },
   {
     "name": "StreamSSN",
-    "intro": "Real-time ASR with Whisper, optimized for real-time streaming with Adaptive chunking, similar to carteisa's ink-whisper",
-    "repo": "https://github.com/kaushal07wick/StreamSSN"
+    "intro": "Real-time ASR with Whisper, optimized for streaming with adaptive chunking — similar to Cartesia's ink-whisper.",
+    "repo": "https://github.com/kaushal07wick/StreamSSN",
+    "lang": "rust",
+    "status": "active",
+    "tags": ["asr", "real-time", "streaming", "whisper"]
   },
   {
     "name": "mem0 Analytics",
-    "intro": "Observability and performance telemetry for Mem0 memory systems. Aggregates metrics from LLM + vector pipelines into actionable insights.",
-    "repo": "https://github.com/kaushal07wick/mem0-analytics"
+    "intro": "Observability and performance telemetry for Mem0 memory systems. Aggregates metrics from LLM and vector pipelines into actionable insights.",
+    "repo": "https://github.com/kaushal07wick/mem0-analytics",
+    "lang": "python",
+    "status": "active",
+    "tags": ["observability", "llm", "telemetry", "vectors"]
   },
   {
     "name": "BreeBoost",
-    "intro": "BreeBoost is a full-stack, end-to-end real-time fraud detection system built using machine learning and statistical monitoring. ",
-    "repo": "https://github.com/kaushal07wick/breeboost"
+    "intro": "Full-stack, end-to-end real-time fraud detection system built with machine learning and statistical monitoring.",
+    "repo": "https://github.com/kaushal07wick/breeboost",
+    "lang": "python",
+    "status": "active",
+    "tags": ["ml", "fraud-detection", "fullstack", "real-time"]
   },
   {
     "name": "LiteLLM Aggregator",
-    "intro": "High-performance, async-first system that computes and monitors LLM API spend across millions of requests with PostgreSQL and Prometheus. ",
-    "repo": "https://github.com/kaushal07wick/litellm-aggregator"
+    "intro": "High-performance, async-first system that computes and monitors LLM API spend across millions of requests with PostgreSQL and Prometheus.",
+    "repo": "https://github.com/kaushal07wick/litellm-aggregator",
+    "lang": "python",
+    "status": "active",
+    "tags": ["llm", "postgres", "prometheus", "async"]
   },
   {
-    "name" : "TabMate",
+    "name": "TabMate",
     "intro": "Playful and practical Chrome extension for saving, organizing, and exporting your open browser tabs.",
-    "repo" : "https://github.com/kaushal07wick/tabmate"
+    "repo": "https://github.com/kaushal07wick/tabmate",
+    "lang": "javascript",
+    "status": "shipped",
+    "tags": ["chrome-ext", "productivity", "browser"]
   }
 ]
