@@ -1,7 +1,7 @@
 async function loadHeader() {
   const container = document.getElementById("header-container");
   if (!container) return;
-  const html = await fetch("header.html").then(r => r.text());
+  const html = await fetch("header.html?v=" + Date.now(), { cache: "no-store" }).then(r => r.text());
   container.innerHTML = html;
   
   // Mobile menu toggle
