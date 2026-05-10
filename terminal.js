@@ -190,7 +190,7 @@ ${grp("GAMES")}
       if (t==="uses") return location.href="uses.html"
 
       if (blogsIndex.map(x=>x.toLowerCase()).includes(t+".md"))
-        return location.href=`blog-post.html?file=${t}`
+        return location.href=`/blog/${t}/`
 
       const p = projectsIndex.find(x=>x.name.toLowerCase()===t)
       if (p) return window.open(p.repo,"_blank")
