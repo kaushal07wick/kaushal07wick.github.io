@@ -96,7 +96,7 @@ All operations occur on a dedicated agent branch. You can safely delete it witho
 
 Here is Osmogrep running end-to-end.
 
-![osmogrep-wrking](/images/osmogrep.gif)
+![osmogrep-wrking](/images/osmogrep.mp4)
 
 [Osmogrep](https://github.com/kaushal07wick/OsmoGrep) is open to contributions, feel free to contribute and let me know your thoughts on this.
 

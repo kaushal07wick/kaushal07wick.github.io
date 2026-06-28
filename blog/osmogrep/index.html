@@ -23,9 +23,13 @@
   <meta name="twitter:title" content="OsmoGrep" />
   <meta name="twitter:description" content="TUI based self-healing agent" />
 
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/tailwind.css?v=1" />
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="header.js" defer></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
@@ -271,6 +275,20 @@
     const html = marked.parse(cleaned);
     const container = document.getElementById("content");
     container.innerHTML = html;
+
+    // upgrade .mp4/.webm image refs to inline autoplay video; lazy-load the rest
+    container.querySelectorAll("img").forEach(img => {
+      const src = img.getAttribute("src") || "";
+      if (/\.(mp4|webm)$/i.test(src)) {
+        const v = document.createElement("video");
+        v.src = src; v.autoplay = v.loop = v.muted = v.playsInline = true;
+        v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
+        v.className = img.className; v.style.maxWidth = "100%"; v.style.borderRadius = "0.5rem";
+        img.replaceWith(v);
+      } else {
+        img.loading = "lazy"; img.decoding = "async";
+      }
+    });
 
     // RUN HIGHLIGHTING
     hljs.highlightAll();

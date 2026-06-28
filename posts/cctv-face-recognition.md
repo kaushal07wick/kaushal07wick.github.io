@@ -4,7 +4,7 @@ author: Kaushal Choudhary
 date: 2026-05-10
 # AI Demos Are Easy. Real CCTV Feeds Are Not.
 
-![cctv-hero](/images/cctv-hero.png)
+![cctv-hero](/images/cctv-hero.webp)
 
 Face recognition is one of the easiest ways to improve security across large campuses, offices, and public spaces. On paper, modern face recognition models are incredibly accurate.
 
@@ -29,7 +29,7 @@ Most of the campus still used old 2MP analog CCTV cameras, along with a few digi
 * jittery RTSP feeds
 * distant faces captured from 10–12 feet height
 
-![cctv-challenges](/images/cctv-challenges.png)
+![cctv-challenges](/images/cctv-challenges.webp)
 *Frames were not being captured cleanly enough for good face recognition.*
 
 Inside the control room, the feeds looked far worse than the polished datasets most face recognition systems are benchmarked on.
@@ -40,7 +40,7 @@ And we had to make this system work in under a week.
 
 # The Hardware Setup
 
-![cctv-architecture](/images/cctv-architecture.png)
+![cctv-architecture](/images/cctv-architecture.webp)
 *Distributed edge inference with real-time streaming.*
 
 Our deployment architecture used three edge inference devices connected directly to the campus surveillance network.
@@ -263,7 +263,7 @@ At that point, recognition became significantly harder. The detector struggled o
 
 # What Finally Worked
 
-![cctv-throughput](/images/cctv-throughput.png)
+![cctv-throughput](/images/cctv-throughput.webp)
 
 The final solution was surprisingly simple compared to all the complex tuning we attempted.
 
