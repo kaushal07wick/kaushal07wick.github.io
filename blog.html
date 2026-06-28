@@ -295,20 +295,6 @@
     }
     .tx-empty::before { content: "// "; opacity: 0.55; }
 
-    /* ── ASCII FOOTER FRAME ────────────────────────────── */
-    .end-of-feed {
-      margin-top: 40px;
-      text-align: center;
-      font-size: 11px;
-      letter-spacing: 0.18em;
-      opacity: 0.4;
-      text-transform: uppercase;
-    }
-    .end-of-feed::before, .end-of-feed::after {
-      content: " ───── ";
-      opacity: 0.6;
-    }
-
     @media (prefers-reduced-motion: reduce) {
       .dispatch-list-wrap::before { display: none; }
       .tx-anim-init { opacity: 1; transform: none; }
@@ -357,7 +343,6 @@
   <!-- LIST -->
   <section class="dispatch-list-wrap">
     <div id="post-list" class="tx-list"></div>
-    <div class="end-of-feed">end of feed</div>
   </section>
 </div>
 

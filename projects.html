@@ -145,31 +145,6 @@
     }
     .controls .hint { font-size: 11px; opacity: 0.45; letter-spacing: 0.04em; }
 
-    /* ── COMMAND PANEL (unique flavor) ─────────────────── */
-    .git-status {
-      margin-top: 36px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: rgba(201, 124, 93,0.02);
-      padding: 16px 20px;
-      font-size: 13px;
-      line-height: 1.7;
-      position: relative;
-    }
-    .git-status::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      opacity: 0.55;
-    }
-    .gs-line { white-space: pre-wrap; }
-    .gs-prompt { color: var(--accent); font-weight: 600; }
-    .gs-out    { opacity: 0.85; }
-    .gs-dim    { opacity: 0.5; }
-    .gs-ok     { color: #27c93f; }
-    .gs-tag    { color: var(--accent); }
-
     /* ── GRID + CARDS ──────────────────────────────────── */
     .grid-wrap {
       position: relative;
@@ -199,28 +174,21 @@
     .proj-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 18px;
+      gap: 40px 44px;
     }
 
     .proj-card {
       position: relative;
-      border: 1px solid var(--border);
-      background: var(--card-bg);
-      border-radius: 10px;
-      padding: 22px 22px 16px;
+      padding: 6px 0 2px;
       display: flex;
       flex-direction: column;
       text-decoration: none;
       color: inherit;
-      min-height: 196px;
-      transition: border-color .25s ease, transform .25s ease, box-shadow .25s ease, background .25s ease;
+      transition: transform .25s ease;
     }
-    .proj-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-3px);
-      box-shadow: 0 12px 34px var(--shadow);
-      background: rgba(201, 124, 93, 0.055);
-    }
+    .proj-card:hover { transform: translateY(-2px); }
+    .proj-card:hover .pc-name { color: var(--accent); }
+    .pc-name { transition: color .2s ease; }
 
     /* head: language dot + name + status */
     .pc-head {
@@ -279,8 +247,7 @@
     /* footer: repo slug + open link */
     .pc-foot {
       margin-top: 14px;
-      padding-top: 13px;
-      border-top: 1px dashed var(--border);
+      padding-top: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -313,19 +280,6 @@
     }
 
     .proj-card.proj-hidden { display: none; }
-
-    .end-mark {
-      margin-top: 50px;
-      text-align: center;
-      font-size: 11px;
-      letter-spacing: 0.18em;
-      opacity: 0.4;
-      text-transform: uppercase;
-    }
-    .end-mark::before, .end-mark::after {
-      content: " ───── ";
-      opacity: 0.6;
-    }
 
     @media (prefers-reduced-motion: reduce) {
       .grid-wrap::before { display: none; }
@@ -371,17 +325,9 @@
     </div>
   </section>
 
-  <!-- GIT STATUS PANEL (unique flavor) -->
-  <section class="git-status">
-    <div class="gs-line"><span class="gs-prompt">$</span> git status --short --all</div>
-    <div class="gs-line gs-out" id="gs-out">  loading manifest...</div>
-    <div class="gs-line gs-dim">workspace clean · all branches in sync</div>
-  </section>
-
   <!-- GRID -->
   <section class="grid-wrap">
     <div id="proj-grid" class="proj-grid"></div>
-    <div class="end-mark">end of manifest</div>
   </section>
 </div>
 
@@ -392,7 +338,6 @@
       data = await fetch("projects/index.json?v=" + Date.now(), { cache: "no-store" })
         .then(r => r.json());
     } catch {
-      document.getElementById("gs-out").textContent = "  failed to load manifest.";
       return;
     }
 
@@ -410,10 +355,6 @@
     document.getElementById("ps-active").textContent  = active;
     document.getElementById("ps-langs").textContent   = langs.length;
     document.getElementById("ps-primary").textContent = primary;
-
-    // ── git status panel
-    const out = document.getElementById("gs-out");
-    out.innerHTML = `  on ${total} projects · <span class="gs-tag">${active} active</span> · ${langs.length} langs (${langs.join(", ")})`;
 
     // ── render cards
     const grid = document.getElementById("proj-grid");
