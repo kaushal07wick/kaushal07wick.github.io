@@ -1,0 +1,27 @@
+# Cloudflare Pages headers — controls caching + adds basic hardening.
+# (Ignored by GitHub Pages, so safe to keep in the repo during migration.)
+
+# Sensible defaults for every response
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+
+# HTML: always revalidate so content edits appear immediately after a push
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Markdown blog sources fetched at runtime: brief cache, refresh in background
+/posts/*
+  Cache-Control: public, max-age=300, stale-while-revalidate=86400
+
+# JS/CSS: not content-hashed, so cache for a day and revalidate in the
+# background — fast repeat loads without trapping stale files for long.
+/*.css
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+/*.js
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Static media has stable filenames — cache hard for a year.
+/images/*
+  Cache-Control: public, max-age=31536000, immutable
