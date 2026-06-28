@@ -789,6 +789,47 @@
     .footer-row { justify-content: flex-start; }
     .footer-build { font-size: 11px; }
   }
+
+  /* ===== HOMEPAGE POLISH — centered hero + varied grid textures ===== */
+  /* swap the uniform site-wide grid for distinct, edge-faded texture patches */
+  body::before { display: none !important; }
+
+  :root { --gx: rgba(201, 124, 93, 0.12); --gx2: rgba(201, 124, 93, 0.07); }
+  .light { --gx: rgba(177, 92, 60, 0.24); --gx2: rgba(177, 92, 60, 0.15); }
+
+  /* texture drawn behind content via ::before, faded at the edges with a mask */
+  .tex { position: relative; }
+  .tex > * { position: relative; z-index: 1; }
+  .tex::before {
+    content: ""; position: absolute; inset: -2px; z-index: 0; pointer-events: none;
+    -webkit-mask-image: radial-gradient(ellipse 78% 82% at 50% 50%, #000 42%, transparent 92%);
+            mask-image: radial-gradient(ellipse 78% 82% at 50% 50%, #000 42%, transparent 92%);
+  }
+  .tex-dots::before    { background-image: radial-gradient(var(--gx) 1.1px, transparent 1.4px); background-size: 16px 16px; }
+  .tex-grid-sm::before { background-image: linear-gradient(var(--gx2) 1px, transparent 1px), linear-gradient(90deg, var(--gx2) 1px, transparent 1px); background-size: 14px 14px; }
+  .tex-grid-lg::before { background-image: linear-gradient(var(--gx2) 1px, transparent 1px), linear-gradient(90deg, var(--gx2) 1px, transparent 1px); background-size: 78px 78px; }
+  .tex-hlines::before  { background-image: linear-gradient(var(--gx) 1px, transparent 1px); background-size: 100% 13px; }
+  .tex-diag::before    { background-image: repeating-linear-gradient(-45deg, var(--gx2) 0, var(--gx2) 1px, transparent 1px, transparent 9px); }
+
+  /* hero — centered + spacious */
+  .hero-zone {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    gap: 24px; margin-top: 36px; padding: 56px 24px 64px;
+  }
+  .hero-zone h1 { font-size: clamp(28px, 4.6vw, 44px); line-height: 1.16; margin: 0; }
+  .hero-cta { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin: 0; }
+  .hero-stack {
+    display: flex; flex-wrap: wrap; gap: 10px 22px; justify-content: center;
+    color: var(--accent); opacity: 0.72; margin: 0;
+  }
+
+  /* textured section zones — more breathing room between patches */
+  .zone { margin-top: 76px; padding: 32px 26px; }
+  .zone--tight { padding: 24px 26px; }
+  @media (max-width: 640px) {
+    .hero-zone { padding: 36px 14px 44px; gap: 18px; }
+    .zone { padding: 24px 12px; margin-top: 56px; }
+  }
   </style>
 </head>
 
@@ -806,39 +847,31 @@
 
   <div id="header-container"></div>
     <!-- HERO -->
-    <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
-      <div class="col-span-2">
-        <h1 class="text-4xl leading-tight">
-          Hi, I'm <span style="color: var(--accent); opacity: 0.85;">Kaushal</span>,<br>
-          <span style="color: var(--accent);">a Systems Engineer,</span> always<br>
-          cooking something new<span class="cursor"></span>
-        </h1>
-
-        <div class="flex space-x-4 mt-8">
-          <a href="blog.html" class="neon-btn">
-            Read my Blog
-          </a>
-          <a href="#Contact" class="neon-btn">
-            Contact Me
-          </a>
-        </div>
-
-        <div class="flex space-x-6 mt-8" style="color: var(--accent); opacity: 0.75;">
-          <span class="sound-hover">TensorRT</span>
-          <span class="sound-hover">PyTorch</span>
-          <span class="sound-hover">Rust</span>
-          <span class="sound-hover">Go</span>
-          <span class="sound-hover">Distributed Inference</span>
-          <span class="sound-hover">Postgres</span>
-        </div>
-      </div>
+    <section class="hero-zone tex tex-grid-lg">
       <div class="jarvis-orb-container">
         <canvas id="arc-reactor" width="240" height="240" aria-hidden="true"></canvas>
+      </div>
+      <h1>
+        Hi, I'm <span style="color: var(--accent); opacity: 0.85;">Kaushal</span>,<br>
+        <span style="color: var(--accent);">a Systems Engineer,</span> always<br>
+        cooking something new<span class="cursor"></span>
+      </h1>
+      <div class="hero-cta">
+        <a href="blog.html" class="neon-btn">Read my Blog</a>
+        <a href="#Contact" class="neon-btn">Contact Me</a>
+      </div>
+      <div class="hero-stack">
+        <span class="sound-hover">TensorRT</span>
+        <span class="sound-hover">PyTorch</span>
+        <span class="sound-hover">Rust</span>
+        <span class="sound-hover">Go</span>
+        <span class="sound-hover">Distributed Inference</span>
+        <span class="sound-hover">Postgres</span>
       </div>
     </section>
 
     <!-- STATS STRIP -->
-    <section class="stat-strip" id="stats" aria-label="stats">
+    <section class="stat-strip zone zone--tight tex tex-hlines" id="stats" aria-label="stats">
       <div class="stat">
         <div class="stat-num" data-target="3">0</div>
         <div class="stat-label">years shipping ML</div>
@@ -858,7 +891,7 @@
     </section>
 
     <!-- EXPERIENCE -->
-    <section id="Experience" class="mt-20">
+    <section id="Experience" class="zone tex tex-dots">
       <div class="section-title"><span class="sec-num">01</span>$ cat experience.txt</div>
 
       <ol class="timeline mt-10">
@@ -921,14 +954,14 @@
     </section>
 
     <!-- SELECTED WORK -->
-    <section id="Work" class="mt-20">
+    <section id="Work" class="zone tex tex-diag">
       <div class="section-title"><span class="sec-num">02</span>$ cat selected_work.json</div>
       <div id="work-grid" class="work-grid"></div>
       <a href="projects.html" class="work-all">view all projects ▹</a>
     </section>
 
     <!-- LATEST DISPATCH -->
-    <section id="Dispatch" class="mt-20">
+    <section id="Dispatch" class="zone tex tex-grid-sm">
       <div class="section-title"><span class="sec-num">03</span>$ tail -1 dispatches.log</div>
       <a id="latest-dispatch" href="#" class="dispatch-card">
         <div class="dispatch-meta">▹ latest · <span id="dispatch-date">—</span></div>
