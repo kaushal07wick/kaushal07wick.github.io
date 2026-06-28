@@ -13,18 +13,18 @@
 
   <style>
     :root {
-      --bg: #000;
-      --text: #d8fbe3;
-      --accent: #00ffb7;
-      --border: rgba(0,255,170,0.20);
-      --card-bg: rgba(0,255,170,0.03);
+      --bg: #14100d;
+      --text: #e3d9cc;
+      --accent: #c97c5d;
+      --border: rgba(201, 124, 93,0.20);
+      --card-bg: rgba(201, 124, 93,0.03);
     }
     .light {
-      --bg: #ffffff;
-      --text: #002e22;
-      --accent: #008d66;
-      --border: rgba(0,141,102,0.25);
-      --card-bg: rgba(0,141,102,0.04);
+      --bg: #faf6f0;
+      --text: #2e211a;
+      --accent: #b15c3c;
+      --border: rgba(177, 92, 60,0.25);
+      --card-bg: rgba(177, 92, 60,0.04);
     }
 
     html, body {
@@ -65,7 +65,7 @@
       color: var(--accent);
       line-height: 1;
       margin: 0;
-      text-shadow: 0 0 28px rgba(0,255,175,0.30);
+      text-shadow: 0 0 28px rgba(201, 124, 93,0.30);
       display: flex;
       align-items: center;
       gap: 14px;
@@ -128,8 +128,8 @@
     #dispatch-grep::placeholder { color: var(--text); opacity: 0.35; }
     #dispatch-grep:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 14px rgba(0,255,175,0.18);
-      background: rgba(0,255,170,0.03);
+      box-shadow: 0 0 14px rgba(201, 124, 93,0.18);
+      background: rgba(201, 124, 93,0.03);
     }
     .controls .hint {
       font-size: 11px;
@@ -151,7 +151,7 @@
       left: 0; right: 0;
       height: 80px;
       pointer-events: none;
-      background: linear-gradient(to bottom, transparent, rgba(0,255,175,0.09), transparent);
+      background: linear-gradient(to bottom, transparent, rgba(201, 124, 93,0.09), transparent);
       filter: blur(6px);
       animation: scan-beam 11s linear infinite;
       z-index: 2;
@@ -235,7 +235,7 @@
     }
     .tx-card:hover .tx-title {
       color: var(--accent);
-      text-shadow: 0 0 14px rgba(0,255,175,0.30);
+      text-shadow: 0 0 14px rgba(201, 124, 93,0.30);
     }
 
     .tx-sub {

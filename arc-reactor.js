@@ -1,5 +1,8 @@
-// Arc-reactor / "new element" orb. Glowing nucleus with electrons orbiting on
-// tilted 3D planes, plus a HUD ring. Replaces the old flat jarvis-orb.
+// Ember flow field. Glowing embers rise from a warm forge-glow at the base,
+// drifting on a noise-driven flow field, hot gold-white when young and cooling
+// to deep clay-red as they rise and fade. Spark trails + additive bloom. The
+// cursor stirs the flow. Clipped to a disc so it stays orb-shaped and matches
+// the terracotta palette. (Canvas id kept as "arc-reactor".)
 
 (function () {
   const canvas = document.getElementById("arc-reactor");
@@ -7,6 +10,9 @@
   const ctx = canvas.getContext("2d");
 
   const SIZE = 240;
+  const CX = SIZE / 2;
+  const CY = SIZE / 2;
+  const CLIP_R = 114;
   let dpr = window.devicePixelRatio || 1;
 
   function resize() {
@@ -20,165 +26,175 @@
   resize();
   window.addEventListener("resize", resize);
 
-  function palette() {
-    return document.body.classList.contains("light")
-      ? { main: "0, 150, 100", glow: "0, 200, 130", core: "120, 255, 200" }
-      : { main: "0, 255, 175", glow: "0, 255, 200", core: "200, 255, 230" };
+  function isLight() {
+    return document.body.classList.contains("light");
   }
 
-  // Orbits live in their own local XY plane (z = 0), then are rotated by a
-  // tilt around X and a twist around Z. Projection is orthographic — depth
-  // (the resulting z) only modulates size and alpha so far/near reads right.
-  const orbits = [
-    { r: 56, tilt: 0.10, twist: 0.20, period: 3.4, count: 1, phase: 0.0 },
-    { r: 70, tilt: 1.20, twist: 1.00, period: 4.6, count: 2, phase: 1.0 },
-    { r: 82, tilt: -0.85, twist: 2.00, period: 5.8, count: 1, phase: 2.0 },
-    { r: 64, tilt: 0.95, twist: -0.60, period: 2.9, count: 1, phase: 0.5 },
-    { r: 76, tilt: -0.45, twist: 2.65, period: 3.7, count: 2, phase: 1.6 },
-  ];
-
-  const HUD_R = 96;
-  const t0 = performance.now();
-
-  function rotateXZ(p, ax, az) {
-    // Rotate around X first (tilt the plane forward/back).
-    const cy = Math.cos(ax), sy = Math.sin(ax);
-    const y1 = p.y * cy - p.z * sy;
-    const z1 = p.y * sy + p.z * cy;
-    p.y = y1; p.z = z1;
-    // Then rotate around Z (twist the orbit's "node line").
-    const cz = Math.cos(az), sz = Math.sin(az);
-    const x2 = p.x * cz - p.y * sz;
-    const y2 = p.x * sz + p.y * cz;
-    p.x = x2; p.y = y2;
-    return p;
-  }
-
-  function drawOrbit(cx, cy, o, time, twist, accent) {
-    // Trace the orbit ring as alpha-modulated dots so the far half fades.
-    const samples = 96;
-    for (let i = 0; i < samples; i++) {
-      const a = (i / samples) * Math.PI * 2;
-      const p = { x: Math.cos(a) * o.r, y: Math.sin(a) * o.r, z: 0 };
-      rotateXZ(p, o.tilt, twist);
-      const depth = (p.z + o.r) / (2 * o.r); // 0 = far, 1 = near
-      const alpha = 0.08 + 0.30 * depth;
-      ctx.fillStyle = `rgba(${accent.main}, ${alpha})`;
-      ctx.fillRect(cx + p.x - 0.5, cy + p.y - 0.5, 1.2, 1.2);
+  // Warm ember gradient: cold (old) -> mid -> hot (young).
+  // Dark theme runs additive (blooms); light theme uses deeper, opaque clay.
+  function emberColor(life) {
+    // life: 1 (just born, hottest) -> 0 (dying)
+    let c;
+    if (life > 0.6) {
+      const f = (life - 0.6) / 0.4; // 0..1 toward hot
+      c = lerp3([232, 150, 84], isLight() ? [150, 70, 40] : [255, 232, 178], f);
+    } else {
+      const f = life / 0.6; // 0..1 toward mid
+      c = lerp3([150, 60, 40], [232, 150, 84], f);
     }
-
-    // Electrons.
-    for (let k = 0; k < o.count; k++) {
-      const a = (time / o.period) * Math.PI * 2 + o.phase + (k / o.count) * Math.PI * 2;
-      const p = { x: Math.cos(a) * o.r, y: Math.sin(a) * o.r, z: 0 };
-      rotateXZ(p, o.tilt, twist);
-      const depth = (p.z + o.r) / (2 * o.r);
-      const r = 1.6 + depth * 2.4;
-
-      const haloR = r * 7;
-      const halo = ctx.createRadialGradient(cx + p.x, cy + p.y, 0, cx + p.x, cy + p.y, haloR);
-      halo.addColorStop(0, `rgba(${accent.glow}, ${0.55 * (0.4 + 0.6 * depth)})`);
-      halo.addColorStop(1, `rgba(${accent.glow}, 0)`);
-      ctx.fillStyle = halo;
-      ctx.beginPath();
-      ctx.arc(cx + p.x, cy + p.y, haloR, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = `rgba(255, 255, 255, ${0.55 + 0.45 * depth})`;
-      ctx.beginPath();
-      ctx.arc(cx + p.x, cy + p.y, r, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    return c;
+  }
+  function lerp3(a, b, t) {
+    return [
+      Math.round(a[0] + (b[0] - a[0]) * t),
+      Math.round(a[1] + (b[1] - a[1]) * t),
+      Math.round(a[2] + (b[2] - a[2]) * t),
+    ];
   }
 
-  function drawNucleus(cx, cy, time, accent) {
-    const pulse = 1 + Math.sin(time * 2.2) * 0.08;
-    const r = 9 * pulse;
-
-    const halo = ctx.createRadialGradient(cx, cy, 0, cx, cy, 70);
-    halo.addColorStop(0, `rgba(${accent.glow}, 0.55)`);
-    halo.addColorStop(0.45, `rgba(${accent.glow}, 0.16)`);
-    halo.addColorStop(1, `rgba(${accent.glow}, 0)`);
-    ctx.fillStyle = halo;
-    ctx.beginPath();
-    ctx.arc(cx, cy, 70, 0, Math.PI * 2);
-    ctx.fill();
-
-    const core = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-    core.addColorStop(0, `rgba(255, 255, 255, 1)`);
-    core.addColorStop(0.45, `rgba(${accent.core}, 0.95)`);
-    core.addColorStop(1, `rgba(${accent.main}, 0.4)`);
-    ctx.fillStyle = core;
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.fill();
+  // ── flow field (cheap layered-sine pseudo-noise) ─────────────────
+  function flowAngle(x, y, t) {
+    const s = 0.018;
+    const n =
+      Math.sin(x * s + t * 0.5) +
+      Math.cos(y * s * 1.2 - t * 0.4) +
+      Math.sin((x + y) * s * 0.7 + t * 0.25);
+    return n * 1.4;
   }
 
-  function drawHud(cx, cy, time, accent) {
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = `rgba(${accent.main}, 0.22)`;
-    ctx.beginPath();
-    ctx.arc(cx, cy, HUD_R, 0, Math.PI * 2);
-    ctx.stroke();
+  // ── embers ────────────────────────────────────────────────────────
+  const N = 150;
+  const embers = [];
 
-    ctx.strokeStyle = `rgba(${accent.main}, 0.10)`;
-    ctx.beginPath();
-    ctx.arc(cx, cy, HUD_R - 8, 0, Math.PI * 2);
-    ctx.stroke();
-
-    // Tick marks rotating slowly — the "instrument" feel.
-    for (let i = 0; i < 48; i++) {
-      const a = (i / 48) * Math.PI * 2 + time * 0.12;
-      const major = i % 4 === 0;
-      const r1 = HUD_R + 2;
-      const r2 = HUD_R + (major ? 8 : 4);
-      ctx.strokeStyle = `rgba(${accent.main}, ${major ? 0.55 : 0.20})`;
-      ctx.beginPath();
-      ctx.moveTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
-      ctx.lineTo(cx + Math.cos(a) * r2, cy + Math.sin(a) * r2);
-      ctx.stroke();
-    }
-
-    // Two short arcs spinning the other direction.
-    ctx.strokeStyle = `rgba(${accent.main}, 0.55)`;
-    ctx.lineWidth = 1.5;
-    const arcLen = 0.35;
-    for (const sign of [1, -1]) {
-      const start = time * 0.6 * sign;
-      ctx.beginPath();
-      ctx.arc(cx, cy, HUD_R + 12, start, start + arcLen);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(cx, cy, HUD_R + 12, start + Math.PI, start + Math.PI + arcLen);
-      ctx.stroke();
-    }
+  function spawn(em, fill) {
+    em.x = CX + (Math.random() - 0.5) * 80;
+    em.y = CY + 40 + Math.random() * 55;        // born low in the disc
+    em.vx = (Math.random() - 0.5) * 0.3;
+    em.vy = -(0.25 + Math.random() * 0.5);
+    em.maxLife = 2.6 + Math.random() * 2.8;
+    em.life = fill ? Math.random() : 1;          // stagger on first fill
+    em.size = 0.8 + Math.random() * 1.7;
+    em.px = em.x;
+    em.py = em.y;
+  }
+  for (let i = 0; i < N; i++) {
+    const em = {};
+    spawn(em, true);
+    embers.push(em);
   }
 
-  function frame() {
-    const time = (performance.now() - t0) / 1000;
-    const accent = palette();
-    const cx = SIZE / 2, cy = SIZE / 2;
+  // ── cursor (in canvas coords) ─────────────────────────────────────
+  let mcx = -999, mcy = -999, mActive = 0;
+  window.addEventListener("mousemove", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mcx = e.clientX - rect.left;
+    mcy = e.clientY - rect.top;
+    mActive = mcx > -50 && mcx < SIZE + 50 && mcy > -50 && mcy < SIZE + 50 ? 1 : 0;
+  });
+
+  let t0 = performance.now();
+  let last = t0;
+
+  function frame(now) {
+    const time = (now - t0) / 1000;
+    let dt = (now - last) / 1000;
+    last = now;
+    if (dt > 0.05) dt = 0.05; // clamp after tab-switch
+    const light = isLight();
 
     ctx.clearRect(0, 0, SIZE, SIZE);
 
-    // Soft background haze inside the HUD ring.
-    const bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, HUD_R);
-    bg.addColorStop(0, `rgba(${accent.main}, 0.07)`);
-    bg.addColorStop(1, `rgba(${accent.main}, 0)`);
-    ctx.fillStyle = bg;
+    ctx.save();
     ctx.beginPath();
-    ctx.arc(cx, cy, HUD_R, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.arc(CX, CY, CLIP_R, 0, Math.PI * 2);
+    ctx.clip();
 
-    drawHud(cx, cy, time, accent);
+    // Forge glow pool at the base.
+    const baseY = CY + 70;
+    const pool = ctx.createRadialGradient(CX, baseY, 0, CX, baseY, 110);
+    pool.addColorStop(0, light ? "rgba(177, 92, 60, 0.22)" : "rgba(224, 132, 70, 0.30)");
+    pool.addColorStop(0.5, light ? "rgba(177, 92, 60, 0.08)" : "rgba(201, 100, 60, 0.12)");
+    pool.addColorStop(1, "rgba(201, 100, 60, 0)");
+    ctx.fillStyle = pool;
+    ctx.fillRect(0, 0, SIZE, SIZE);
 
-    // Each orbit's twist precesses slowly so the whole thing feels alive.
-    orbits.forEach((o, i) => {
-      const dynamicTwist = o.twist + time * 0.06 * (i % 2 ? 1 : -1);
-      drawOrbit(cx, cy, o, time, dynamicTwist, accent);
-    });
+    if (!light) ctx.globalCompositeOperation = "lighter";
 
-    drawNucleus(cx, cy, time, accent);
+    for (const em of embers) {
+      // flow + rise
+      const fa = flowAngle(em.x, em.y, time);
+      em.vx += Math.cos(fa) * 0.05;
+      em.vy += Math.sin(fa) * 0.05;
+      em.vy -= 0.05; // buoyancy
+
+      // cursor stir: swirl + push outward
+      if (mActive) {
+        const dx = em.x - mcx, dy = em.y - mcy;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < 2600) {
+          const d = Math.sqrt(d2) || 1;
+          const fall = 1 - d / 51;
+          em.vx += ((-dy / d) * 0.5 + (dx / d) * 0.3) * fall; // tangential + radial
+          em.vy += ((dx / d) * 0.5 + (dy / d) * 0.3) * fall;
+        }
+      }
+
+      em.vx *= 0.95;
+      em.vy *= 0.97;
+      // speed cap
+      const sp = Math.hypot(em.vx, em.vy);
+      if (sp > 2.2) { em.vx *= 2.2 / sp; em.vy *= 2.2 / sp; }
+
+      em.px = em.x; em.py = em.y;
+      em.x += em.vx * dt * 60;
+      em.y += em.vy * dt * 60;
+      em.life -= dt / em.maxLife;
+
+      // respawn when dead or drifted out of the disc
+      const out = Math.hypot(em.x - CX, em.y - CY) > CLIP_R + 6;
+      if (em.life <= 0 || out) { spawn(em, false); continue; }
+
+      const [r, g, b] = emberColor(em.life);
+      const alpha = Math.min(1, em.life * 1.5) * (light ? 0.85 : 0.95);
+      const rad = em.size * (0.45 + 0.55 * em.life);
+
+      // spark trail
+      ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 0.4})`;
+      ctx.lineWidth = rad * 0.9;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(em.px, em.py);
+      ctx.lineTo(em.x, em.y);
+      ctx.stroke();
+
+      // bloom halo for the hottest young embers
+      if (!light && em.life > 0.65) {
+        const hr = rad * 6;
+        const halo = ctx.createRadialGradient(em.x, em.y, 0, em.x, em.y, hr);
+        halo.addColorStop(0, `rgba(255, 220, 170, ${0.3 * em.life})`);
+        halo.addColorStop(1, "rgba(255, 220, 170, 0)");
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(em.x, em.y, hr, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // core dot
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+      ctx.beginPath();
+      ctx.arc(em.x, em.y, rad, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.globalCompositeOperation = "source-over";
+    ctx.restore();
+
+    // faint framing ring
+    ctx.strokeStyle = light ? "rgba(177, 92, 60, 0.18)" : "rgba(201, 124, 93, 0.16)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(CX, CY, CLIP_R, 0, Math.PI * 2);
+    ctx.stroke();
 
     requestAnimationFrame(frame);
   }

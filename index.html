@@ -15,30 +15,30 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #000;
-      --text: #d8fbe3;
-      --accent: #00ffb7;
+      --bg: #14100d;
+      --text: #e3d9cc;
+      --accent: #c97c5d;
 
-      --border: rgba(0, 255, 170, 0.25);
-      --card-bg: rgba(0, 255, 170, 0.05);
-      --card-shadow: rgba(0, 255, 170, 0.20);
+      --border: rgba(201, 124, 93, 0.25);
+      --card-bg: rgba(201, 124, 93, 0.05);
+      --card-shadow: rgba(201, 124, 93, 0.20);
             --term-bg: #1a1a1a;
       --term-bar: #222;
-      --term-text: #00ffb7;
-      --term-dim: #009f84;
+      --term-text: #c97c5d;
+      --term-dim: #8a7a6a;
     }
 
     .light {
-      --bg: #ffffff;
-      --text: #002e22;
-      --accent: #008d66;
-      --border: rgba(0, 141, 102, 0.35);
-      --card-bg: rgba(0, 141, 102, 0.05);
-      --card-shadow: rgba(0, 141, 102, 0.15);
-            --term-bg: #e9fff5;
-      --term-bar: #d3ffef;
-      --term-text: #008d66;
-      --term-dim: #006b52;
+      --bg: #faf6f0;
+      --text: #2e211a;
+      --accent: #b15c3c;
+      --border: rgba(177, 92, 60, 0.35);
+      --card-bg: rgba(177, 92, 60, 0.05);
+      --card-shadow: rgba(177, 92, 60, 0.15);
+            --term-bg: #f3ece2;
+      --term-bar: #e8ddcd;
+      --term-text: #b15c3c;
+      --term-dim: #8a6a55;
     }
 
     html, body {
@@ -101,7 +101,7 @@
 
     .tech-card:hover {
       border-color: var(--accent);
-      box-shadow: 0 0 24px rgba(0, 141, 102, 0.35);
+      box-shadow: 0 0 24px rgba(177, 92, 60, 0.35);
       transform: translateY(-4px);
     }
 
@@ -274,21 +274,21 @@
       width: 240px;
       height: 240px;
       display: block;
-      filter: drop-shadow(0 0 18px rgba(0,255,175,0.35));
+      filter: drop-shadow(0 0 18px rgba(224, 132, 70, 0.35));
       transition: filter 0.4s ease, transform 0.4s ease;
       cursor: pointer;
     }
 
     #arc-reactor:hover {
-      filter: drop-shadow(0 0 28px rgba(0,255,175,0.65));
+      filter: drop-shadow(0 0 28px rgba(224, 132, 70, 0.6));
       transform: scale(1.05);
     }
 
     .light #arc-reactor {
-      filter: drop-shadow(0 0 14px rgba(0,150,100,0.45));
+      filter: drop-shadow(0 0 14px rgba(177, 92, 60, 0.45));
     }
     .light #arc-reactor:hover {
-      filter: drop-shadow(0 0 22px rgba(0,150,100,0.7));
+      filter: drop-shadow(0 0 22px rgba(177, 92, 60, 0.7));
     }
     .nav-link {
       font-size: 16px;
@@ -388,7 +388,7 @@
     font-weight: 600;
     letter-spacing: -0.02em;
     line-height: 1.1;
-    text-shadow: 0 0 12px rgba(0,255,175,0.25);
+    text-shadow: 0 0 12px rgba(201, 124, 93,0.25);
   }
   .stat-label {
     font-size: 10.5px;
@@ -520,8 +520,8 @@
     background: var(--term-bg);
     border: 1px solid var(--border);
     border-radius: 12px;
-    box-shadow: 0 0 28px rgba(0,255,170,0.14),
-                inset 0 0 24px rgba(0,255,170,0.03);
+    box-shadow: 0 0 28px rgba(201, 124, 93,0.14),
+                inset 0 0 24px rgba(201, 124, 93,0.03);
     overflow: hidden;
     font-family: "JetBrains Mono", monospace;
   }
@@ -608,10 +608,10 @@
   .pterm-output::-webkit-scrollbar { width: 8px; }
   .pterm-output::-webkit-scrollbar-track { background: transparent; }
   .pterm-output::-webkit-scrollbar-thumb {
-    background: rgba(0,255,170,0.14);
+    background: rgba(201, 124, 93,0.14);
     border-radius: 99px;
   }
-  .pterm-output::-webkit-scrollbar-thumb:hover { background: rgba(0,255,170,0.30); }
+  .pterm-output::-webkit-scrollbar-thumb:hover { background: rgba(201, 124, 93,0.30); }
 
   /* output color classes */
   .pterm-output .t-cmd  { color: var(--accent); font-weight: 500; }
@@ -712,7 +712,7 @@
   .boot-line:nth-child(2) { animation-delay: 0.40s; }
   .boot-line:nth-child(3) { animation-delay: 0.75s; }
   .boot-line:nth-child(4) { animation-delay: 1.10s; }
-  .boot-line .ok  { color: #00ffb7; margin-left: 8px; }
+  .boot-line .ok  { color: #c97c5d; margin-left: 8px; }
   .boot-line .ts  { opacity: 0.55; margin-right: 10px; }
   .boot-cursor {
     display: inline-block;
@@ -1100,6 +1100,6 @@
   <script src="header.js" defer></script>
   <script src="terminal.js?v=2" defer></script>
   <script src="index.js" defer></script>
-  <script src="arc-reactor.js" defer></script>
+  <script src="arc-reactor.js?v=ember1" defer></script>
 </body>
 </html>

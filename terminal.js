@@ -614,7 +614,7 @@ ${c("  side effect", "t-dim")}  ${["clarity", "focus", "anxiety", "shipping", "a
     ctx.fillStyle = "rgba(0,0,0,0.9)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.strokeStyle = "rgba(0,255,180,0.15)";
+    ctx.strokeStyle = "rgba(201, 124, 93,0.15)";
     for (let x = 0; x < canvas.width; x += 40) {
         ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
     }
@@ -622,7 +622,7 @@ ${c("  side effect", "t-dim")}  ${["clarity", "focus", "anxiety", "shipping", "a
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
     }
 
-    ctx.fillStyle = "#00ffb7";
+    ctx.fillStyle = "#c97c5d";
     ctx.font = "28px JetBrains Mono";
     ctx.fillText("●", 60, playerY);
 

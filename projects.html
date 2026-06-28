@@ -11,20 +11,20 @@
 
   <style>
     :root {
-      --bg: #000;
-      --text: #d8fbe3;
-      --accent: #00ffb7;
-      --border: rgba(0, 255, 170, 0.20);
-      --card-bg: rgba(0, 255, 170, 0.03);
-      --shadow: rgba(0, 255, 170, 0.20);
+      --bg: #14100d;
+      --text: #e3d9cc;
+      --accent: #c97c5d;
+      --border: rgba(201, 124, 93, 0.20);
+      --card-bg: rgba(201, 124, 93, 0.03);
+      --shadow: rgba(201, 124, 93, 0.20);
     }
     .light {
-      --bg: #ffffff;
-      --text: #002e22;
-      --accent: #008d66;
-      --border: rgba(0, 141, 102, 0.25);
-      --card-bg: rgba(0, 141, 102, 0.04);
-      --shadow: rgba(0, 141, 102, 0.20);
+      --bg: #faf6f0;
+      --text: #2e211a;
+      --accent: #b15c3c;
+      --border: rgba(177, 92, 60, 0.25);
+      --card-bg: rgba(177, 92, 60, 0.04);
+      --shadow: rgba(177, 92, 60, 0.20);
     }
 
     html, body {
@@ -72,7 +72,7 @@
       color: var(--accent);
       line-height: 1;
       margin: 0;
-      text-shadow: 0 0 28px rgba(0,255,175,0.30);
+      text-shadow: 0 0 28px rgba(201, 124, 93,0.30);
       display: flex;
       align-items: center;
       gap: 12px;
@@ -134,8 +134,8 @@
     #proj-grep::placeholder { color: var(--text); opacity: 0.35; }
     #proj-grep:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 14px rgba(0,255,175,0.18);
-      background: rgba(0,255,170,0.03);
+      box-shadow: 0 0 14px rgba(201, 124, 93,0.18);
+      background: rgba(201, 124, 93,0.03);
     }
     .controls .hint { font-size: 11px; opacity: 0.45; letter-spacing: 0.04em; }
 
@@ -144,7 +144,7 @@
       margin-top: 36px;
       border: 1px solid var(--border);
       border-radius: 10px;
-      background: rgba(0,255,170,0.02);
+      background: rgba(201, 124, 93,0.02);
       padding: 16px 20px;
       font-size: 13px;
       line-height: 1.7;
@@ -178,7 +178,7 @@
       top: -90px;
       height: 90px;
       pointer-events: none;
-      background: linear-gradient(to bottom, transparent, rgba(0,255,175,0.08), transparent);
+      background: linear-gradient(to bottom, transparent, rgba(201, 124, 93,0.08), transparent);
       filter: blur(7px);
       animation: scan-beam 13s linear infinite;
       z-index: 2;
@@ -192,151 +192,112 @@
 
     .proj-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 18px;
     }
 
     .proj-card {
       position: relative;
       border: 1px solid var(--border);
       background: var(--card-bg);
-      border-radius: 8px;
-      overflow: hidden;
-      padding: 0;
-      transition: 0.3s ease;
+      border-radius: 10px;
+      padding: 22px 22px 16px;
       display: flex;
       flex-direction: column;
-      cursor: pointer;
       text-decoration: none;
       color: inherit;
-      min-height: 230px;
+      min-height: 196px;
+      transition: border-color .25s ease, transform .25s ease, box-shadow .25s ease, background .25s ease;
     }
-
-    /* corner brackets — give it that HUD/manifest feel */
-    .proj-card::before, .proj-card::after {
-      content: "";
-      position: absolute;
-      width: 14px; height: 14px;
-      border: 1px solid var(--accent);
-      opacity: 0.45;
-      transition: 0.3s;
-    }
-    .proj-card::before { top: 6px;    left: 6px;
-      border-right: none; border-bottom: none; }
-    .proj-card::after  { bottom: 6px; right: 6px;
-      border-left: none;  border-top: none; }
-
     .proj-card:hover {
       border-color: var(--accent);
       transform: translateY(-3px);
-      box-shadow: 0 0 32px var(--shadow);
+      box-shadow: 0 12px 34px var(--shadow);
+      background: rgba(201, 124, 93, 0.055);
     }
-    .proj-card:hover::before, .proj-card:hover::after { opacity: 1; }
 
-    /* mini header bar */
-    .pc-bar {
-      padding: 10px 16px;
-      border-bottom: 1px dashed var(--border);
+    /* head: language dot + name + status */
+    .pc-head {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      gap: 11px;
+      margin-bottom: 13px;
     }
-    .pc-id    { color: var(--accent); font-weight: 600; }
-    .pc-path  { color: var(--accent); opacity: 0.65; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .pc-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 10px;
-      padding: 2px 8px;
-      border: 1px solid var(--border);
-      border-radius: 99px;
-      letter-spacing: 0.06em;
-    }
-    .pc-status.active  { color: #27c93f; border-color: rgba(39,201,63,0.45); }
-    .pc-status.shipped { color: var(--accent); border-color: var(--accent); }
-    .pc-status.wip     { color: #ffbd2e; border-color: rgba(255,189,46,0.45); }
-    .pc-status .blink {
-      width: 5px; height: 5px;
+    .pc-dot {
+      width: 9px; height: 9px;
       border-radius: 50%;
+      flex: none;
       background: currentColor;
-      box-shadow: 0 0 5px currentColor;
-      animation: pc-blink 1.6s ease-in-out infinite;
+      box-shadow: 0 0 9px currentColor;
     }
-    @keyframes pc-blink { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
-
-    /* body */
-    .pc-body { padding: 18px 18px 6px 18px; flex: 1; display: flex; flex-direction: column; }
     .pc-name {
-      font-size: 22px;
-      color: var(--accent);
+      font-size: 21px;
       font-weight: 600;
-      margin: 0 0 8px 0;
+      color: var(--text);
       letter-spacing: 0.01em;
+      line-height: 1.1;
     }
+    .pc-status {
+      margin-left: auto;
+      font-size: 9.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0.55;
+      white-space: nowrap;
+    }
+    .pc-status.active  { color: #7faf6a; }
+    .pc-status.shipped { color: var(--accent); }
+    .pc-status.wip     { color: #d4a94a; }
+
     .pc-intro {
-      opacity: 0.78;
-      line-height: 1.55;
+      opacity: 0.72;
+      line-height: 1.6;
       font-size: 13.5px;
-      flex: 1;
     }
 
-    .pc-tags {
+    /* meta: language + tags as quiet middot-separated text */
+    .pc-meta {
+      margin-top: auto;
+      padding-top: 16px;
+      font-size: 12px;
+      letter-spacing: 0.02em;
       display: flex;
       flex-wrap: wrap;
-      gap: 5px;
-      margin-top: 14px;
+      align-items: center;
+      gap: 7px;
     }
-    .pc-tag {
-      font-size: 10.5px;
-      padding: 2px 8px;
-      border: 1px solid var(--border);
-      border-radius: 99px;
-      opacity: 0.78;
-      letter-spacing: 0.04em;
-    }
-    .pc-lang {
-      color: var(--accent);
-      border-color: var(--accent);
-      opacity: 1;
-    }
-    .pc-lang::before { content: "● "; opacity: 0.85; }
+    .pc-meta .lang { color: var(--accent); }
+    .pc-meta .tag  { opacity: 0.5; }
+    .pc-meta .mid  { opacity: 0.28; }
 
-    /* clone footer (revealed on hover) */
-    .pc-clone {
+    /* footer: repo slug + open link */
+    .pc-foot {
       margin-top: 14px;
+      padding-top: 13px;
       border-top: 1px dashed var(--border);
-      padding: 12px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
       font-size: 11.5px;
-      background: rgba(0,255,170,0.02);
-      transition: 0.3s ease;
     }
-    .pc-clone .cmd {
-      color: var(--accent);
-      opacity: 0.85;
+    .pc-slug {
+      opacity: 0.42;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       min-width: 0;
     }
-    .pc-clone .open {
+    .pc-open {
       color: var(--accent);
-      letter-spacing: 0.06em;
+      opacity: 0.75;
+      letter-spacing: 0.05em;
       white-space: nowrap;
-      transition: 0.25s;
+      transition: opacity .2s;
     }
-    .pc-clone .open::after {
-      content: " ▸";
-      transition: 0.25s;
-    }
-    .proj-card:hover .pc-clone .open::after { transform: translateX(3px); display: inline-block; }
+    .pc-open .arr { display: inline-block; transition: transform .25s ease; }
+    .proj-card:hover .pc-open { opacity: 1; }
+    .proj-card:hover .pc-open .arr { transform: translate(2px, -2px); }
 
     /* anim */
     .pc-anim-init { opacity: 0; transform: translateY(14px); }
@@ -454,11 +415,16 @@
     grid.innerHTML = "";
 
     data.forEach((p, idx) => {
-      const id     = String(idx + 1).padStart(2, "0");
       const status = p.status || "active";
       const tags   = p.tags || [];
       const lang   = p.lang || "code";
-      const path   = "~/" + (p.name || "unknown").toLowerCase().replace(/\s+/g, "-");
+      const slug   = (p.repo || "").replace(/^https?:\/\/(www\.)?github\.com\//, "");
+      const langColors = {
+        python: "#c9a45d", rust: "#c97c5d", javascript: "#d4c478",
+        typescript: "#6da9c9", go: "#6db3b0", c: "#b08fb0", "c++": "#b08fb0",
+        java: "#c98f5d", ruby: "#c96d6d", shell: "#8fae6f"
+      };
+      const dotColor = langColors[lang.toLowerCase()] || "var(--accent)";
 
       const card = document.createElement("a");
       card.className = "proj-card pc-anim-init";
@@ -473,22 +439,19 @@
       ).toLowerCase();
 
       card.innerHTML = `
-        <div class="pc-bar">
-          <span class="pc-id">▹ ${id}</span>
-          <span class="pc-path">${path}</span>
-          <span class="pc-status ${status}"><span class="blink"></span>${status}</span>
+        <div class="pc-head">
+          <span class="pc-dot" style="color:${dotColor}"></span>
+          <span class="pc-name">${p.name}</span>
+          <span class="pc-status ${status}">${status}</span>
         </div>
-        <div class="pc-body">
-          <div class="pc-name">${p.name}</div>
-          <div class="pc-intro">${(p.intro || "").trim()}</div>
-          <div class="pc-tags">
-            <span class="pc-tag pc-lang">${lang}</span>
-            ${tags.map(t => `<span class="pc-tag">${t}</span>`).join("")}
-          </div>
+        <div class="pc-intro">${(p.intro || "").trim()}</div>
+        <div class="pc-meta">
+          <span class="lang">${lang}</span>
+          ${tags.map(t => `<span class="mid">·</span><span class="tag">${t}</span>`).join("")}
         </div>
-        <div class="pc-clone">
-          <span class="cmd">$ git clone ${p.repo}</span>
-          <span class="open">open</span>
+        <div class="pc-foot">
+          <span class="pc-slug">${slug}</span>
+          <span class="pc-open">open <span class="arr">↗</span></span>
         </div>
       `;
       grid.appendChild(card);
