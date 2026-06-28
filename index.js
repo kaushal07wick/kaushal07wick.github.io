@@ -38,12 +38,12 @@ document.addEventListener("DOMContentLoaded", () => {
   function syncTheme() {
     const saved = localStorage.getItem("theme") || "dark";
     const isLight = saved === "light";
-    document.body.classList.toggle("light", isLight);
+    document.documentElement.classList.toggle("light", isLight);
     setIcons(isLight);
   }
 
   function toggleTheme() {
-    const isLight = document.body.classList.toggle("light");
+    const isLight = document.documentElement.classList.toggle("light");
     localStorage.setItem("theme", isLight ? "light" : "dark");
     setIcons(isLight);
   }

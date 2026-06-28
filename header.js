@@ -18,14 +18,14 @@ async function loadHeader() {
   function syncTheme() {
     const saved = localStorage.getItem("theme");
     const isLight = saved === "light";
-    document.body.classList.toggle("light", isLight);
+    document.documentElement.classList.toggle("light", isLight);
     const icon = isLight ? "☀︎" : "☾";
     if (toggle) toggle.textContent = icon;
     if (mobileToggle) mobileToggle.textContent = icon;
   }
   
   function handleThemeToggle() {
-    const newLight = document.body.classList.toggle("light");
+    const newLight = document.documentElement.classList.toggle("light");
     localStorage.setItem("theme", newLight ? "light" : "dark");
     const icon = newLight ? "☀︎" : "☾";
     if (toggle) toggle.textContent = icon;
