@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <script>
     // apply saved theme before first paint to avoid theme flash
-    if ((localStorage.getItem("theme") || "dark") === "light") document.documentElement.classList.add("light");
+    if ((localStorage.getItem("theme") || "light") !== "dark") document.documentElement.classList.add("light");
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="/images/kkc.svg">
@@ -940,7 +940,7 @@
 
     <!-- LATEST DISPATCH -->
     <section id="Dispatch" class="zone tex tex-grid-sm">
-      <div class="section-title"><span class="sec-num">03</span>$ tail -1 dispatches.log</div>
+      <div class="section-title"><span class="sec-num">03</span>$ tail -1 blog.log</div>
       <a id="latest-dispatch" href="#" class="dispatch-card">
         <div class="dispatch-meta">▹ latest · <span id="dispatch-date">—</span></div>
         <div class="dispatch-title" id="dispatch-title">Loading...</div>

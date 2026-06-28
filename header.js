@@ -17,7 +17,7 @@ async function loadHeader() {
   
   function syncTheme() {
     const saved = localStorage.getItem("theme");
-    const isLight = saved === "light";
+    const isLight = saved !== "dark";   // light is the default
     document.documentElement.classList.toggle("light", isLight);
     const icon = isLight ? "☀︎" : "☾";
     if (toggle) toggle.textContent = icon;

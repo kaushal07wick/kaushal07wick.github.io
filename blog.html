@@ -5,10 +5,10 @@
   <meta charset="UTF-8" />
   <script>
     // apply saved theme before first paint to avoid theme flash
-    if ((localStorage.getItem("theme") || "dark") === "light") document.documentElement.classList.add("light");
+    if ((localStorage.getItem("theme") || "light") !== "dark") document.documentElement.classList.add("light");
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dispatches — Kaushal</title>
+  <title>Blog — Kaushal</title>
 
   <link rel="stylesheet" href="/tailwind.css?v=1" />
   <script src="header.js" defer></script>
@@ -324,21 +324,21 @@
   <!-- HERO -->
   <section class="dispatch-hero">
     <div class="meta-bar">
-      <span><span class="k">file</span><span class="v">~/dispatches.log</span></span>
+      <span><span class="k">file</span><span class="v">~/blog</span></span>
       <span class="sep">·</span>
       <span><span class="k">mode</span><span class="v">read-only</span></span>
       <span class="sep">·</span>
-      <span><span class="k">channel</span><span class="v">field-reports</span></span>
+      <span><span class="k">channel</span><span class="v">blog</span></span>
     </div>
 
-    <h1 class="dispatch-title">DISPATCHES<span class="blink-bar"></span></h1>
+    <h1 class="dispatch-title">BLOG<span class="blink-bar"></span></h1>
 
     <p class="dispatch-sub">
       <span class="accent">field reports</span> — notes on shipping ML to real systems.
     </p>
 
     <div class="stat-bar">
-      <span><span class="n" id="dt-count">--</span> <span class="label">transmissions</span></span>
+      <span><span class="n" id="dt-count">--</span> <span class="label">posts</span></span>
       <span class="sep">·</span>
       <span><span class="n" id="dt-words">--</span> <span class="label">words</span></span>
       <span class="sep">·</span>
@@ -349,7 +349,7 @@
 
     <div class="controls">
       <span class="grep-prompt">grep:</span>
-      <input id="dispatch-grep" type="text" placeholder="filter transmissions..." autocomplete="off" spellcheck="false" />
+      <input id="dispatch-grep" type="text" placeholder="filter posts..." autocomplete="off" spellcheck="false" />
       <span class="hint">type to filter · esc to clear</span>
     </div>
   </section>
@@ -418,7 +418,7 @@
         </div>
         <div class="tx-title">${title}</div>
         ${subtitle ? `<div class="tx-sub">${subtitle}</div>` : ""}
-        <div class="tx-cta">read transmission</div>
+        <div class="tx-cta">read post</div>
       `;
       list.appendChild(card);
     }
@@ -455,7 +455,7 @@
         if (!empty) {
           empty = document.createElement("div");
           empty.className = "tx-empty";
-          empty.textContent = "no transmissions match";
+          empty.textContent = "no posts match";
           list.appendChild(empty);
         }
       } else if (empty) empty.remove();

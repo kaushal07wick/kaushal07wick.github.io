@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function syncTheme() {
-    const saved = localStorage.getItem("theme") || "dark";
+    const saved = localStorage.getItem("theme") || "light";
     const isLight = saved === "light";
     document.documentElement.classList.toggle("light", isLight);
     setIcons(isLight);
