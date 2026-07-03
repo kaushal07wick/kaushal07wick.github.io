@@ -32,6 +32,7 @@
       --term-bar: #222;
       --term-text: #c97c5d;
       --term-dim: #8a7a6a;
+      --term-key: #f2ede5;
     }
 
     .light {
@@ -45,6 +46,7 @@
       --term-bar: #e8ddcd;
       --term-text: #b15c3c;
       --term-dim: #8a6a55;
+      --term-key: #2e211a;
     }
 
     html, body {
@@ -626,7 +628,7 @@
   .pterm-output .t-err  { color: #ff6c6c; }
   .pterm-output .t-dim  { opacity: 0.55; }
   .pterm-output .t-ok   { color: #27c93f; }
-  .pterm-output .t-key  { color: #fff; opacity: 0.95; }
+  .pterm-output .t-key  { color: var(--term-key); opacity: 0.95; }
   .pterm-output .t-link {
     color: var(--accent);
     text-decoration: underline;

@@ -4,6 +4,7 @@
     "intro": "Browser AM radio. Tune the dial across lo-fi stations and live world signals — Wikipedia edits, earthquakes, Hacker News read aloud — sonified in real time. No backend.",
     "repo": "https://github.com/kaushal07wick/anomaly-fm",
     "live": "https://kaushal07wick.github.io/anomaly-fm/",
+    "image": "https://kaushal07wick.github.io/anomaly-fm/og.png",
     "lang": "javascript",
     "status": "shipped",
     "tags": ["web-audio", "radio", "generative", "tts"]
@@ -12,6 +13,8 @@
     "name": "OsmoGrep",
     "intro": "Terminal-native execution-based agent. Run full tests in parallel with sub-agents.",
     "repo": "https://github.com/kaushal07wick/OsmoGrep",
+    "live": "https://osmogrep.com",
+    "image": "https://osmogrep.com/opengraph-image?d0f9699c11d4c917",
     "lang": "python",
     "status": "active",
     "tags": ["agents", "testing", "tui", "execution"]
