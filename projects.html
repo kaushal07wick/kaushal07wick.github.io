@@ -174,21 +174,40 @@
     .proj-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 40px 44px;
+      gap: 24px;
     }
 
     .proj-card {
       position: relative;
-      padding: 6px 0 2px;
+      padding: 20px 20px 16px;
       display: flex;
       flex-direction: column;
       text-decoration: none;
       color: inherit;
-      transition: transform .25s ease;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
     }
-    .proj-card:hover { transform: translateY(-2px); }
+    .proj-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+      box-shadow: 0 12px 30px var(--shadow);
+    }
     .proj-card:hover .pc-name { color: var(--accent); }
     .pc-name { transition: color .2s ease; }
+    /* live-demo projects get an accent top edge + a pulsing marker */
+    .proj-card.is-live { border-top-color: var(--accent); }
+    .pc-live {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 7px var(--accent);
+      margin-right: 6px;
+      vertical-align: middle;
+      animation: dot-pulse 1.6s ease-in-out infinite;
+    }
 
     /* head: language dot + name + status */
     .pc-head {
@@ -248,6 +267,7 @@
     .pc-foot {
       margin-top: 14px;
       padding-top: 12px;
+      border-top: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -373,8 +393,8 @@
       const dotColor = langColors[lang.toLowerCase()] || "var(--accent)";
 
       const card = document.createElement("a");
-      card.className = "proj-card pc-anim-init";
-      card.href = p.repo;
+      card.className = "proj-card pc-anim-init" + (p.live ? " is-live" : "");
+      card.href = p.live || p.repo;
       card.target = "_blank";
       card.rel = "noopener";
       card.dataset.search = (
@@ -397,7 +417,7 @@
         </div>
         <div class="pc-foot">
           <span class="pc-slug">${slug}</span>
-          <span class="pc-open">open <span class="arr">↗</span></span>
+          <span class="pc-open">${p.live ? '<span class="pc-live"></span>launch' : "open"} <span class="arr">↗</span></span>
         </div>
       `;
       grid.appendChild(card);
