@@ -1,5 +1,6 @@
 title: OsmoGrep
 subtitle: TUI based self-healing agent
+blurb: Building a TUI-based, self-healing terminal agent.
 author: Kaushal Choudhary
 date: 2026-01-10
 # OsmoGrep

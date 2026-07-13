@@ -1,5 +1,6 @@
 title: Image Scraping
 subtitle: AI driven image-scraping with Firecrawl🔥
+blurb: AI-driven image scraping with Firecrawl.
 author: Kaushal Choudhary
 date: 2026-01-01
 # How to Scrape Images from Websites
@@ -14,25 +15,25 @@ This guide examines why traditional image scraping methods fall short and how Fi
 
 ## Table of Contents
 
-1. [What Is Image Scraping?](https://www.notion.so/How-to-Scrape-Images-from-Websites-21f44bb5a31e8076adc4e424bb73f4db?pvs=21) 
+1. [What Is Image Scraping?](#what-is-image-scraping)
 
-2. [Why scrape images from websites?](https://www.notion.so/How-to-Scrape-Images-from-Websites-21f44bb5a31e8076adc4e424bb73f4db?pvs=21) 
+2. [Why scrape images from websites?](#why-scrape-images-from-websites)
 
-3. [The Modern AI Native Solution: Firecrawl](https://www.notion.so/How-to-Scrape-Images-from-Websites-21f44bb5a31e8076adc4e424bb73f4db?pvs=21)
+3. [The Modern AI Native Solution: Firecrawl](#the-modern-ai-native-solution-firecrawl)
 
-4. [Why traditional approaches fall short?](https://www.notion.so/How-to-Scrape-Images-from-Websites-21f44bb5a31e8076adc4e424bb73f4db?pvs=21) 
+4. [Why traditional approaches fall short?](#why-traditional-approaches-fall-short)
 
-5. [Method 1: Scraping Images with BeautifulSoup4](https://www.notion.so/How-to-Scrape-Images-from-Websites-21f44bb5a31e8076adc4e424bb73f4db?pvs=21) 
+5. [Method 1: Scraping Images with BeautifulSoup4](#method-1-scraping-images-with-beautifulsoup)
 
-6. [Method 2: Scraping Images with Selenium (Browser Automation)](https://www.notion.so/How-to-Scrape-Images-from-Websites-21f44bb5a31e8076adc4e424bb73f4db?pvs=21) 
+6. [Method 2: Scraping Images with Selenium (Browser Automation)](#method-2-scraping-images-using-selenium-browser-automation)
 
-7. [Method 3: Scrape Images with Firecrawl](https://www.notion.so/How-to-Scrape-Images-from-Websites-21f44bb5a31e8076adc4e424bb73f4db?pvs=21) 
+7. [Method 3: Scrape Images with Firecrawl](#method-3-scrape-images-with-firecrawl)
 
-8. [Comparing image scraping methods](https://www.notion.so/How-to-Scrape-Images-from-Websites-21f44bb5a31e8076adc4e424bb73f4db?pvs=21) 
+8. [Comparing image scraping methods](#comparing-image-scraping-methods)
 
-9. [FAQs](https://www.notion.so/How-to-Scrape-Images-from-Websites-21f44bb5a31e8076adc4e424bb73f4db?pvs=21) 
+9. [FAQs](#frequently-asked-questions-faq)
 
-10. [Conclusion](https://www.notion.so/How-to-Scrape-Images-from-Websites-21f44bb5a31e8076adc4e424bb73f4db?pvs=21) 
+10. [Conclusion](#conclusion)
 
 ## TL;DR
 

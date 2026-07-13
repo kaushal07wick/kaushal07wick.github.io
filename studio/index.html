@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Studio — Kaushal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  :root{ --paper:#efe7d6; --ink:#16130d; --ac:#ff5a3c; --navy:#182a54; --muted:#8a7c5e;
+    --rule:rgba(22,19,13,.16); --code:#e9dfc7;
+    --disp:'Instrument Serif',serif; --grot:'Bricolage Grotesque',sans-serif; --mono:'Space Mono',monospace; }
+  html,body{ height:100%; }
+  body{ font-family:var(--grot); color:var(--ink); background:var(--paper); overflow:hidden; }
+
+  header{ display:flex; align-items:center; gap:18px; padding:16px 28px; border-bottom:2px solid var(--ink); background:var(--paper); }
+  header .brand{ font-family:var(--disp); font-size:26px; line-height:1; }
+  header .brand em{ font-style:italic; color:var(--ac); }
+  header .tag{ font-family:var(--mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); }
+  header .spacer{ flex:1; }
+  select,.btn{ font-family:var(--mono); font-size:12px; }
+  select{ background:var(--paper); border:1.5px solid var(--ink); padding:8px 12px; color:var(--ink); cursor:pointer; }
+  .btn{ border:1.5px solid var(--ink); background:var(--ink); color:var(--paper); padding:9px 18px; letter-spacing:.08em;
+    text-transform:uppercase; cursor:pointer; transition:transform .16s cubic-bezier(.34,1.56,.5,1), background .16s, color .16s, border-color .16s, box-shadow .16s; }
+  .btn:hover{ background:var(--ac); border-color:var(--ac); box-shadow:3px 3px 0 rgba(22,19,13,.2); }
+  .btn:active{ transform:scale(.93); box-shadow:none; }
+  .btn.ghost{ background:transparent; color:var(--ink); } .btn.ghost:hover{ background:var(--ac); color:var(--paper); border-color:var(--ac); }
+  #status{ font-family:var(--mono); font-size:11px; color:var(--muted); min-width:150px; text-align:right; }
+  #status a{ color:var(--ac); }
+
+  main{ display:grid; grid-template-columns:minmax(360px,1fr) 1.05fr; height:calc(100% - 55px); }
+  .editor{ display:flex; flex-direction:column; border-right:2px solid var(--ink); overflow-y:auto; }
+  .meta{ display:grid; grid-template-columns:1fr 1fr; gap:18px 20px; padding:30px 28px 24px; border-bottom:1px solid var(--rule); }
+  .field{ display:flex; flex-direction:column; gap:4px; }
+  .field.wide{ grid-column:1 / -1; }
+  .field label{ font-family:var(--mono); font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); }
+  .field input{ font-family:var(--grot); font-size:15px; color:var(--ink); background:transparent; border:none; border-bottom:1.5px solid var(--rule);
+    padding:5px 2px; outline:none; transition:border-color .2s; }
+  .field input:focus{ border-color:var(--ac); }
+  .field .title input{ font-family:var(--disp); font-size:22px; }
+
+  .toolbar{ display:flex; flex-wrap:wrap; gap:8px; padding:16px 28px; border-bottom:1px solid var(--rule); }
+  .tool{ font-family:var(--mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink);
+    background:transparent; border:1px solid var(--rule); padding:6px 11px; cursor:pointer;
+    transition:transform .16s cubic-bezier(.34,1.56,.5,1), border-color .15s, color .15s, background .15s; }
+  .tool:hover{ border-color:var(--ac); color:var(--ac); background:rgba(255,90,60,.06); }
+  .tool:active{ transform:scale(.9); }
+
+  #body{ flex:1; min-height:280px; width:100%; resize:none; border:none; outline:none; background:transparent;
+    font-family:var(--mono); font-size:13.5px; line-height:1.7; color:#2b2416; padding:22px 28px; }
+
+  .preview{ display:flex; flex-direction:column; background:#e3d9c4; }
+  .preview .bar{ font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+    padding:9px 16px; border-bottom:1px solid var(--rule); display:flex; align-items:center; gap:8px; }
+  .preview .bar .dot{ width:8px; height:8px; border-radius:50%; background:var(--ac); }
+  iframe{ flex:1; width:100%; border:none; background:var(--paper); }
+
+  /* image picker drawer */
+  #picker{ position:fixed; inset:0; background:rgba(22,19,13,.55); display:none; align-items:center; justify-content:center; z-index:20; }
+  #picker.open{ display:flex; }
+  .pick-panel{ width:min(760px,92vw); max-height:82vh; overflow-y:auto; background:var(--paper); border:2px solid var(--ink);
+    box-shadow:12px 12px 0 rgba(22,19,13,.25); padding:22px; }
+  #picker.open .pick-panel{ animation:pop .3s cubic-bezier(.34,1.56,.5,1) both; }
+  @keyframes pop{ from{ opacity:0; transform:translateY(14px) scale(.96); } to{ opacity:1; transform:none; } }
+  .pick-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+  .pick-close{ flex:none; width:38px; height:38px; font-family:var(--mono); font-size:20px; line-height:1; cursor:pointer;
+    background:var(--paper); color:var(--ink); border:1.5px solid var(--ink); display:flex; align-items:center; justify-content:center;
+    transition:transform .28s cubic-bezier(.34,1.56,.5,1), rotate .3s ease, background .2s, color .2s, border-color .2s; }
+  .pick-close:hover{ background:var(--ac); color:var(--paper); border-color:var(--ac); rotate:90deg; }
+  .pick-close:active{ transform:scale(.88); }
+  .pick-panel h3{ font-family:var(--disp); font-size:26px; margin-bottom:4px; }
+  .pick-panel p{ font-family:var(--mono); font-size:11px; color:var(--muted); margin-bottom:18px; }
+  .pick-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px; }
+  .pick-cell{ border:1px solid var(--rule); background:var(--code); cursor:pointer; transition:.15s; overflow:hidden; }
+  .pick-cell:hover{ border-color:var(--ac); box-shadow:4px 4px 0 rgba(255,90,60,.25); }
+  .pick-cell .thumb{ height:92px; background:#d8cdb4 center/cover no-repeat; display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:10px; color:var(--muted); }
+  .pick-cell .nm{ font-family:var(--mono); font-size:9.5px; padding:6px 8px; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  /* login gate (hosted only) */
+  #login{ position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; background:var(--paper); }
+  #login.show{ display:flex; }
+  #login::before{ content:""; position:absolute; inset:0; opacity:.05; mix-blend-mode:multiply; pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .login-card{ position:relative; width:min(360px,90vw); text-align:center; padding:44px 34px; background:var(--paper);
+    border:2px solid var(--ink); box-shadow:12px 12px 0 rgba(22,19,13,.18); }
+  .login-brand{ font-family:var(--disp); font-size:34px; line-height:1; }
+  .login-brand em{ font-style:italic; color:var(--ac); }
+  .login-sub{ font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin:10px 0 28px; }
+  #loginPw{ width:100%; font-family:var(--mono); font-size:14px; padding:12px 14px; border:1.5px solid var(--ink);
+    background:var(--paper); color:var(--ink); outline:none; margin-bottom:14px; transition:border-color .2s; }
+  #loginPw:focus{ border-color:var(--ac); }
+  #login .btn{ width:100%; justify-content:center; text-align:center; }
+  .login-err{ font-family:var(--mono); font-size:11px; color:var(--ac); margin-top:16px; min-height:14px; }
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="login-card">
+    <div class="login-brand">Kaushal <em>Studio</em></div>
+    <p class="login-sub">Sign in to write</p>
+    <input id="loginPw" type="password" placeholder="password" autocomplete="current-password" />
+    <button class="btn" id="loginBtn">Enter →</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
+<header>
+  <span class="brand">Kaushal <em>Studio</em></span>
+  <span class="tag" id="envtag">blog cms</span>
+  <span class="spacer"></span>
+  <select id="loadSel" title="Load a post to edit"><option value="">＋ New post</option></select>
+  <button class="btn ghost" id="previewBtn">Refresh preview</button>
+  <button class="btn" id="publishBtn">Publish</button>
+  <span id="status"></span>
+</header>
+
+<main>
+  <section class="editor">
+    <div class="meta">
+      <div class="field wide title"><label>Title</label><input id="title" placeholder="Post title" /></div>
+      <div class="field wide"><label>Subtitle</label><input id="subtitle" placeholder="Italic line under the title" /></div>
+      <div class="field wide"><label>Homepage blurb</label><input id="blurb" placeholder="One line shown in the Writing list (defaults to subtitle)" /></div>
+      <div class="field"><label>Slug (url)</label><input id="slug" placeholder="my-post" /></div>
+      <div class="field"><label>Date</label><input id="date" type="date" /></div>
+      <div class="field wide"><label>Author</label><input id="author" value="Kaushal Choudhary" /></div>
+    </div>
+
+    <div class="toolbar">
+      <button class="tool" data-snip="h2">＃ Heading</button>
+      <button class="tool" data-snip="code">&lt;/&gt; Code</button>
+      <button class="tool" data-snip="table">▦ Table</button>
+      <button class="tool" data-snip="callout">🔥 Callout</button>
+      <button class="tool" data-snip="link">↗ Link</button>
+      <button class="tool" data-snip="quote">❝ Quote</button>
+      <button class="tool" id="imgBtn">🖼 Image / Video</button>
+    </div>
+
+    <textarea id="body" placeholder="Write in Markdown. Code fences, tables, > quotes, &lt;aside&gt; callouts, images and videos (.mp4) all render in the panel on the right exactly as they will ship."></textarea>
+  </section>
+
+  <section class="preview">
+    <div class="bar"><span class="dot"></span> live preview — rendered through the real post template</div>
+    <iframe id="pv" title="preview"></iframe>
+  </section>
+</main>
+
+<div id="picker">
+  <div class="pick-panel">
+    <div class="pick-head">
+      <div><h3>Insert media</h3><p>from /images — click to drop a Markdown reference at your cursor</p></div>
+      <button class="pick-close" id="pickClose" title="Close (Esc)">×</button>
+    </div>
+    <div class="pick-grid" id="pickGrid"></div>
+  </div>
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const fields = ["title","subtitle","blurb","slug","date","author"];
+  const pv = $("pv");
+  let slugDirty = false, loadedSlug = "";
+
+  // local dev is served by tools/cms.py; anything else is the hosted deploy (Cloudflare)
+  const LOCAL = /^(127\.0\.0\.1|localhost)$/.test(location.hostname);
+  const PUBLISH_URL = LOCAL ? "/cms/publish" : "/api/publish";
+  const IMAGES_URL  = LOCAL ? "/cms/images"  : "/api/images";
+  $("envtag").textContent = LOCAL ? "local · blog cms" : "live · blog cms";
+
+  function slugify(s){
+    return (s||"").trim().toLowerCase().replace(/[^\w\s-]/g,"").replace(/[\s_]+/g,"-").replace(/-+/g,"-").replace(/^-|-$/g,"");
+  }
+  function today(){ return new Date().toISOString().slice(0,10); }
+
+  // assemble the .md file: frontmatter, a `# title` delimiter, then the body
+  function buildMarkdown(){
+    const fm = [];
+    if ($("title").value) fm.push("title: " + $("title").value.trim());
+    if ($("subtitle").value) fm.push("subtitle: " + $("subtitle").value.trim());
+    if ($("blurb").value) fm.push("blurb: " + $("blurb").value.trim());
+    fm.push("author: " + ($("author").value.trim() || "Kaushal Choudhary"));
+    fm.push("date: " + ($("date").value || today()));
+    return fm.join("\n") + "\n# " + ($("title").value.trim() || "Untitled") + "\n\n" + $("body").value;
+  }
+
+  // ---- live preview (draft lives in sessionStorage; the iframe reads it) ----
+  let t;
+  function schedule(){ clearTimeout(t); t = setTimeout(saveDraft, 550); }
+  function saveDraft(){
+    sessionStorage.setItem("cms_draft", buildMarkdown());
+    reloadPreview();
+  }
+  function reloadPreview(){
+    let y = 0; try { y = pv.contentWindow.scrollY || 0; } catch(e){}
+    pv.onload = () => { try { pv.contentWindow.scrollTo(0, y); } catch(e){} };
+    if (pv.src) { try { pv.contentWindow.location.reload(); } catch(e){ pv.src = pv.src; } }
+    else pv.src = "/blog-post.html?file=__draft";
+  }
+
+  fields.forEach(id => $(id).addEventListener("input", schedule));
+  $("body").addEventListener("input", schedule);
+  $("title").addEventListener("input", () => { if (!slugDirty) $("slug").value = slugify($("title").value); });
+  $("slug").addEventListener("input", () => { slugDirty = true; });
+  $("previewBtn").addEventListener("click", saveDraft);
+
+  // ---- toolbar snippets ----
+  const SNIPPETS = {
+    h2: "\n\n## Section heading\n\n",
+    code: "\n\n```python\n# code here\n```\n\n",
+    table: "\n\n| Column A | Column B |\n| --- | --- |\n| value | value |\n| value | value |\n\n",
+    callout: "\n\n<aside>\n\n🔥 Something worth calling out. [Link it](https://example.com).\n\n</aside>\n\n",
+    link: "[link text](https://)",
+    quote: "\n\n> A line worth pulling out of the flow.\n\n",
+  };
+  function insertAtCursor(text){
+    const ta = $("body"), s = ta.selectionStart, e = ta.selectionEnd;
+    ta.value = ta.value.slice(0,s) + text + ta.value.slice(e);
+    ta.focus(); ta.selectionStart = ta.selectionEnd = s + text.length;
+    schedule();
+  }
+  document.querySelectorAll(".tool[data-snip]").forEach(b =>
+    b.addEventListener("click", () => insertAtCursor(SNIPPETS[b.dataset.snip])));
+
+  // ---- image picker ----
+  $("imgBtn").addEventListener("click", async () => {
+    const grid = $("pickGrid"); grid.innerHTML = "loading…";
+    let imgs = [];
+    try { imgs = await fetch(IMAGES_URL).then(r => r.json()); } catch(e){ imgs = []; }
+    grid.innerHTML = imgs.length ? "" : "no images found";
+    imgs.forEach(src => {
+      const isVid = /\.(mp4|webm|mov)$/i.test(src);
+      const cell = document.createElement("div"); cell.className = "pick-cell";
+      cell.innerHTML = `<div class="thumb" ${isVid ? "" : `style="background-image:url('${src}')"`}>${isVid ? "▶ video" : ""}</div>`
+        + `<div class="nm">${src.replace("/images/","")}</div>`;
+      cell.onclick = () => {
+        const name = src.split("/").pop().replace(/\.[^.]+$/,"").replace(/[-_]/g," ");
+        insertAtCursor(`\n\n![${name}](${src})\n\n`);
+        $("picker").classList.remove("open");
+      };
+      grid.appendChild(cell);
+    });
+    $("picker").classList.add("open");
+  });
+  $("picker").addEventListener("click", e => { if (e.target.id === "picker") e.target.classList.remove("open"); });
+  $("pickClose").addEventListener("click", () => $("picker").classList.remove("open"));
+  document.addEventListener("keydown", e => { if (e.key === "Escape") $("picker").classList.remove("open"); });
+
+  // ---- load existing posts (static files, works local + hosted) ----
+  function splitFrontmatter(md){
+    const fm = {}; const lines = md.split("\n"); let i = 0;
+    for (; i < lines.length; i++){
+      const m = lines[i].match(/^(title|subtitle|blurb|author|date)\s*:\s*(.+)$/i);
+      if (m) fm[m[1].toLowerCase()] = m[2].trim();
+      else break;
+    }
+    let body = lines.slice(i).join("\n").replace(/^\s*#\s+.*\n?/, "").replace(/^\n+/, "");
+    return { fm, body };
+  }
+  async function loadPost(slug){
+    const markdown = await fetch("/posts/" + slug + ".md", { cache:"no-store" }).then(r => r.text());
+    const { fm, body } = splitFrontmatter(markdown);
+    $("title").value = fm.title || ""; $("subtitle").value = fm.subtitle || "";
+    $("blurb").value = fm.blurb || ""; $("author").value = fm.author || "Kaushal Choudhary";
+    $("date").value = fm.date || today(); $("slug").value = slug; $("body").value = body;
+    slugDirty = true; loadedSlug = slug; saveDraft();
+  }
+  async function refreshList(){
+    let files = [];
+    try { files = await fetch("/posts/index.json", { cache:"no-store" }).then(r => r.json()); } catch(e){}
+    const posts = await Promise.all(files.map(async f => {
+      const slug = f.replace(/\.md$/, "");
+      let title = slug;
+      try { const md = await fetch("/posts/" + f, { cache:"no-store" }).then(r => r.text());
+        title = (md.match(/^title:\s*(.+)$/im) || [])[1] || slug; } catch(e){}
+      return { slug, title };
+    }));
+    $("loadSel").innerHTML = '<option value="">＋ New post</option>' +
+      posts.map(p => `<option value="${p.slug}">✎ ${p.title.replace(/"/g,"&quot;")}</option>`).join("");
+  }
+  $("loadSel").addEventListener("change", e => { e.target.value ? loadPost(e.target.value) : newPost(); });
+  function newPost(){
+    fields.forEach(id => $(id).value = "");
+    $("author").value = "Kaushal Choudhary"; $("date").value = today();
+    $("body").value = ""; slugDirty = false; loadedSlug = "";
+    $("status").textContent = ""; saveDraft();
+  }
+
+  // ---- publish ----
+  $("publishBtn").addEventListener("click", async () => {
+    const slug = slugify($("slug").value || $("title").value);
+    if (!$("title").value.trim()){ $("status").textContent = "need a title"; return; }
+    if (!slug){ $("status").textContent = "need a slug"; return; }
+    $("status").textContent = "publishing…";
+    try {
+      const res = await fetch(PUBLISH_URL, {
+        method:"POST", headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ slug, markdown: buildMarkdown() })
+      }).then(r => r.json());
+      if (res.ok){
+        $("status").innerHTML = LOCAL
+          ? `published → <a href="${res.url}" target="_blank">${res.url}</a>`
+          : `committed ✓ — live in ~1 min at <a href="${res.url}" target="_blank">${res.url}</a>`;
+        refreshList();
+      } else {
+        $("status").textContent = "error: " + (res.error || "failed");
+      }
+    } catch(e){ $("status").textContent = "error: " + e.message; }
+  });
+
+  // ---- login gate ----
+  function boot(){ $("date").value = today(); refreshList(); saveDraft(); }
+  async function gate(){
+    if (LOCAL) return boot();                         // local dev is trusted
+    let authed = false;
+    try { authed = (await fetch("/api/session").then(r => r.json())).authed; } catch(e){}
+    if (authed) return boot();
+    $("login").classList.add("show"); $("loginPw").focus();
+  }
+  async function doLogin(){
+    $("loginErr").textContent = "";
+    try {
+      const r = await fetch("/api/login", { method:"POST", headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ password: $("loginPw").value }) }).then(r => r.json());
+      if (r.ok){ $("login").classList.remove("show"); boot(); }
+      else $("loginErr").textContent = r.error || "wrong password";
+    } catch(e){ $("loginErr").textContent = e.message; }
+  }
+  $("loginBtn").addEventListener("click", doLogin);
+  $("loginPw").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+
+  gate();
+</script>
+</body>
+</html>

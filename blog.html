@@ -1,470 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <script>
-    // apply saved theme before first paint to avoid theme flash
-    if ((localStorage.getItem("theme") || "light") !== "dark") document.documentElement.classList.add("light");
-  </script>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Blog — Kaushal</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Writing — Kaushal Choudhary</title>
+<link rel="icon" type="image/png" href="/images/kkc.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --paper:#efe7d6; --ink:#16130d; --ac:#ff5a3c; --muted:#8a7c5e; --rule:rgba(22,19,13,.16);
+    --disp:'Instrument Serif',serif; --grot:'Bricolage Grotesque',sans-serif; --mono:'Space Mono',monospace;
+  }
+  html{ scroll-behavior:smooth; }
+  body{ font-family:var(--grot); color:var(--ink); background:var(--paper); overflow-x:hidden; position:relative; -webkit-font-smoothing:antialiased; }
+  body::after{ content:""; position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.05; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  a{ color:inherit; }
+  .wrap{ max-width:1000px; margin:0 auto; padding:0 clamp(24px,6vw,80px); position:relative; z-index:2; }
 
-  <link rel="stylesheet" href="/tailwind.css?v=1" />
-  <script src="header.js" defer></script>
+  nav{ position:fixed; top:0; left:0; right:0; z-index:50; display:flex; align-items:center; justify-content:space-between;
+    padding:15px clamp(24px,6vw,80px); mix-blend-mode:difference; color:#fff; }
+  nav .logo{ font-family:var(--grot); font-weight:800; font-size:19px; letter-spacing:-.01em; text-decoration:none; }
+  nav .links{ display:flex; gap:24px; font-family:var(--mono); font-size:12px; letter-spacing:.04em; }
+  nav .links a{ text-decoration:none; }
+  @media(max-width:640px){ nav .links a:not(.cta){ display:none; } }
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  .hero{ padding:clamp(120px,20vh,180px) 0 26px; border-bottom:2px solid var(--ink); }
+  .eyebrow{ font-family:var(--mono); font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--muted); }
+  .hero h1{ font-family:var(--disp); font-weight:400; font-style:italic; font-size:clamp(52px,12vw,132px); line-height:.86; letter-spacing:-.01em; margin:8px 0 0; }
+  .hero .sub{ font-size:17px; color:#3a3327; margin-top:16px; max-width:54ch; line-height:1.55; }
+  .statbar{ display:flex; gap:22px; flex-wrap:wrap; margin-top:22px; font-family:var(--mono); font-size:12px; color:var(--muted); }
+  .statbar .n{ color:var(--ac); }
+  .controls{ margin-top:22px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .controls .gp{ font-family:var(--mono); color:var(--ac); font-size:13px; }
+  #grep{ background:#fff8ea; border:1px solid var(--rule); color:var(--ink); padding:9px 13px; font-family:var(--mono); font-size:13px; border-radius:6px; flex:0 0 320px; max-width:100%; outline:none; transition:.2s; }
+  #grep:focus{ border-color:var(--ac); box-shadow:0 0 0 3px rgba(255,90,60,.15); }
+  .controls .hint{ font-family:var(--mono); font-size:11px; color:var(--muted); }
 
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  #post-list{ margin-top:14px; }
+  .tx-card{ position:relative; display:block; padding:26px 6px; border-bottom:1px solid var(--rule); text-decoration:none;
+    transition:transform .4s cubic-bezier(.2,.8,.2,1); will-change:transform; }
+  .tx-card:first-child{ border-top:1px solid var(--rule); }
+  .tx-card::before{ content:""; position:absolute; left:-6px; top:26px; bottom:26px; width:3px; background:var(--ac); transform:scaleY(0); transform-origin:center; transition:transform .4s cubic-bezier(.2,.8,.2,1); }
+  .tx-card:hover{ transform:translateX(14px); }
+  .tx-card:hover::before{ transform:scaleY(1); }
+  .tx-meta{ font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:12px; }
+  .tx-meta .id{ color:var(--ac); }
+  .tx-meta .pill{ padding:1px 8px; border:1px solid var(--rule); border-radius:99px; }
+  .tx-title{ font-family:var(--disp); font-weight:400; font-size:clamp(26px,3.6vw,46px); line-height:1.04; letter-spacing:-.01em; transition:color .2s; }
+  .tx-card:hover .tx-title{ color:var(--ac); }
+  .tx-sub{ color:#3a3327; font-size:15px; line-height:1.6; max-width:64ch; margin-top:8px; }
+  .tx-cta{ margin-top:12px; font-family:var(--mono); font-size:12px; color:var(--ac); opacity:0; transform:translateX(-8px); transition:.25s; }
+  .tx-cta::after{ content:" ▸"; }
+  .tx-card:hover .tx-cta{ opacity:1; transform:translateX(0); }
+  .tx-hidden{ display:none; }
+  .tx-anim-init{ opacity:0; transform:translateY(16px); }
+  .tx-anim-in{ opacity:1; transform:translateY(0); transition:opacity .6s cubic-bezier(.2,.8,.2,1), transform .6s cubic-bezier(.2,.8,.2,1); }
+  .tx-empty{ padding:36px 0; text-align:center; color:var(--muted); font-family:var(--mono); font-size:13px; }
+  .tx-empty::before{ content:"// "; }
+  @media(prefers-reduced-motion:reduce){ .tx-anim-init{ opacity:1; transform:none; } }
 
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet"/>
-
-  <style>
-    :root {
-      --bg: #14100d;
-      --text: #e3d9cc;
-      --accent: #c97c5d;
-      --border: rgba(201, 124, 93,0.20);
-      --card-bg: rgba(201, 124, 93,0.03);
-    }
-    .light {
-      --bg: #faf6f0;
-      --text: #2e211a;
-      --accent: #b15c3c;
-      --border: rgba(177, 92, 60,0.25);
-      --card-bg: rgba(177, 92, 60,0.04);
-    }
-
-    html, body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: "JetBrains Mono", monospace;
-      min-height: 100%;
-    }
-
-    /* ── HERO ──────────────────────────────────────────── */
-    .dispatch-hero {
-      margin-top: 32px;
-      padding-bottom: 26px;
-      border-bottom: 1px dashed var(--border);
-      position: relative;
-    }
-
-    .meta-bar {
-      font-size: 11.5px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      opacity: 0.75;
-      margin-bottom: 18px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px 14px;
-      align-items: center;
-    }
-    .meta-bar .k { opacity: 0.5; margin-right: 4px; }
-    .meta-bar .v { color: var(--accent); }
-    .meta-bar .sep { opacity: 0.25; }
-
-    .dispatch-title {
-      font-size: clamp(44px, 9vw, 88px);
-      font-weight: 700;
-      letter-spacing: 0.16em;
-      color: var(--accent);
-      line-height: 1;
-      margin: 0;
-      text-shadow: 0 0 28px rgba(201, 124, 93,0.30);
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .dispatch-title .blink-bar {
-      display: inline-block;
-      width: 14px;
-      height: clamp(38px, 7vw, 70px);
-      background: var(--accent);
-      box-shadow: 0 0 18px var(--accent);
-      animation: bar-blink 1.05s steps(2) infinite;
-    }
-    @keyframes bar-blink { 50% { opacity: 0; } }
-
-    .dispatch-sub {
-      margin-top: 18px;
-      opacity: 0.78;
-      line-height: 1.7;
-      max-width: 60ch;
-      font-size: 14.5px;
-    }
-    .dispatch-sub .accent { color: var(--accent); }
-
-    .stat-bar {
-      margin-top: 22px;
-      font-size: 12px;
-      letter-spacing: 0.05em;
-      color: var(--accent);
-      opacity: 0.85;
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-    .stat-bar .n { font-weight: 600; }
-    .stat-bar .label { opacity: 0.6; }
-    .stat-bar .sep { opacity: 0.35; }
-
-    /* ── GREP / FILTER ─────────────────────────────────── */
-    .controls {
-      margin-top: 22px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .grep-prompt { color: var(--accent); font-size: 13px; opacity: 0.85; user-select: none; }
-    #dispatch-grep {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 7px 12px;
-      font-family: inherit;
-      font-size: 13px;
-      border-radius: 4px;
-      flex: 0 0 320px;
-      max-width: 100%;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-    }
-    #dispatch-grep::placeholder { color: var(--text); opacity: 0.35; }
-    #dispatch-grep:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 14px rgba(201, 124, 93,0.18);
-      background: rgba(201, 124, 93,0.03);
-    }
-    .controls .hint {
-      font-size: 11px;
-      opacity: 0.45;
-      letter-spacing: 0.04em;
-    }
-
-    /* ── LIST + SCAN BEAM ──────────────────────────────── */
-    .dispatch-list-wrap {
-      position: relative;
-      margin-top: 36px;
-      padding: 12px 0;
-      overflow: hidden;
-    }
-    .dispatch-list-wrap::before {
-      /* slow downward scan-beam */
-      content: "";
-      position: absolute;
-      left: 0; right: 0;
-      height: 80px;
-      pointer-events: none;
-      background: linear-gradient(to bottom, transparent, rgba(201, 124, 93,0.09), transparent);
-      filter: blur(6px);
-      animation: scan-beam 11s linear infinite;
-      z-index: 2;
-      top: -80px;
-    }
-    @keyframes scan-beam {
-      0%   { transform: translateY(0); opacity: 0.0; }
-      8%   { opacity: 1; }
-      92%  { opacity: 1; }
-      100% { transform: translateY(120vh); opacity: 0; }
-    }
-
-    .tx-list {
-      position: relative;
-      padding-left: 28px;
-      border-left: 1px dashed var(--border);
-    }
-
-    /* ── TRANSMISSION CARD ─────────────────────────────── */
-    .tx-card {
-      position: relative;
-      display: block;
-      padding: 22px 0 30px 0;
-      border-bottom: 1px dashed var(--border);
-      text-decoration: none;
-      color: inherit;
-      cursor: pointer;
-      transition: transform 0.30s cubic-bezier(.2,.7,.3,1);
-    }
-    .tx-card:last-child { border-bottom: none; }
-
-    .tx-card::before {
-      content: "";
-      position: absolute;
-      left: -33px;
-      top: 30px;
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: var(--accent);
-      opacity: 0.45;
-      box-shadow: 0 0 6px var(--accent);
-      transition: 0.3s ease;
-    }
-    .tx-card:hover { transform: translateX(8px); }
-    .tx-card:hover::before {
-      opacity: 1;
-      transform: scale(1.4);
-      box-shadow: 0 0 14px var(--accent);
-    }
-
-    .tx-meta {
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      opacity: 0.62;
-      margin-bottom: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-    }
-    .tx-meta .id { color: var(--accent); opacity: 1; font-weight: 600; }
-    .tx-meta .sep { opacity: 0.3; }
-    .tx-meta .pill {
-      display: inline-block;
-      padding: 1px 7px;
-      border: 1px solid var(--border);
-      border-radius: 99px;
-      opacity: 0.78;
-      font-size: 10.5px;
-    }
-
-    .tx-title {
-      color: var(--text);
-      font-size: clamp(20px, 2.5vw, 26px);
-      font-weight: 500;
-      line-height: 1.28;
-      margin-bottom: 8px;
-      transition: color 0.25s ease, text-shadow 0.25s ease;
-    }
-    .tx-card:hover .tx-title {
-      color: var(--accent);
-      text-shadow: 0 0 14px rgba(201, 124, 93,0.30);
-    }
-
-    .tx-sub {
-      opacity: 0.74;
-      font-size: 14.5px;
-      line-height: 1.55;
-      max-width: 64ch;
-    }
-
-    .tx-cta {
-      margin-top: 14px;
-      font-size: 12px;
-      letter-spacing: 0.05em;
-      color: var(--accent);
-      opacity: 0;
-      transform: translateX(-10px);
-      transition: 0.3s ease;
-    }
-    .tx-cta::after {
-      content: "▸";
-      margin-left: 4px;
-      transition: 0.25s ease;
-    }
-    .tx-card:hover .tx-cta {
-      opacity: 0.95;
-      transform: translateX(0);
-    }
-    .tx-card:hover .tx-cta::after { transform: translateX(3px); }
-
-    .tx-card.tx-hidden { display: none; }
-
-    /* stagger reveal — independent of header.js observer */
-    .tx-anim-init {
-      opacity: 0;
-      transform: translateY(14px);
-    }
-    .tx-anim-in {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.55s ease, transform 0.55s ease;
-    }
-
-    .tx-empty {
-      padding: 36px 0;
-      text-align: center;
-      opacity: 0.5;
-      font-size: 13px;
-      letter-spacing: 0.04em;
-    }
-    .tx-empty::before { content: "// "; opacity: 0.55; }
-
-    @media (prefers-reduced-motion: reduce) {
-      .dispatch-list-wrap::before { display: none; }
-      .tx-anim-init { opacity: 1; transform: none; }
-    }
-  </style>
+  footer{ padding:26px 0 44px; font-family:var(--mono); font-size:11px; color:var(--muted); border-top:1px solid var(--rule); margin-top:24px; position:relative; z-index:2; }
+  footer .wrap{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+</style>
 </head>
-
 <body>
 
-<div class="max-w-5xl mx-auto px-6">
-  <div id="header-container"></div>
+<nav>
+  <a href="index.html" class="logo">Kaushal Choudhary</a>
+  <div class="links"><a href="blog.html">Writing</a><a href="index.html#contact" class="cta">Contact</a></div>
+</nav>
 
-  <!-- HERO -->
-  <section class="dispatch-hero">
-    <div class="meta-bar">
-      <span><span class="k">file</span><span class="v">~/blog</span></span>
-      <span class="sep">·</span>
-      <span><span class="k">mode</span><span class="v">read-only</span></span>
-      <span class="sep">·</span>
-      <span><span class="k">channel</span><span class="v">blog</span></span>
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Field reports — shipping ML to real systems</div>
+    <h1>The Log</h1>
+    <p class="sub">Coding agents, inference, and what actually breaks in production — written down so I remember, and maybe you find it useful.</p>
+    <div class="statbar">
+      <span><span class="n" id="dt-count">--</span> posts</span>
+      <span><span class="n" id="dt-words">--</span> words</span>
+      <span><span class="n" id="dt-mins">--</span> min total</span>
+      <span>last · <span class="n" id="dt-last">—</span></span>
     </div>
-
-    <h1 class="dispatch-title">BLOG<span class="blink-bar"></span></h1>
-
-    <p class="dispatch-sub">
-      <span class="accent">field reports</span> — notes on shipping ML to real systems.
-    </p>
-
-    <div class="stat-bar">
-      <span><span class="n" id="dt-count">--</span> <span class="label">posts</span></span>
-      <span class="sep">·</span>
-      <span><span class="n" id="dt-words">--</span> <span class="label">words</span></span>
-      <span class="sep">·</span>
-      <span><span class="n" id="dt-mins">--</span> <span class="label">min total</span></span>
-      <span class="sep">·</span>
-      <span><span class="label">last</span> <span class="n" id="dt-last">—</span></span>
-    </div>
-
     <div class="controls">
-      <span class="grep-prompt">grep:</span>
-      <input id="dispatch-grep" type="text" placeholder="filter posts..." autocomplete="off" spellcheck="false" />
-      <span class="hint">type to filter · esc to clear</span>
+      <span class="gp">grep:</span>
+      <input id="grep" type="text" placeholder="filter posts…" autocomplete="off" spellcheck="false" />
+      <span class="hint">type to filter · / to focus · esc to clear</span>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- LIST -->
-  <section class="dispatch-list-wrap">
-    <div id="post-list" class="tx-list"></div>
-  </section>
-</div>
+<section class="wrap"><div id="post-list"></div></section>
+
+<footer><div class="wrap"><span>© 2026 Kaushal Choudhary</span><span>built by hand · ML engineer</span></div></footer>
 
 <script>
-  async function loadBlog() {
-    const list = document.getElementById("post-list");
-
-    let files = [];
-    try {
-      files = await fetch("posts/index.json?v=" + Date.now(), { cache: "no-store" })
-        .then(r => r.json());
-    } catch (e) {
-      list.innerHTML = `<div class="tx-empty">failed to load index.json</div>`;
-      return;
-    }
-
-    list.innerHTML = "";
-
-    let totalWords = 0;
-    let totalMins  = 0;
-    const dates    = [];
-    const total    = files.length;
-
-    for (let idx = 0; idx < files.length; idx++) {
-      const file = files[idx];
-      let md;
-      try {
-        md = await fetch("posts/" + file + "?v=" + Date.now(), { cache: "no-store" })
-          .then(r => r.text());
-      } catch { continue; }
-
-      const title    = md.match(/^title:\s*(.+)$/mi)?.[1]?.trim() || "Untitled";
-      const subtitle = md.match(/^subtitle:\s*(.+)$/mi)?.[1]?.trim() || "";
-      const date     = md.match(/^date:\s*(.+)$/mi)?.[1]?.trim() || "";
-
-      // strip frontmatter for word count
-      const body  = md.replace(/^(title:.*\n|subtitle:.*\n|author:.*\n|date:.*\n)+/i, "");
-      const words = body.split(/\s+/).filter(Boolean).length;
-      const mins  = Math.max(1, Math.round(words / 220));
-      totalWords += words;
-      totalMins  += mins;
-      if (date) dates.push(date);
-
-      // newest first → highest id
-      const id = String(total - idx).padStart(2, "0");
-
-      const card = document.createElement("a");
-      card.className = "tx-card tx-anim-init";
-      card.href = `/blog/${file.replace(/\.md$/, "")}/`;
-      card.dataset.search = (title + " " + subtitle).toLowerCase();
-      card.innerHTML = `
-        <div class="tx-meta">
-          <span class="id">▹ ${id}</span>
-          <span class="sep">·</span>
-          <span>${date || "—"}</span>
-          <span class="sep">·</span>
-          <span class="pill">~${mins} min · ${words.toLocaleString()} words</span>
-        </div>
+  async function loadBlog(){
+    const list=document.getElementById('post-list');
+    let files=[];
+    try{ files=await fetch('posts/index.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.json()); }
+    catch(e){ list.innerHTML='<div class="tx-empty">failed to load index.json</div>'; return; }
+    list.innerHTML='';
+    let totalWords=0, totalMins=0; const dates=[]; const total=files.length;
+    for(let idx=0;idx<files.length;idx++){
+      const file=files[idx]; let md;
+      try{ md=await fetch('posts/'+file+'?v='+Date.now(),{cache:'no-store'}).then(r=>r.text()); }catch{ continue; }
+      const title=md.match(/^title:\s*(.+)$/mi)?.[1]?.trim()||'Untitled';
+      const subtitle=md.match(/^subtitle:\s*(.+)$/mi)?.[1]?.trim()||'';
+      const date=md.match(/^date:\s*(.+)$/mi)?.[1]?.trim()||'';
+      const body=md.replace(/^(title:.*\n|subtitle:.*\n|author:.*\n|date:.*\n)+/i,'');
+      const words=body.split(/\s+/).filter(Boolean).length, mins=Math.max(1,Math.round(words/220));
+      totalWords+=words; totalMins+=mins; if(date)dates.push(date);
+      const id=String(total-idx).padStart(2,'0');
+      const card=document.createElement('a');
+      card.className='tx-card tx-anim-init';
+      card.href=`/blog/${file.replace(/\.md$/,'')}/`;
+      card.dataset.search=(title+' '+subtitle).toLowerCase();
+      card.innerHTML=`
+        <div class="tx-meta"><span class="id">▹ ${id}</span><span>${date||'—'}</span><span class="pill">~${mins} min · ${words.toLocaleString()} words</span></div>
         <div class="tx-title">${title}</div>
-        ${subtitle ? `<div class="tx-sub">${subtitle}</div>` : ""}
-        <div class="tx-cta">read post</div>
-      `;
+        ${subtitle?`<div class="tx-sub">${subtitle}</div>`:''}
+        <div class="tx-cta">read post</div>`;
       list.appendChild(card);
     }
-
-    // header stats
-    const lastDate = dates.sort().reverse()[0] || "—";
-    document.getElementById("dt-count").textContent = total;
-    document.getElementById("dt-words").textContent = totalWords.toLocaleString();
-    document.getElementById("dt-mins").textContent  = totalMins;
-    document.getElementById("dt-last").textContent  = lastDate;
-
-    // stagger fade-in
-    requestAnimationFrame(() => {
-      document.querySelectorAll(".tx-card.tx-anim-init").forEach((c, i) => {
-        setTimeout(() => {
-          c.classList.remove("tx-anim-init");
-          c.classList.add("tx-anim-in");
-        }, 80 + i * 90);
-      });
-    });
-
-    // live filter
-    const input = document.getElementById("dispatch-grep");
-    input.addEventListener("input", e => {
-      const q = e.target.value.trim().toLowerCase();
-      let visible = 0;
-      document.querySelectorAll(".tx-card").forEach(c => {
-        const match = !q || c.dataset.search.includes(q);
-        c.classList.toggle("tx-hidden", !match);
-        if (match) visible++;
-      });
-      let empty = list.querySelector(".tx-empty");
-      if (visible === 0) {
-        if (!empty) {
-          empty = document.createElement("div");
-          empty.className = "tx-empty";
-          empty.textContent = "no posts match";
-          list.appendChild(empty);
-        }
-      } else if (empty) empty.remove();
-    });
-
-    input.addEventListener("keydown", e => {
-      if (e.key === "Escape") {
-        input.value = "";
-        input.dispatchEvent(new Event("input"));
-        input.blur();
-      }
-    });
-
-    // global "/" focuses the grep field, like vim search
-    document.addEventListener("keydown", e => {
-      if (e.key === "/" && document.activeElement !== input) {
-        e.preventDefault();
-        input.focus();
-      }
-    });
+    const lastDate=dates.sort().reverse()[0]||'—';
+    document.getElementById('dt-count').textContent=total;
+    document.getElementById('dt-words').textContent=totalWords.toLocaleString();
+    document.getElementById('dt-mins').textContent=totalMins;
+    document.getElementById('dt-last').textContent=lastDate;
+    requestAnimationFrame(()=>{ document.querySelectorAll('.tx-card.tx-anim-init').forEach((c,i)=>{
+      setTimeout(()=>{ c.classList.remove('tx-anim-init'); c.classList.add('tx-anim-in'); }, 80+i*90); }); });
+    const input=document.getElementById('grep');
+    input.addEventListener('input',e=>{ const q=e.target.value.trim().toLowerCase(); let visible=0;
+      document.querySelectorAll('.tx-card').forEach(c=>{ const m=!q||c.dataset.search.includes(q); c.classList.toggle('tx-hidden',!m); if(m)visible++; });
+      let empty=list.querySelector('.tx-empty');
+      if(visible===0){ if(!empty){ empty=document.createElement('div'); empty.className='tx-empty'; empty.textContent='no posts match'; list.appendChild(empty); } }
+      else if(empty) empty.remove(); });
+    input.addEventListener('keydown',e=>{ if(e.key==='Escape'){ input.value=''; input.dispatchEvent(new Event('input')); input.blur(); } });
+    document.addEventListener('keydown',e=>{ if(e.key==='/'&&document.activeElement!==input){ e.preventDefault(); input.focus(); } });
   }
-
   loadBlog();
 </script>
-
 </body>
 </html>

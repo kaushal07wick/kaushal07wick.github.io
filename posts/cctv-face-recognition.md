@@ -1,5 +1,6 @@
 title: AI Demos Are Easy. Real CCTV Feeds Are Not.
 subtitle: Deploying face recognition across 6,500 cameras at one of India's largest universities
+blurb: Deploying face recognition across 6,500 cameras at one of India's largest universities.
 author: Kaushal Choudhary
 date: 2026-05-10
 # AI Demos Are Easy. Real CCTV Feeds Are Not.

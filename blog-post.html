@@ -1,235 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <script>
-    // apply saved theme before first paint to avoid theme flash
-    if ((localStorage.getItem("theme") || "light") !== "dark") document.documentElement.classList.add("light");
-  </script>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <base href="/" />
-  <title>Blog Post — Kaushal</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<base href="/" />
+<title>Post — Kaushal Choudhary</title>
+<link rel="icon" type="image/png" href="/images/kkc.svg">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://api.microlink.io" />
+<link rel="preconnect" href="https://www.google.com" />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/site-fx.css" />
+<script src="/assets/site-fx.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<style>
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --paper:#efe7d6; --ink:#16130d; --ac:#ff5a3c; --navy:#182a54; --muted:#8a7c5e; --rule:rgba(22,19,13,.16);
+    --code:#e9dfc7;
+    --disp:'Instrument Serif',serif; --grot:'Bricolage Grotesque',sans-serif; --mono:'Space Mono',monospace;
+  }
+  html{ scroll-behavior:smooth; }
+  body{ font-family:var(--grot); color:var(--ink); background:var(--paper); position:relative; -webkit-font-smoothing:antialiased; }
+  body::after{ content:""; position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.05; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  a{ color:inherit; }
 
-  <link rel="stylesheet" href="/tailwind.css?v=1" />
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="header.js" defer></script>
+  nav{ position:fixed; top:0; left:0; right:0; z-index:50; display:flex; align-items:center; justify-content:space-between;
+    padding:15px clamp(24px,6vw,80px); mix-blend-mode:difference; color:#fff; }
+  nav .logo{ font-family:var(--grot); font-weight:800; font-size:19px; letter-spacing:-.01em; text-decoration:none; }
+  nav .links{ display:flex; gap:24px; font-family:var(--mono); font-size:12px; letter-spacing:.04em; }
+  nav .links a{ text-decoration:none; }
+  @media(max-width:640px){ nav .links a:not(.cta){ display:none; } }
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  .article{ max-width:720px; margin:0 auto; padding:clamp(116px,17vh,150px) clamp(24px,5vw,32px) 40px; position:relative; z-index:2; }
 
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  /* magazine masthead */
+  .post-head{ border-bottom:2px solid var(--ink); padding-bottom:26px; margin-bottom:14px; }
+  .post-kicker{ display:flex; justify-content:space-between; align-items:baseline; gap:16px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--muted); margin-bottom:22px; }
+  .post-kicker b{ color:var(--ac); font-weight:400; }
+  .post-title{ font-family:var(--disp); font-weight:400; font-size:clamp(38px,7vw,70px); line-height:1.02; letter-spacing:-.015em; color:var(--ink); }
+  .post-sub{ font-family:var(--disp); font-style:italic; font-weight:400; font-size:clamp(19px,2.6vw,27px); line-height:1.34; color:#5b5140; margin-top:16px; max-width:40ch; }
+  .post-meta{ display:flex; flex-wrap:wrap; gap:12px; margin-top:24px; font-family:var(--mono); font-size:12px; letter-spacing:.05em; color:var(--muted); }
+  .post-meta .dot{ color:var(--ac); }
 
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
-  <style>
-    :root {
-      --bg: #14100d;
-      --text: #e3d9cc;
-      --accent: #c97c5d;
-      --border: rgba(201, 124, 93,0.25);
-      --code-bg: rgba(201, 124, 93,0.07);
-      --code-inline-bg: rgba(201, 124, 93,0.12);
-    }
+  #content{ font-size:18px; line-height:1.8; color:#2b2416; margin-top:34px; }
+  #content > p:first-of-type{ font-size:20px; }
+  #content > p:first-of-type::first-letter{ font-family:var(--disp); font-size:3.4em; line-height:.8; float:left; margin:6px 12px 0 0; color:var(--ac); }
+  #content p{ margin:22px 0; }
+  #content h1,#content h2,#content h3{ scroll-margin-top:96px; }
+  #content h1{ font-family:var(--disp); font-weight:400; font-size:34px; color:var(--ink); margin:44px 0 16px; line-height:1.05; }
+  #content h2{ font-family:var(--grot); font-size:clamp(22px,3vw,28px); font-weight:800; letter-spacing:-.02em; color:var(--ink); margin:48px 0 14px; padding-top:18px; border-top:1px solid var(--rule); }
+  #content h2::before{ content:""; display:inline-block; width:11px; height:11px; background:var(--ac); margin-right:13px; vertical-align:middle; transform:translateY(-3px); }
+  #content h3{ font-family:var(--grot); font-size:19px; font-weight:700; color:var(--ink); margin:30px 0 10px; }
+  #content h4{ font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.04em; color:var(--navy); margin:24px 0 8px; }
+  #content a{ color:var(--ink); text-decoration:none; border-bottom:1.5px solid var(--ac); padding-bottom:1px; transition:color .2s, background .2s; }
+  #content a:hover{ color:var(--ac); background:rgba(255,90,60,.08); }
+  #content a.ext::after{ content:" ↗"; font-family:var(--mono); font-size:.8em; color:var(--ac); }
+  #content ul{ list-style:none; padding:6px 0; }
+  #content ul li{ position:relative; padding-left:26px; margin-bottom:10px; }
+  #content ul li::before{ content:""; position:absolute; left:4px; top:.62em; width:8px; height:2px; background:var(--ac); }
+  #content ol{ padding-left:26px; margin:14px 0; }
+  #content ol li{ margin-bottom:10px; }
+  #content ol li::marker{ font-family:var(--mono); color:var(--ac); font-size:.85em; }
+  #content blockquote{ border-left:3px solid var(--ac); padding:4px 0 4px 22px; margin:26px 0; color:#5b5140; font-family:var(--disp); font-style:italic; font-size:23px; line-height:1.42; }
+  #content hr{ border:none; border-top:1px solid var(--rule); margin:44px 0; }
 
-    .light {
-      --bg: #faf6f0;
-      --text: #2e211a;
-      --accent: #b15c3c;
-      --border: rgba(177, 92, 60,0.35);
-      --code-bg: rgba(177, 92, 60,0.10);
-      --code-inline-bg: rgba(177, 92, 60,0.18);
-    }
+  /* inline + block code — warm paper, not a dark slab */
+  code:not(pre code){ background:rgba(255,90,60,.1); border:1px solid rgba(255,90,60,.22); padding:1.5px 6px; font-family:var(--mono); font-size:13.5px; border-radius:3px; color:#8a3418; }
+  pre{ position:relative; background:var(--code); border:1px solid var(--ink); border-radius:5px; padding:34px 18px 18px; overflow-x:auto; margin:32px 0; box-shadow:6px 6px 0 rgba(22,19,13,.1); }
+  pre::before{ content:attr(data-lang); position:absolute; top:0; left:0; font-family:var(--mono); font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--paper); background:var(--ink); padding:3px 11px; border-radius:0 0 6px 0; }
+  pre code{ background:none; border:none; padding:0; font-family:var(--mono); font-size:13px; line-height:1.65; display:block; color:#332b1c; }
+  .copy-btn{ position:absolute; top:5px; right:7px; background:transparent; color:#8a3418; border:1px solid rgba(22,19,13,.3); font-family:var(--mono); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; padding:3px 9px; border-radius:3px; cursor:pointer; transition:.18s; }
+  .copy-btn:hover{ background:var(--ac); color:var(--paper); border-color:var(--ac); }
+  /* syntax tokens tuned for a warm/light background */
+  .hljs-comment,.hljs-quote{ color:#9a8c6b; font-style:italic; }
+  .hljs-keyword,.hljs-selector-tag,.hljs-literal,.hljs-doctag{ color:#b23a1e; }
+  .hljs-string,.hljs-attr,.hljs-template-tag,.hljs-addition,.hljs-regexp{ color:#3f6135; }
+  .hljs-number,.hljs-meta,.hljs-built_in,.hljs-builtin-name{ color:#9a5a1f; }
+  .hljs-title,.hljs-title.function_,.hljs-section,.hljs-name{ color:#1c3566; font-weight:700; }
+  .hljs-title.class_,.hljs-type,.hljs-class .hljs-title{ color:#7a4a86; font-weight:700; }
+  .hljs-variable,.hljs-params,.hljs-property{ color:#332b1c; }
+  .hljs-symbol,.hljs-bullet,.hljs-link,.hljs-selector-id,.hljs-selector-class{ color:#b23a1e; }
+  .hljs-deletion{ color:#b23a1e; } .hljs-emphasis{ font-style:italic; } .hljs-strong{ font-weight:700; }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: "JetBrains Mono", monospace;
-    }
+  /* figures — framed with print offset */
+  figure{ margin:36px auto; }
+  #content figure img, #content figure video{ display:block; width:100%; height:auto; border:1px solid var(--ink); box-shadow:7px 7px 0 rgba(22,19,13,.13); background:var(--code); }
+  #content img{ max-width:100%; height:auto; }
+  figcaption{ font-family:var(--mono); font-size:12px; letter-spacing:.03em; color:var(--muted); margin-top:12px; text-align:center; line-height:1.5; }
 
-    #content {
-      margin-top: 40px;
-      line-height: 1.85;
-      font-size: 17px;
-    }
-    /* Improve paragraph spacing for Markdown */
-    #content p {
-      margin: 22px 0;     /* add vertical spacing */
-      line-height: 1.75;  /* smoother readability */
-    }
+  /* tables */
+  .table-wrap{ overflow-x:auto; margin:28px 0; border:1px solid var(--ink); box-shadow:6px 6px 0 rgba(22,19,13,.1); }
+  #content table{ border-collapse:collapse; width:100%; font-size:15px; }
+  #content th,#content td{ border:1px solid var(--rule); padding:10px 14px; text-align:left; vertical-align:top; }
+  #content th{ background:var(--ink); color:var(--paper); font-family:var(--mono); font-size:11px; letter-spacing:.07em; text-transform:uppercase; }
+  #content tbody tr:nth-child(even) td{ background:rgba(22,19,13,.035); }
 
-    /* CLEAN HEADINGS */
-    #content h1 { font-size: 32px; margin-bottom: 20px; color: var(--accent); font-weight: 700;  ; }
-    #content h2 { font-size: 26px; margin-top: 32px; margin-bottom: 16px; color: var(--accent); font-weight: 500;   }
-    #content h3 { font-size: 22px; margin-top: 24px; margin-bottom: 12px; color: var(--accent); font-weight: 400;   }
+  /* aside / callout */
+  #content aside{ position:relative; margin:30px 0; padding:18px 22px 18px 24px; background:rgba(255,90,60,.07);
+    border:1px solid rgba(255,90,60,.26); border-left:4px solid var(--ac); border-radius:0 6px 6px 0; font-size:16.5px; line-height:1.7; }
+  #content aside p{ margin:8px 0; } #content aside p:first-child{ margin-top:0; } #content aside p:last-child{ margin-bottom:0; }
 
-    /* INLINE LINKS */
-    #content a {
-      color: var(--accent);
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      transition: 0.2s;
-    }
-    #content a:hover { opacity: .8; text-shadow: 0 0 6px var(--accent); }
-
-    /* INLINE CODE ( `example` ) */
-    code:not(pre code) {
-      background: var(--code-inline-bg);
-      border: 1px solid var(--border);
-      padding: 3px 6px;
-      font-size: 14px;
-      border-radius: 4px;
-    }
-
-    /* BLOCK CODE */
-    pre {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px;
-      overflow-x: auto;
-      margin: 28px 0;
-      position: relative;
-    }
-
-    pre code {
-      background: none;
-      border: none;
-      padding: 0;
-      white-space: pre;
-      font-size: 15px;
-      line-height: 1.6;
-      display: block;
-    }
-
-    /* COPY BUTTON */
-    .copy-btn {
-      position: absolute;
-      top: 10px;
-      right: 12px;
-      background: var(--accent);
-      color: #000;
-      border: none;
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 4px;
-      cursor: pointer;
-      opacity: 0.85;
-      transition: 0.2s;
-    }
-    .copy-btn:hover {
-      opacity: 1;
-      box-shadow: 0 0 8px var(--accent);
-    }
-
-       /* IMAGE STYLE — NO TINT + CENTERED */
-    #content img {
-      display: block;
-      max-width: 100%;
-      height: auto;
-      margin: 32px auto;
-      padding: 0;
-      border: none !important;
-      background: transparent !important;
-      border-radius: 10px;
-      mix-blend-mode: normal !important;
-    }
-
-    /* CAPTION STYLE */
-    figure {
-      margin: 32px auto;
-      text-align: center;
-    }
-
-    figcaption {
-      font-size: 14px;
-      opacity: 0.7;
-      margin-top: 6px;
-    }
-    /* BEAUTIFUL MAIN TITLE */
-    #content h1:first-of-type {
-      text-align: center;
-      font-size: 60px;                 /* clean large size */
-      font-weight: 700;                /* strong bold */
-      letter-spacing: -0.5px;          /* tighter, modern */
-      margin-bottom: 28px;             /* more breathing room */
-      color: var(--accent);            /* your accent green */
-    }
-
-    /* CUSTOM BULLET POINTS ▹ — SHIFTED RIGHT */
-    #content ul {
-      padding-top: 10px;
-      list-style: none;
-      padding-left: 0;
-      margin-left: 0;
-    }
-
-    #content ul li {
-      position: relative;
-      padding-left: 32px;      /* moved text right */
-      margin-bottom: 10px;
-      line-height: 1.6;
-    }
-
-    #content ul li::before {
-      content: "▹";
-      position: absolute;
-      left: 8px;               /* move bullet right */
-      top: 0.2em;
-      color: var(--accent);
-      font-weight: 700;
-      font-size: 18px;
-      line-height: 1;
-    }
-    /* FIX ORDERED LIST NUMBERING */
-    #content ol {
-      list-style: decimal;
-      padding-left: 32px;  /* align with your custom bullets */
-      margin-left: 0;
-    }
-
-    #content ol li {
-      margin-bottom: 10px;
-      line-height: 1.6;
-    }
-
-    /* BACK BUTTON */
-    .back-btn {
-      display: inline-block;
-      margin: 60px 0 90px 0;
-      padding: 10px 18px;
-      border: 1px solid var(--accent);
-      border-radius: 6px;
-      color: var(--accent);
-      text-decoration: none;
-      transition: 0.25s;
-    }
-    .back-btn:hover {
-      background: var(--accent);
-      color: #000;
-      box-shadow: 0 0 10px var(--accent);
-    }
-
-  </style>
+  .back-btn{ display:inline-flex; align-items:center; gap:8px; margin:60px 0 8px; font-family:var(--mono); font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink); text-decoration:none; border-bottom:1.5px solid var(--ac); padding-bottom:3px; transition:color .2s; }
+  .back-btn:hover{ color:var(--ac); }
+  footer{ padding:26px clamp(24px,6vw,80px) 44px; font-family:var(--mono); font-size:11px; letter-spacing:.04em; color:var(--muted); border-top:1px solid var(--rule); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; max-width:760px; margin:0 auto; position:relative; z-index:2; }
+  footer a{ color:var(--ink); text-decoration:none; border-bottom:1.5px solid var(--ac); }
+</style>
 </head>
-
 <body>
 
-<div class="max-w-3xl mx-auto px-6 pb-24">
-  <div id="header-container"></div>
+<nav>
+  <a href="index.html" class="logo">Kaushal Choudhary</a>
+  <div class="links"><a href="index.html#writing">Writing</a><a href="index.html#contact" class="cta">Contact</a></div>
+</nav>
 
+<div class="article">
+  <header id="posthead" class="post-head"></header>
   <div id="content"></div>
-
-  <a class="back-btn" href="blog.html">&larr; Back to Blog</a>
+  <a class="back-btn" href="index.html#writing">&larr; back to writing</a>
 </div>
 
+<footer><span>© 2026 Kaushal Choudhary</span><a href="index.html#contact">get in touch ↗</a></footer>
+
 <script>
-  // Slug can come from either the legacy query param (?file=foo[.md])
-  // or the pretty URL pattern /blog/<slug>/.
   const params = new URLSearchParams(location.search);
   let slug = (params.get("file") || "").replace(/\.md$/, "");
   if (!slug) {
@@ -238,79 +140,124 @@
   }
   const file = slug ? slug + ".md" : "";
 
+  function parseFrontmatter(md){
+    const o = {};
+    for (const line of md.split("\n")){
+      const m = line.match(/^(title|subtitle|author|date)\s*:\s*(.+)$/i);
+      if (m) o[m[1].toLowerCase()] = m[2].trim();
+      else if (line.startsWith("# ")) break;
+    }
+    return o;
+  }
+  function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function slugify(s){
+    return (s||"").trim().toLowerCase()
+      .replace(/[^\w\s-]/g,"").replace(/[\s_]+/g,"-").replace(/-+/g,"-").replace(/^-|-$/g,"");
+  }
+  const isVideo = s => /\.(mp4|webm|mov|m4v)(\?|$)/i.test(s || "");
+
   async function loadPost() {
-    if (!file) return;
+    let md;
+    if (slug === "__draft") {                       // studio live preview (no server file)
+      md = sessionStorage.getItem("cms_draft") || "";
+      if (!md.trim()) { document.getElementById("content").innerHTML =
+        '<p style="font-family:var(--mono);color:var(--muted);">Start writing — your draft previews here.</p>'; return; }
+    } else {
+      if (!file) return;
+      md = await fetch("posts/" + file).then(r => r.text());
+    }
+    const fm = parseFrontmatter(md);
+    if (fm.title) document.title = fm.title + " — Kaushal";
 
-    const md = await fetch("posts/" + file).then(r => r.text());
+    let body = md.replace(/^(title:.*\n|subtitle:.*\n|blurb:.*\n|author:.*\n|date:.*\n)+/i, "").trim();
+    body = body.replace(/^#\s+.*\n+/, "");            // drop the duplicate leading H1
+    const words = body.split(/\s+/).filter(Boolean).length;
+    const mins = Math.max(1, Math.round(words / 220));
 
-    // Update browser tab title from the post's frontmatter
-    const titleMatch = md.match(/^title:\s*(.+)$/mi);
-    if (titleMatch) document.title = titleMatch[1].trim() + " — Kaushal";
+    document.getElementById("posthead").innerHTML =
+      `<div class="post-kicker"><span><b>Field Report</b></span><span>${esc(fm.date)}</span></div>
+       <h1 class="post-title">${esc(fm.title)}</h1>` +
+      (fm.subtitle ? `<p class="post-sub">${esc(fm.subtitle)}</p>` : "") +
+      `<div class="post-meta"><span>${esc(fm.date)}</span><span class="dot">◆</span><span>${mins} min read</span><span class="dot">◆</span><span>${esc(fm.author)}</span></div>`;
 
-    marked.setOptions({
-      breaks: true,
-      gfm: true,
-      highlight: function(code, lang) {
-        if (lang && hljs.getLanguage(lang)) {
-          return hljs.highlight(code, { language: lang }).value;
-        }
-        return hljs.highlightAuto(code).value;
+    marked.setOptions({ breaks: true, gfm: true });
+    const content = document.getElementById("content");
+    content.innerHTML = marked.parse(body);
+
+    enhanceContent(content);
+
+    // deep-link: ids are created by JS, so scroll after enhance if the URL carries a hash
+    if (location.hash) {
+      const el = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+      if (el) requestAnimationFrame(() => el.scrollIntoView());
+    }
+  }
+
+  function enhanceContent(content){
+    // heading anchors so in-page ToC links work
+    content.querySelectorAll("h1,h2,h3").forEach(h => { if (!h.id) h.id = slugify(h.textContent); });
+
+    // media: turn video files into <video>, wrap everything in <figure> with a caption
+    content.querySelectorAll("img").forEach(img => {
+      const src = img.getAttribute("src") || "";
+      const alt = (img.getAttribute("alt") || "").trim();
+      let media = img;
+      if (isVideo(src)) {
+        const v = document.createElement("video");
+        v.src = src; v.autoplay = true; v.loop = true; v.muted = true; v.playsInline = true;
+        v.setAttribute("muted",""); v.setAttribute("playsinline",""); v.setAttribute("loop","");
+        v.controls = true;
+        img.replaceWith(v); media = v;
+      }
+      const fig = document.createElement("figure");
+      media.replaceWith(fig); fig.appendChild(media);
+      if (alt.includes(" ")) {                          // only real sentences become captions
+        const cap = document.createElement("figcaption"); cap.textContent = alt; fig.appendChild(cap);
       }
     });
 
-    // Strip top metadata lines (title:, subtitle:, author:, date:)
-    const cleaned = md.replace(/^(title:.*\n|subtitle:.*\n|author:.*\n|date:.*\n)+/i, "").trim();
-    const html = marked.parse(cleaned);
-    const container = document.getElementById("content");
-    container.innerHTML = html;
-
-    // RUN HIGHLIGHTING
-    hljs.highlightAll();
-
-    // ensure links open in new tab
-    container.querySelectorAll("a").forEach(a => {
-      a.setAttribute("target", "_blank");
-      a.setAttribute("rel", "noopener noreferrer");
+    // scrollable table wrappers
+    content.querySelectorAll("table").forEach(t => {
+      const w = document.createElement("div"); w.className = "table-wrap";
+      t.replaceWith(w); w.appendChild(t);
     });
 
-    enhanceCodeBlocks();
-  }
+    // links: internal anchors scroll in-page (base href would otherwise send them home),
+    // external links open in a new tab and get a hover preview
+    content.querySelectorAll("a").forEach(a => {
+      const href = a.getAttribute("href") || "";
+      if (href.startsWith("#")) {
+        a.classList.add("anchor");
+        a.addEventListener("click", e => {
+          const el = document.getElementById(href.slice(1));
+          if (el) { e.preventDefault(); el.scrollIntoView({ behavior:"smooth" }); history.replaceState(null,"",location.pathname + href); }
+        });
+      } else if (/^https?:/i.test(href)) {
+        a.target = "_blank"; a.rel = "noopener noreferrer"; a.classList.add("ext");
+        a.setAttribute("data-preview", "");
+      }
+    });
 
-  function enhanceCodeBlocks() {
-    const blocks = document.querySelectorAll("pre");
-
-    blocks.forEach(pre => {
+    // code blocks: language tag + copy button
+    content.querySelectorAll("pre code").forEach(code => { try { hljs.highlightElement(code); } catch(e){} });
+    content.querySelectorAll("pre").forEach(pre => {
+      const code = pre.querySelector("code");
+      const cls = (code && code.className || "").match(/language-([\w-]+)/);
+      pre.dataset.lang = cls ? cls[1] : "code";
       const btn = document.createElement("button");
-      btn.className = "copy-btn";
-      btn.textContent = "Copy";
-
-      btn.onclick = () => {
-        const code = pre.querySelector("code").innerText;
-        navigator.clipboard.writeText(code);
-        btn.textContent = "Copied!";
-        setTimeout(() => (btn.textContent = "Copy"), 1500);
-      };
-
+      btn.className = "copy-btn"; btn.textContent = "Copy";
+      btn.onclick = () => { navigator.clipboard.writeText(code.innerText); btn.textContent = "Copied"; setTimeout(() => btn.textContent = "Copy", 1400); };
       pre.appendChild(btn);
     });
-  }
-  function convertImagesToFigures() {
-    document.querySelectorAll("#content img").forEach(img => {
-      const alt = img.getAttribute("alt")?.trim();
-      if (!alt) return;
 
-      const figure = document.createElement("figure");
-      const caption = document.createElement("figcaption");
-      caption.textContent = alt;
-
-      img.parentNode.insertBefore(figure, img);
-      figure.appendChild(img);
-      figure.appendChild(caption);
-    });
+    // scroll-in animation for structural blocks
+    content.querySelectorAll("h1,h2,figure,pre,blockquote,aside,.table-wrap").forEach(el => el.classList.add("fx-rise"));
+    if (window.fxObserve) window.fxObserve(content);
+    else content.querySelectorAll(".fx-rise").forEach(el => el.classList.add("in"));
+    if (window.fxPreview) window.fxPreview(content);   // live hover previews on external links
   }
 
   loadPost();
 </script>
-
 </body>
 </html>
