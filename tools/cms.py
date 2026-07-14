@@ -12,7 +12,7 @@ adds the slug to posts/index.json, and runs the regen script.
 
 After publishing: review `git status`, commit and push as usual.
 """
-import base64, hashlib, json, re, subprocess, urllib.request
+import base64, hashlib, json, re, shutil, subprocess, urllib.request
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs, quote
@@ -128,6 +128,22 @@ class Handler(SimpleHTTPRequestHandler):
             except Exception:
                 return self._json({"error": "write failed"}, 500)
             return self._json({"ok": True, "path": f"/images/{fname}"})
+        if p.path == "/cms/delete":
+            data = json.loads(raw or b"{}")
+            slug = (data.get("slug") or "").strip()
+            if not SLUG_RE.match(slug):
+                return self._json({"error": "bad slug"}, 400)
+            (POSTS / (slug + ".md")).unlink(missing_ok=True)
+            idx_path = POSTS / "index.json"
+            idx = [x for x in json.loads(idx_path.read_text()) if x != slug + ".md"]
+            idx_path.write_text(json.dumps(idx, indent=2) + "\n")
+            bdir = ROOT / "blog" / slug
+            if bdir.exists():
+                shutil.rmtree(bdir)
+            r = subprocess.run(["bash", "tools/regen-blog-pages.sh"], cwd=str(ROOT), capture_output=True, text=True)
+            if r.returncode != 0:
+                return self._json({"error": "regen failed", "detail": r.stderr}, 500)
+            return self._json({"ok": True})
         if p.path == "/cms/publish":
             data = json.loads(raw or b"{}")
             slug = (data.get("slug") or "").strip()

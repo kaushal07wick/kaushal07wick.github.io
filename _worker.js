@@ -10,6 +10,7 @@ import * as login from "./functions/api/login.js";
 import * as images from "./functions/api/images.js";
 import * as publish from "./functions/api/publish.js";
 import * as upload from "./functions/api/upload.js";
+import * as del from "./functions/api/delete.js";
 
 const ROUTES = {
   "/api/shot": shot,
@@ -18,6 +19,7 @@ const ROUTES = {
   "/api/images": images,
   "/api/publish": publish,
   "/api/upload": upload,
+  "/api/delete": del,
 };
 
 export default {

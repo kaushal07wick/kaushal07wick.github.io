@@ -3,6 +3,8 @@
   "name": "kaushalchoudhary",
   "main": "_worker.js",
   "compatibility_date": "2026-01-01",
+  // keep dashboard-set vars/secrets across deploys — without this, every push wipes them.
+  "keep_vars": true,
   "assets": {
     "directory": ".",
     "binding": "ASSETS"

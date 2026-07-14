@@ -23,6 +23,8 @@
   header .spacer{ flex:1; }
   select,.btn{ font-family:var(--mono); font-size:12px; }
   select{ background:var(--paper); border:1.5px solid var(--ink); padding:8px 12px; color:var(--ink); cursor:pointer; }
+  .btn.danger{ border-color:#b0392e; color:#b0392e; }
+  .btn.danger:hover{ background:#b0392e; color:var(--paper); }
   .btn{ border:1.5px solid var(--ink); background:var(--ink); color:var(--paper); padding:9px 18px; letter-spacing:.08em;
     text-transform:uppercase; cursor:pointer; transition:transform .16s cubic-bezier(.34,1.56,.5,1), background .16s, color .16s, border-color .16s, box-shadow .16s; }
   .btn:hover{ background:var(--ac); border-color:var(--ac); box-shadow:3px 3px 0 rgba(22,19,13,.2); }
@@ -116,6 +118,7 @@
   <select id="loadSel" title="Load a post to edit"><option value="">＋ New post</option></select>
   <button class="btn ghost" id="previewBtn">Refresh preview</button>
   <button class="btn" id="publishBtn">Publish</button>
+  <button class="btn danger" id="deleteBtn" style="display:none">Delete</button>
   <span id="status"></span>
 </header>
 
@@ -172,6 +175,7 @@
   // local dev is served by tools/cms.py; anything else is the hosted deploy (Cloudflare)
   const LOCAL = /^(127\.0\.0\.1|localhost)$/.test(location.hostname);
   const PUBLISH_URL = LOCAL ? "/cms/publish" : "/api/publish";
+  const DELETE_URL  = LOCAL ? "/cms/delete"  : "/api/delete";
   const IMAGES_URL  = LOCAL ? "/cms/images"  : "/api/images";
   const UPLOAD_URL  = LOCAL ? "/cms/upload"  : "/api/upload";
   $("envtag").textContent = LOCAL ? "local · blog cms" : "live · blog cms";
@@ -301,7 +305,7 @@
     $("title").value = fm.title || ""; $("subtitle").value = fm.subtitle || "";
     $("blurb").value = fm.blurb || ""; $("author").value = fm.author || "Kaushal Choudhary";
     $("date").value = fm.date || today(); $("slug").value = slug; $("body").value = body;
-    slugDirty = true; loadedSlug = slug; saveDraft();
+    slugDirty = true; loadedSlug = slug; $("deleteBtn").style.display = ""; saveDraft();
   }
   async function refreshList(){
     let files = [];
@@ -321,8 +325,19 @@
     fields.forEach(id => $(id).value = "");
     $("author").value = "Kaushal Choudhary"; $("date").value = today();
     $("body").value = ""; slugDirty = false; loadedSlug = "";
+    $("deleteBtn").style.display = "none";
     $("status").textContent = ""; saveDraft();
   }
+  $("deleteBtn").addEventListener("click", async () => {
+    if (!loadedSlug) return;
+    if (!confirm(`Delete "${$("title").value.trim() || loadedSlug}"?\nThis removes the post and its page — can't be undone.`)) return;
+    $("status").textContent = "deleting…";
+    try {
+      const res = await fetch(DELETE_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug: loadedSlug }) }).then(r => r.json());
+      if (res.ok) { $("status").textContent = "deleted ✓"; await refreshList(); newPost(); }
+      else $("status").textContent = "error: " + (res.error || "failed");
+    } catch (e) { $("status").textContent = "error: " + e.message; }
+  });
 
   // ---- publish ----
   $("publishBtn").addEventListener("click", async () => {
