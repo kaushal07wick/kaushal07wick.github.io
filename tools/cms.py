@@ -28,7 +28,7 @@ IMG_EXT = {".webp", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".mp4", ".webm", ".
 def frontmatter(md: str) -> dict:
     out = {}
     for line in md.splitlines():
-        m = re.match(r"^(title|subtitle|blurb|author|date)\s*:\s*(.+)$", line, re.I)
+        m = re.match(r"^(title|subtitle|blurb|author|date|cover)\s*:\s*(.+)$", line, re.I)
         if m:
             out[m.group(1).lower()] = m.group(2).strip()
         elif line.lstrip().startswith("# "):
@@ -77,6 +77,22 @@ class Handler(SimpleHTTPRequestHandler):
             if not fp.exists():
                 return self._json({"error": "not found"}, 404)
             return self._json({"markdown": fp.read_text()})
+        if p.path == "/cms/title":
+            target = (parse_qs(p.query).get("url") or [""])[0]
+            if not target.startswith(("http://", "https://")):
+                return self._json({"error": "bad url"}, 400)
+            try:
+                req = urllib.request.Request(target, headers={"User-Agent": "Mozilla/5.0 (compatible; kaushal-studio/1.0)"})
+                with urllib.request.urlopen(req, timeout=15) as r:
+                    html = r.read(20000).decode("utf-8", "ignore")
+            except Exception:
+                return self._json({"error": "fetch failed"}, 502)
+            og = re.search(r'<meta[^>]+property=["\']og:title["\'][^>]+content=["\']([^"\']+)["\']', html, re.I)
+            t = og.group(1) if og else ""
+            if not t:
+                mt = re.search(r"<title[^>]*>([^<]*)</title>", html, re.I)
+                t = mt.group(1) if mt else ""
+            return self._json({"ok": True, "title": re.sub(r"\s+", " ", t).strip(), "url": target})
         if p.path == "/cms/images":
             imgs = ROOT / "images"
             files = sorted(f"/images/{x.name}" for x in imgs.iterdir()

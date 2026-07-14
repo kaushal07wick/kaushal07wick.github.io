@@ -53,6 +53,15 @@
   .field input:focus{ border-color:var(--ac); }
   .field .title input{ font-family:var(--disp); font-size:22px; }
 
+  .cover-row{ display:flex; align-items:flex-end; gap:8px; }
+  .cover-row input{ flex:1; font-family:var(--grot); font-size:15px; color:var(--ink); background:transparent; border:none; border-bottom:1.5px solid var(--rule); padding:5px 2px; outline:none; transition:border-color .2s; }
+  .cover-row input:focus{ border-color:var(--ac); }
+  .cover-row .tool{ flex:none; }
+  .findbar{ display:flex; align-items:center; gap:8px; padding:12px 28px; border-bottom:1px solid var(--rule); background:rgba(255,90,60,.05); }
+  .findbar[hidden]{ display:none; }
+  .findbar input{ font-family:var(--mono); font-size:12px; color:var(--ink); background:var(--paper); border:1.5px solid var(--rule); padding:6px 10px; outline:none; }
+  .findbar input:focus{ border-color:var(--ac); }
+  .findbar #findCount{ font-family:var(--mono); font-size:11px; color:var(--muted); margin-left:auto; }
   .toolbar{ display:flex; flex-wrap:wrap; gap:8px; padding:16px 28px; border-bottom:1px solid var(--rule); }
   .tool{ font-family:var(--mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink);
     background:transparent; border:1px solid var(--rule); padding:6px 11px; cursor:pointer;
@@ -141,6 +150,10 @@
       <div class="field"><label>Slug (url)</label><input id="slug" placeholder="my-post" /></div>
       <div class="field"><label>Date</label><input id="date" type="date" /></div>
       <div class="field wide"><label>Author</label><input id="author" value="Kaushal Choudhary" /></div>
+      <div class="field wide"><label>Cover image · link/social preview</label>
+        <div class="cover-row"><input id="cover" placeholder="/images/hero.png — shown on the post + as the shared-link card" />
+          <button class="tool" id="coverBtn" type="button">🖼 pick</button></div>
+      </div>
     </div>
 
     <div class="toolbar">
@@ -151,6 +164,17 @@
       <button class="tool" data-snip="link">↗ Link</button>
       <button class="tool" data-snip="quote">❝ Quote</button>
       <button class="tool" id="imgBtn">🖼 Image / Video</button>
+      <button class="tool" id="urlBtn">🔗 From URL</button>
+      <button class="tool" id="findBtn">⇄ Replace</button>
+      <button class="tool" id="exportBtn">⬇ Export .md</button>
+    </div>
+
+    <div class="findbar" id="findbar" hidden>
+      <input id="findIn" placeholder="find" />
+      <input id="replIn" placeholder="replace with" />
+      <button class="tool" id="replAll">Replace all</button>
+      <span id="findCount"></span>
+      <button class="tool" id="findClose" title="Close">×</button>
     </div>
 
     <textarea id="body" placeholder="Write in Markdown. Code fences, tables, > quotes, &lt;aside&gt; callouts, images and videos (.mp4) all render in the panel on the right exactly as they will ship."></textarea>
@@ -178,7 +202,7 @@
 
 <script>
   const $ = id => document.getElementById(id);
-  const fields = ["title","subtitle","blurb","slug","date","author"];
+  const fields = ["title","subtitle","blurb","slug","date","author","cover"];
   const pv = $("pv");
   let slugDirty = false, loadedSlug = "";
 
@@ -188,6 +212,7 @@
   const DELETE_URL  = LOCAL ? "/cms/delete"  : "/api/delete";
   const IMAGES_URL  = LOCAL ? "/cms/images"  : "/api/images";
   const UPLOAD_URL  = LOCAL ? "/cms/upload"  : "/api/upload";
+  const TITLE_URL   = LOCAL ? "/cms/title"   : "/api/title";
   $("envtag").textContent = LOCAL ? "local · blog cms" : "live · blog cms";
 
   function slugify(s){
@@ -201,6 +226,7 @@
     if ($("title").value) fm.push("title: " + $("title").value.trim());
     if ($("subtitle").value) fm.push("subtitle: " + $("subtitle").value.trim());
     if ($("blurb").value) fm.push("blurb: " + $("blurb").value.trim());
+    if ($("cover").value) fm.push("cover: " + $("cover").value.trim());
     fm.push("author: " + ($("author").value.trim() || "Kaushal Choudhary"));
     fm.push("date: " + ($("date").value || today()));
     return fm.join("\n") + "\n# " + ($("title").value.trim() || "Untitled") + "\n\n" + $("body").value;
@@ -275,9 +301,20 @@
     else if (k === "s"){ e.preventDefault(); saveDraft(); $("status").textContent = "draft saved locally ✓"; }
   });
 
-  // ---- image picker ----
-  $("imgBtn").addEventListener("click", async () => {
+  // ---- media picker (shared: inline images + the cover field) ----
+  let pickMode = "body";                      // "body" → insert markdown · "cover" → fill the cover field
+  function useMedia(src){
+    if (pickMode === "cover"){ $("cover").value = src; schedule(); }
+    else {
+      const name = src.split("/").pop().replace(/\.[^.]+$/,"").replace(/[-_]/g," ");
+      insertAtCursor(`\n\n![${name}](${src})\n\n`);
+    }
+    $("picker").classList.remove("open");
+  }
+  async function openPicker(mode){
+    pickMode = mode;
     const grid = $("pickGrid"); grid.innerHTML = "loading…";
+    $("picker").classList.add("open");
     let imgs = [];
     try { imgs = await fetch(IMAGES_URL).then(r => r.json()); } catch(e){ imgs = []; }
     grid.innerHTML = imgs.length ? "" : "no images found";
@@ -286,15 +323,12 @@
       const cell = document.createElement("div"); cell.className = "pick-cell";
       cell.innerHTML = `<div class="thumb" ${isVid ? "" : `style="background-image:url('${src}')"`}>${isVid ? "▶ video" : ""}</div>`
         + `<div class="nm">${src.replace("/images/","")}</div>`;
-      cell.onclick = () => {
-        const name = src.split("/").pop().replace(/\.[^.]+$/,"").replace(/[-_]/g," ");
-        insertAtCursor(`\n\n![${name}](${src})\n\n`);
-        $("picker").classList.remove("open");
-      };
+      cell.onclick = () => useMedia(src);
       grid.appendChild(cell);
     });
-    $("picker").classList.add("open");
-  });
+  }
+  $("imgBtn").addEventListener("click", () => openPicker("body"));
+  $("coverBtn").addEventListener("click", () => openPicker("cover"));
   $("picker").addEventListener("click", e => { if (e.target.id === "picker") e.target.classList.remove("open"); });
   $("pickClose").addEventListener("click", () => $("picker").classList.remove("open"));
   document.addEventListener("keydown", e => { if (e.key === "Escape") $("picker").classList.remove("open"); });
@@ -306,7 +340,7 @@
     fr.onerror = rej;
     fr.readAsDataURL(file);
   });
-  async function uploadFile(file){
+  async function uploadFile(file, target){
     if (!file) return;
     if (!/^(image|video)\//.test(file.type) && !/\.(png|jpe?g|gif|webp|svg|mp4|webm|mov)$/i.test(file.name || "")){
       alert("Only images and videos."); return;
@@ -322,32 +356,76 @@
         body: JSON.stringify({ name, content }),
       }).then(r => r.json());
       if (!r.ok) throw new Error(r.error || "upload failed");
-      const alt = name.replace(/\.[^.]+$/, "").replace(/[-_]/g, " ");
-      insertAtCursor(`\n\n![${alt}](${r.path})\n\n`);
+      if ((target || "body") === "cover"){ $("cover").value = r.path; schedule(); }
+      else {
+        const alt = name.replace(/\.[^.]+$/, "").replace(/[-_]/g, " ");
+        insertAtCursor(`\n\n![${alt}](${r.path})\n\n`);
+      }
       $("picker").classList.remove("open");
       $("status").textContent = `added ${r.path} ✓`;
     } catch (err){ alert("Upload failed: " + err.message); $("status").textContent = prev; }
   }
   $("uploadBtn").addEventListener("click", () => $("fileInput").click());
-  $("fileInput").addEventListener("change", async e => { await uploadFile(e.target.files[0]); e.target.value = ""; });
+  $("fileInput").addEventListener("change", async e => { await uploadFile(e.target.files[0], pickMode); e.target.value = ""; });
 
   // paste a screenshot (⌘V) or drag a file straight onto the editor → upload + insert
   $("body").addEventListener("paste", e => {
     const item = [...(e.clipboardData?.items || [])].find(i => i.type.startsWith("image/"));
-    if (item){ e.preventDefault(); uploadFile(item.getAsFile()); }
+    if (item){ e.preventDefault(); uploadFile(item.getAsFile(), "body"); }
   });
   $("body").addEventListener("dragover", e => { e.preventDefault(); $("body").classList.add("drag"); });
   $("body").addEventListener("dragleave", () => $("body").classList.remove("drag"));
   $("body").addEventListener("drop", e => {
     e.preventDefault(); $("body").classList.remove("drag");
-    const file = e.dataTransfer?.files?.[0]; if (file) uploadFile(file);
+    const file = e.dataTransfer?.files?.[0]; if (file) uploadFile(file, "body");
+  });
+
+  // ---- find & replace (literal, case-sensitive) ----
+  const countMatches = () => {
+    const q = $("findIn").value;
+    $("findCount").textContent = q ? `${$("body").value.split(q).length - 1} match(es)` : "";
+  };
+  $("findBtn").addEventListener("click", () => {
+    const bar = $("findbar"); bar.hidden = !bar.hidden;
+    if (!bar.hidden){ $("findIn").focus(); countMatches(); }
+  });
+  $("findClose").addEventListener("click", () => { $("findbar").hidden = true; });
+  $("findIn").addEventListener("input", countMatches);
+  $("replAll").addEventListener("click", () => {
+    const q = $("findIn").value; if (!q) return;
+    const n = $("body").value.split(q).length - 1;
+    $("body").value = $("body").value.split(q).join($("replIn").value);
+    countMatches(); schedule();
+    $("status").textContent = `replaced ${n} occurrence(s)`;
+  });
+
+  // ---- export the current post as a .md file ----
+  $("exportBtn").addEventListener("click", () => {
+    const name = (slugify($("slug").value || $("title").value) || "post") + ".md";
+    const url = URL.createObjectURL(new Blob([buildMarkdown()], { type: "text/markdown" }));
+    const a = document.createElement("a"); a.href = url; a.download = name; a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // ---- insert a titled link from a pasted URL (title fetched server-side) ----
+  $("urlBtn").addEventListener("click", async () => {
+    const url = prompt("Paste a URL — I'll fetch its title and insert a markdown link:");
+    if (!url) return;
+    if (!/^https?:\/\//i.test(url)){ alert("Needs to start with http:// or https://"); return; }
+    $("status").textContent = "fetching title…";
+    try {
+      const r = await fetch(TITLE_URL + "?url=" + encodeURIComponent(url)).then(r => r.json());
+      const text = (r.ok && r.title) ? r.title : url;
+      insertAtCursor(`[${text}](${url})`);
+      $("status").textContent = r.title ? "link inserted ✓" : "inserted (no title found)";
+    } catch (e){ insertAtCursor(`[${url}](${url})`); $("status").textContent = "inserted (title lookup failed)"; }
   });
 
   // ---- load existing posts (static files, works local + hosted) ----
   function splitFrontmatter(md){
     const fm = {}; const lines = md.split("\n"); let i = 0;
     for (; i < lines.length; i++){
-      const m = lines[i].match(/^(title|subtitle|blurb|author|date)\s*:\s*(.+)$/i);
+      const m = lines[i].match(/^(title|subtitle|blurb|author|date|cover)\s*:\s*(.+)$/i);
       if (m) fm[m[1].toLowerCase()] = m[2].trim();
       else break;
     }
@@ -359,6 +437,7 @@
     const { fm, body } = splitFrontmatter(markdown);
     $("title").value = fm.title || ""; $("subtitle").value = fm.subtitle || "";
     $("blurb").value = fm.blurb || ""; $("author").value = fm.author || "Kaushal Choudhary";
+    $("cover").value = fm.cover || "";
     $("date").value = fm.date || today(); $("slug").value = slug; $("body").value = body;
     slugDirty = true; loadedSlug = slug; $("deleteBtn").style.display = ""; saveDraft();
     dirty = false; updateWC();   // freshly loaded = clean

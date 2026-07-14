@@ -11,6 +11,7 @@ import * as images from "./functions/api/images.js";
 import * as publish from "./functions/api/publish.js";
 import * as upload from "./functions/api/upload.js";
 import * as del from "./functions/api/delete.js";
+import * as title from "./functions/api/title.js";
 
 const ROUTES = {
   "/api/shot": shot,
@@ -20,6 +21,7 @@ const ROUTES = {
   "/api/publish": publish,
   "/api/upload": upload,
   "/api/delete": del,
+  "/api/title": title,
 };
 
 export default {

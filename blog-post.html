@@ -54,6 +54,7 @@
   .post-sub{ font-family:var(--disp); font-style:italic; font-weight:400; font-size:clamp(19px,2.6vw,27px); line-height:1.34; color:#5b5140; margin-top:16px; max-width:40ch; }
   .post-meta{ display:flex; flex-wrap:wrap; gap:12px; margin-top:24px; font-family:var(--mono); font-size:12px; letter-spacing:.05em; color:var(--muted); }
   .post-meta .dot{ color:var(--ac); }
+  .post-cover{ display:block; width:100%; margin-top:34px; border:1px solid var(--rule); aspect-ratio:16/9; object-fit:cover; }
 
   #content{ font-size:18px; line-height:1.8; color:#2b2416; margin-top:34px; }
   #content > p:first-of-type{ font-size:20px; }
@@ -146,7 +147,7 @@
   function parseFrontmatter(md){
     const o = {};
     for (const line of md.split("\n")){
-      const m = line.match(/^(title|subtitle|author|date)\s*:\s*(.+)$/i);
+      const m = line.match(/^(title|subtitle|author|date|cover)\s*:\s*(.+)$/i);
       if (m) o[m[1].toLowerCase()] = m[2].trim();
       else if (line.startsWith("# ")) break;
     }
@@ -172,7 +173,7 @@
     const fm = parseFrontmatter(md);
     if (fm.title) document.title = fm.title + " — Kaushal";
 
-    let body = md.replace(/^(title:.*\n|subtitle:.*\n|blurb:.*\n|author:.*\n|date:.*\n)+/i, "").trim();
+    let body = md.replace(/^(title:.*\n|subtitle:.*\n|blurb:.*\n|author:.*\n|date:.*\n|cover:.*\n)+/i, "").trim();
     body = body.replace(/^#\s+.*\n+/, "");            // drop the duplicate leading H1
     const words = body.split(/\s+/).filter(Boolean).length;
     const mins = Math.max(1, Math.round(words / 220));
@@ -181,7 +182,8 @@
       `<div class="post-kicker"><span><b>Field Report</b></span><span>${esc(fm.date)}</span></div>
        <h1 class="post-title">${esc(fm.title)}</h1>` +
       (fm.subtitle ? `<p class="post-sub">${esc(fm.subtitle)}</p>` : "") +
-      `<div class="post-meta"><span>${esc(fm.date)}</span><span class="dot">◆</span><span>${mins} min read</span><span class="dot">◆</span><span>${esc(fm.author)}</span></div>`;
+      `<div class="post-meta"><span>${esc(fm.date)}</span><span class="dot">◆</span><span>${mins} min read</span><span class="dot">◆</span><span>${esc(fm.author)}</span></div>` +
+      (fm.cover && !isVideo(fm.cover) ? `<img class="post-cover" src="${esc(fm.cover)}" alt="${esc(fm.title)}" loading="eager" />` : "");
 
     marked.setOptions({ breaks: true, gfm: true });
     const content = document.getElementById("content");

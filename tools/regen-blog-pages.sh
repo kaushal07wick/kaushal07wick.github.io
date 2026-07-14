@@ -27,7 +27,7 @@ DOMAIN = "https://kaushalchoudhary.com"
 def parse_frontmatter(md: str) -> dict:
     out = {}
     for line in md.splitlines():
-        m = re.match(r"^(title|subtitle|blurb|author|date)\s*:\s*(.+)$", line, re.IGNORECASE)
+        m = re.match(r"^(title|subtitle|blurb|author|date|cover)\s*:\s*(.+)$", line, re.IGNORECASE)
         if m:
             out[m.group(1).lower()] = m.group(2).strip()
         elif line.lstrip().startswith("# "):
@@ -58,6 +58,10 @@ for i, fname in enumerate(files):
     author   = fm.get("author", "Kaushal Choudhary")
     year     = (date[:4] if len(date) >= 4 and date[:4].isdigit() else "2026")
     url      = f"{DOMAIN}/blog/{slug}/"
+    cover    = fm.get("cover", "")
+    img      = (cover if cover.startswith("http") else DOMAIN + cover) if cover else ""
+    img_meta = (f'\n  <meta property="og:image" content="{esc(img)}" />'
+                f'\n  <meta name="twitter:image" content="{esc(img)}" />') if img else ""
 
     head = f"""<title>{esc(title)} — Kaushal</title>
   <meta name="description" content="{esc(subtitle or title)}" />
@@ -71,7 +75,7 @@ for i, fname in enumerate(files):
   <meta property="article:published_time" content="{esc(date)}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="{esc(title)}" />
-  <meta name="twitter:description" content="{esc(subtitle or title)}" />"""
+  <meta name="twitter:description" content="{esc(subtitle or title)}" />{img_meta}"""
 
     out_html = re.sub(r"<title>.*?</title>", head, template, count=1, flags=re.DOTALL)
     out_dir = ROOT / "blog" / slug
