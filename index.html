@@ -85,8 +85,14 @@
   .lede-art{ position:relative; margin:0; }
   .lede-art img{ display:block; width:100%; height:auto; image-rendering:pixelated; mix-blend-mode:multiply;
     border:1px solid var(--ink); box-shadow:9px 9px 0 rgba(24,42,84,.18); }
-  .lede-art canvas{ display:block; width:100%; aspect-ratio:5/4;
-    border:1px solid var(--ink); background:var(--paper2); box-shadow:9px 9px 0 rgba(24,42,84,.18); }
+  .lede-art .flapboard{ display:grid; grid-template-columns:repeat(12,1fr); grid-template-rows:repeat(6,1fr); gap:3px;
+    width:100%; aspect-ratio:5/4; padding:clamp(9px,3%,16px); border:1px solid var(--ink); background:#141109;
+    box-shadow:9px 9px 0 rgba(24,42,84,.18); }
+  .lede-art .flap{ position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden;
+    border-radius:1.5px; background:linear-gradient(180deg,#2a251c 0%,#211d15 49%,#161208 51%,#1b1710 100%); perspective:140px; }
+  .lede-art .flap::after{ content:""; position:absolute; left:0; right:0; top:50%; height:1px; background:rgba(0,0,0,.6); }
+  .lede-art .flap-char{ font-family:var(--mono); font-weight:700; font-size:clamp(8px,1.5vw,15px); line-height:1;
+    color:#f2e9d7; transform-origin:center; backface-visibility:hidden; }
   .lede-art figcaption{ font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-top:14px; text-align:right; }
   @media(max-width:800px){ .lede{ grid-template-columns:1fr; gap:34px; } .lede-art{ order:-1; max-width:440px; } }
 
@@ -279,8 +285,8 @@
         <p>Full-stack: frontend, backend, distributed systems, model training, and deployment to the edge. As a forward-deployed engineer I sit with customers, turn their needs into curated software, ship it, and monitor and maintain it live. One idea, one owner — research to production.</p>
       </div>
       <figure class="lede-art">
-        <canvas id="llmnet" aria-hidden="true"></canvas>
-        <figcaption>Next-token prediction · live</figcaption>
+        <div class="flapboard" id="flapboard" aria-hidden="true"></div>
+        <figcaption>Departures · now boarding</figcaption>
       </figure>
     </div>
   </div>
@@ -524,7 +530,7 @@
   </div>
 </section>
 
-<script src="/assets/site-fx.js?v=2" defer></script>
+<script src="/assets/site-fx.js?v=3" defer></script>
 <script>
   // projects: swap the sticky preview image to the hovered/focused row
   const projxImg = document.getElementById('projxImg');

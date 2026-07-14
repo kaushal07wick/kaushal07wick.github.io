@@ -75,71 +75,61 @@
     window.fxPreview();
   })();
 
-  // ---------- live next-token prediction: a tiny LLM generating (profile art) ----------
+  // ---------- split-flap departures board (profile art) ----------
   (function () {
-    const cv = document.getElementById("llmnet"); if (!cv) return;
-    const x = cv.getContext("2d");
-    const INK = "#16130d", AC = "#ff5a3c", MUT = "#8a7c5e", NAVY = "24,42,84", DPR = Math.min(2, window.devicePixelRatio || 1);
-    const PROMPT = ">";
-    // scripted softmax over the next token; [0] is the one that gets sampled
-    const STEPS = [
-      [["the", .60], ["a", .22], ["we", .11], ["this", .07]],
-      [["model", .54], ["system", .22], ["agent", .15], ["network", .09]],
-      [["ships", .47], ["runs", .27], ["scales", .17], ["trains", .09]],
-      [["to", .71], ["on", .16], ["at", .08], ["for", .05]],
-      [["the", .66], ["your", .18], ["an", .10], ["its", .06]],
-      [["edge", .51], ["cloud", .29], ["gpu", .13], ["node", .07]],
-      [["and", .63], ["then", .20], ["but", .10], ["so", .07]],
-      [["stays", .50], ["keeps", .28], ["runs", .15], ["holds", .07]],
-      [["alive", .57], ["fast", .25], ["cheap", .11], ["warm", .07]],
+    const board = document.getElementById("flapboard"); if (!board) return;
+    const FLAP = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789·◆-";
+    const COLS = 12, ROWS = 6;
+    const FRAMES = [
+      ["DEPARTURES", "", "RESEARCH", "TO", "PRODUCTION", "BOARDING"],
+      ["NOW SHIPPING", "", "THE MODEL", "TO THE EDGE", "STATUS", "ON TIME"],
+      ["KAUSHAL", "CHOUDHARY", "", "ML ENGINEER", "FORWARD", "DEPLOYED"],
+      ["BUILT", "END TO END", "", "ONE IDEA", "ONE OWNER", "◆  ◆  ◆"],
     ];
-    let W, H;
-    function fit() { W = cv.offsetWidth; H = cv.offsetHeight; cv.width = W * DPR; cv.height = H * DPR; x.setTransform(DPR, 0, 0, DPR, 0, 0); }
-    fit(); let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(fit, 200); });
+    const center = (s) => {
+      s = (s || "").toUpperCase().slice(0, COLS);
+      const pad = COLS - s.length, l = Math.floor(pad / 2);
+      return " ".repeat(l) + s + " ".repeat(pad - l);
+    };
+    const target = (frame) => Array.from({ length: ROWS }, (_, r) => center(frame[r] || "")).join("");
+    const glyph = (c) => (c === " " ? " " : c);
 
-    function wrap(str, maxW) {
-      const ws = str.split(" "), out = []; let c = "";
-      for (const w of ws) { const t = c ? c + " " + w : w; if (x.measureText(t).width > maxW && c) { out.push(c); c = w; } else c = t; }
-      if (c) out.push(c); return out;
+    const cells = [];
+    for (let i = 0; i < COLS * ROWS; i++) {
+      const flap = document.createElement("span"); flap.className = "flap";
+      const ch = document.createElement("span"); ch.className = "flap-char"; ch.textContent = " ";
+      flap.appendChild(ch); board.appendChild(flap);
+      cells.push({ ch, cur: " ", timer: null });
     }
-    function render(clock, text, step, phase) {
-      x.clearRect(0, 0, W, H);
-      const PAD = 16, splitY = Math.round(H * 0.54);
-      x.font = "600 15px 'Space Mono', monospace"; x.textBaseline = "top";
-      const lines = wrap((PROMPT + " " + text.join(" ")).trim(), W - 2 * PAD); let yy = PAD;
-      x.fillStyle = INK; lines.forEach(l => { x.fillText(l, PAD, yy); yy += 21; });
-      if (phase !== "done" && Math.floor(clock * 1.6) % 2 === 0) {
-        const lw = x.measureText(lines[lines.length - 1] || "").width;
-        x.fillStyle = AC; x.fillRect(PAD + lw + 4, yy - 20, 8, 14);
-      }
-      x.strokeStyle = "rgba(" + NAVY + ",.2)"; x.lineWidth = 1; x.beginPath(); x.moveTo(PAD, splitY); x.lineTo(W - PAD, splitY); x.stroke();
-      x.font = "10px 'Space Mono', monospace"; x.fillStyle = MUT; x.textBaseline = "alphabetic";
-      x.fillText("P( next token )", PAD, splitY + 16);
-      const cur = STEPS[Math.min(step, STEPS.length - 1)];
-      const barX = PAD + 66, barW = W - PAD - barX - 34, top0 = splitY + 28, rowH = Math.min(24, (H - top0 - 6) / cur.length);
-      cur.forEach(([tok, p], i) => {
-        const cy = top0 + rowH * i + rowH / 2, hot = i === 0 && phase !== "think";
-        const shown = phase === "think" ? p * (0.5 + 0.6 * Math.abs(Math.sin(clock * 7 + i * 1.3))) : p;
-        x.textBaseline = "middle";
-        x.fillStyle = hot ? AC : INK; x.font = (hot ? "700 " : "400 ") + "12px 'Space Mono', monospace";
-        x.fillText(tok, PAD, cy);
-        x.fillStyle = hot ? AC : "rgba(" + NAVY + ",.3)"; x.fillRect(barX, cy - 5, Math.max(2, barW * Math.min(1, shown)), 10);
-        x.fillStyle = MUT; x.font = "10px 'Space Mono', monospace";
-        x.fillText(Math.round(shown * 100) + "%", barX + barW + 5, cy);
+    const setInstant = (t) => cells.forEach((c, i) => { c.cur = t[i]; c.ch.textContent = glyph(t[i]); });
+
+    const targets = FRAMES.map(target);
+    if (reduce.matches) { setInstant(targets[2]); return; }   // static name frame
+
+    function flipTo(t) {
+      cells.forEach((cell, i) => {
+        clearTimeout(cell.timer);
+        const goal = t[i]; if (cell.cur === goal) return;
+        let from = FLAP.indexOf(cell.cur); if (from < 0) from = 0;
+        let to = FLAP.indexOf(goal); if (to < 0) to = 0;
+        const steps = (to - from + FLAP.length) % FLAP.length;
+        const delay = ((i % COLS) + Math.floor(i / COLS)) * 26;   // diagonal cascade
+        let k = 0;
+        const tick = () => {
+          k++;
+          cell.ch.textContent = glyph(FLAP[(from + k) % FLAP.length]);
+          cell.ch.animate([{ transform: "rotateX(-88deg)" }, { transform: "rotateX(0deg)" }], { duration: 90, easing: "ease-out" });
+          if (k < steps) cell.timer = setTimeout(tick, 55);
+          else cell.cur = goal;
+        };
+        cell.timer = setTimeout(tick, delay);
       });
     }
 
-    let text = [], step = 0, phase = "think", pt = 0, clock = 0;
-    const THINK = 1.1, HOLD = 0.55, DONE = 2.2;
-    if (reduce.matches) { render(0, ["the", "model", "ships", "to", "the", "edge"], 5, "hold"); return; }
-    (function loop() {
-      clock += 1 / 60; pt += 1 / 60;
-      if (phase === "think" && pt > THINK) { phase = "hold"; pt = 0; }
-      else if (phase === "hold" && pt > HOLD) { text.push(STEPS[step][0][0]); step++; pt = 0; phase = step >= STEPS.length ? "done" : "think"; }
-      else if (phase === "done" && pt > DONE) { text = []; step = 0; phase = "think"; pt = 0; }
-      render(clock, text, step, phase);
-      requestAnimationFrame(loop);
-    })();
+    setInstant(targets[0].replace(/[^ ]/g, " "));               // start blank, then flip in
+    flipTo(targets[0]);
+    let fi = 0;
+    setInterval(() => { fi = (fi + 1) % targets.length; flipTo(targets[fi]); }, 4400);
   })();
 
   // ---------- contact particle field (curl-flow + mouse repel) ----------
