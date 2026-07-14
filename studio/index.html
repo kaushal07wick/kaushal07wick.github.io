@@ -61,7 +61,8 @@
   .tool:active{ transform:scale(.9); }
 
   #body{ flex:1; min-height:280px; width:100%; resize:none; border:none; outline:none; background:transparent;
-    font-family:var(--mono); font-size:13.5px; line-height:1.7; color:#2b2416; padding:22px 28px; }
+    font-family:var(--mono); font-size:13.5px; line-height:1.7; color:#2b2416; padding:22px 28px; transition:box-shadow .15s, background .15s; }
+  #body.drag{ background:rgba(255,90,60,.06); box-shadow:inset 0 0 0 2px var(--ac); }
 
   .preview{ display:flex; flex-direction:column; background:#e3d9c4; }
   .preview .bar{ font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
@@ -156,7 +157,7 @@
   </section>
 
   <section class="preview">
-    <div class="bar"><span class="dot"></span> live preview — rendered through the real post template</div>
+    <div class="bar"><span class="dot"></span> live preview — rendered through the real post template <span id="wc" style="margin-left:auto; color:var(--muted)"></span></div>
     <iframe id="pv" title="preview"></iframe>
   </section>
 </main>
@@ -206,11 +207,24 @@
   }
 
   // ---- live preview (draft lives in sessionStorage; the iframe reads it) ----
-  let t;
-  function schedule(){ clearTimeout(t); t = setTimeout(saveDraft, 550); }
+  // never-lose-work: every edit is also mirrored to localStorage so a crash/refresh resumes it
+  const AUTOSAVE = "cms_autosave_v1";
+  let t, dirty = false;
+  function schedule(){ dirty = true; updateWC(); clearTimeout(t); t = setTimeout(saveDraft, 550); }
   function saveDraft(){
     sessionStorage.setItem("cms_draft", buildMarkdown());
+    snapshot();
     reloadPreview();
+  }
+  function snapshot(){
+    const data = { loadedSlug, slugDirty, body: $("body").value };
+    fields.forEach(id => data[id] = $(id).value);
+    try { localStorage.setItem(AUTOSAVE, JSON.stringify(data)); } catch(e){}
+  }
+  function clearAutosave(){ try { localStorage.removeItem(AUTOSAVE); } catch(e){} dirty = false; }
+  function updateWC(){
+    const words = ($("body").value.trim().match(/\S+/g) || []).length;
+    $("wc").textContent = words ? `${words} words · ${Math.max(1, Math.ceil(words / 220))} min read` : "";
   }
   function reloadPreview(){
     let y = 0; try { y = pv.contentWindow.scrollY || 0; } catch(e){}
@@ -243,6 +257,24 @@
   document.querySelectorAll(".tool[data-snip]").forEach(b =>
     b.addEventListener("click", () => insertAtCursor(SNIPPETS[b.dataset.snip])));
 
+  // ---- keyboard shortcuts: ⌘B bold · ⌘I italic · ⌘K link · ⌘S save draft locally ----
+  function wrapSel(before, after){
+    const ta = $("body"), s = ta.selectionStart, e = ta.selectionEnd, sel = ta.value.slice(s, e);
+    ta.value = ta.value.slice(0, s) + before + sel + after + ta.value.slice(e);
+    ta.focus();
+    if (sel){ ta.selectionStart = s + before.length; ta.selectionEnd = e + before.length; }
+    else ta.selectionStart = ta.selectionEnd = s + before.length;
+    schedule();
+  }
+  $("body").addEventListener("keydown", e => {
+    if (!(e.metaKey || e.ctrlKey)) return;
+    const k = e.key.toLowerCase();
+    if (k === "b"){ e.preventDefault(); wrapSel("**", "**"); }
+    else if (k === "i"){ e.preventDefault(); wrapSel("*", "*"); }
+    else if (k === "k"){ e.preventDefault(); wrapSel("[", "](https://)"); }
+    else if (k === "s"){ e.preventDefault(); saveDraft(); $("status").textContent = "draft saved locally ✓"; }
+  });
+
   // ---- image picker ----
   $("imgBtn").addEventListener("click", async () => {
     const grid = $("pickGrid"); grid.innerHTML = "loading…";
@@ -274,27 +306,41 @@
     fr.onerror = rej;
     fr.readAsDataURL(file);
   });
-  $("uploadBtn").addEventListener("click", () => $("fileInput").click());
-  $("fileInput").addEventListener("change", async e => {
-    const file = e.target.files[0]; if (!file) return;
-    if (file.size > 25 * 1024 * 1024) { alert("That file is over 25 MB — compress it first."); e.target.value = ""; return; }
-    const btn = $("uploadBtn"), label = btn.textContent;
-    btn.textContent = "uploading…"; btn.disabled = true;
+  async function uploadFile(file){
+    if (!file) return;
+    if (!/^(image|video)\//.test(file.type) && !/\.(png|jpe?g|gif|webp|svg|mp4|webm|mov)$/i.test(file.name || "")){
+      alert("Only images and videos."); return;
+    }
+    if (file.size > 25 * 1024 * 1024){ alert("That file is over 25 MB — compress it first."); return; }
+    const prev = $("status").textContent;
+    $("status").textContent = `uploading ${file.name || "image"}…`;
     try {
       const content = await fileToBase64(file);
+      const name = file.name || `paste-${Date.now()}.png`;   // pasted screenshots often come in unnamed
       const r = await fetch(UPLOAD_URL, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: file.name, content }),
+        body: JSON.stringify({ name, content }),
       }).then(r => r.json());
       if (!r.ok) throw new Error(r.error || "upload failed");
-      const alt = file.name.replace(/\.[^.]+$/, "").replace(/[-_]/g, " ");
+      const alt = name.replace(/\.[^.]+$/, "").replace(/[-_]/g, " ");
       insertAtCursor(`\n\n![${alt}](${r.path})\n\n`);
       $("picker").classList.remove("open");
-    } catch (err) {
-      alert("Upload failed: " + err.message);
-    } finally {
-      btn.textContent = label; btn.disabled = false; e.target.value = "";
-    }
+      $("status").textContent = `added ${r.path} ✓`;
+    } catch (err){ alert("Upload failed: " + err.message); $("status").textContent = prev; }
+  }
+  $("uploadBtn").addEventListener("click", () => $("fileInput").click());
+  $("fileInput").addEventListener("change", async e => { await uploadFile(e.target.files[0]); e.target.value = ""; });
+
+  // paste a screenshot (⌘V) or drag a file straight onto the editor → upload + insert
+  $("body").addEventListener("paste", e => {
+    const item = [...(e.clipboardData?.items || [])].find(i => i.type.startsWith("image/"));
+    if (item){ e.preventDefault(); uploadFile(item.getAsFile()); }
+  });
+  $("body").addEventListener("dragover", e => { e.preventDefault(); $("body").classList.add("drag"); });
+  $("body").addEventListener("dragleave", () => $("body").classList.remove("drag"));
+  $("body").addEventListener("drop", e => {
+    e.preventDefault(); $("body").classList.remove("drag");
+    const file = e.dataTransfer?.files?.[0]; if (file) uploadFile(file);
   });
 
   // ---- load existing posts (static files, works local + hosted) ----
@@ -315,6 +361,7 @@
     $("blurb").value = fm.blurb || ""; $("author").value = fm.author || "Kaushal Choudhary";
     $("date").value = fm.date || today(); $("slug").value = slug; $("body").value = body;
     slugDirty = true; loadedSlug = slug; $("deleteBtn").style.display = ""; saveDraft();
+    dirty = false; updateWC();   // freshly loaded = clean
   }
   async function refreshList(){
     let files = [];
@@ -329,13 +376,16 @@
     $("loadSel").innerHTML = '<option value="">＋ New post</option>' +
       posts.map(p => `<option value="${p.slug}">✎ ${p.title.replace(/"/g,"&quot;")}</option>`).join("");
   }
-  $("loadSel").addEventListener("change", e => { e.target.value ? loadPost(e.target.value) : newPost(); });
+  $("loadSel").addEventListener("change", e => {
+    if (dirty && !confirm("You have unsaved changes. Discard them and switch?")){ e.target.value = loadedSlug; return; }
+    e.target.value ? loadPost(e.target.value) : newPost();
+  });
   function newPost(){
     fields.forEach(id => $(id).value = "");
     $("author").value = "Kaushal Choudhary"; $("date").value = today();
     $("body").value = ""; slugDirty = false; loadedSlug = "";
     $("deleteBtn").style.display = "none";
-    $("status").textContent = ""; saveDraft();
+    $("status").textContent = ""; clearAutosave(); saveDraft(); dirty = false; updateWC();
   }
   $("deleteBtn").addEventListener("click", async () => {
     if (!loadedSlug) return;
@@ -363,15 +413,28 @@
         $("status").innerHTML = LOCAL
           ? `published → <a href="${res.url}" target="_blank">${res.url}</a>`
           : `committed ✓ — live in ~1 min at <a href="${res.url}" target="_blank">${res.url}</a>`;
-        refreshList();
+        loadedSlug = slug; $("deleteBtn").style.display = ""; clearAutosave(); refreshList();
       } else {
         $("status").textContent = "error: " + (res.error || "failed");
       }
     } catch(e){ $("status").textContent = "error: " + e.message; }
   });
 
+  // resume the last editing session if the tab was closed/crashed mid-write
+  function restoreAutosave(){
+    let d; try { d = JSON.parse(localStorage.getItem(AUTOSAVE) || "null"); } catch(e){}
+    if (!d || (!d.title && !d.body)) return;
+    fields.forEach(id => { if (id in d) $(id).value = d[id]; });
+    $("body").value = d.body || "";
+    slugDirty = !!d.slugDirty; loadedSlug = d.loadedSlug || "";
+    if (loadedSlug){ $("loadSel").value = loadedSlug; $("deleteBtn").style.display = ""; }
+    updateWC();
+    $("status").textContent = "↩ restored your last session";
+  }
+  addEventListener("beforeunload", e => { if (dirty){ e.preventDefault(); e.returnValue = ""; } });
+
   // ---- login gate ----
-  function boot(){ $("date").value = today(); refreshList(); saveDraft(); }
+  async function boot(){ $("date").value = today(); await refreshList(); restoreAutosave(); saveDraft(); }
   async function gate(){
     if (LOCAL) return boot();                         // local dev is trusted
     let authed = false;
