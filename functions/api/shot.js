@@ -1,12 +1,18 @@
 // GET /api/shot?url=...  — live screenshot, cached at Cloudflare's edge.
 //
-// Runtime (it reflects the current target site), but the edge caches each result
-// for a week with background revalidation, so every hover after the first is
-// instant and the upstream service is hit ~once per link per week (no rate limits).
-// Public + read-only; only http(s) targets, only images are returned.
+// Runtime (reflects the current target site), but each result is cached at the
+// edge for a week with background revalidation, so every hover after the first
+// is instant and upstream is hit ~once per link per week. Public + read-only;
+// only http(s) targets, only images returned.
+//
+// Tries screenshot providers in order — some block datacenter IPs, so the
+// fallback matters when running from a Cloudflare Worker.
 
-const SHOT = (u) =>
-  `https://api.microlink.io/?url=${encodeURIComponent(u)}&screenshot=true&meta=false&embed=screenshot.url`;
+const UA = "Mozilla/5.0 (compatible; kaushal-preview/1.0; +https://kaushalchoudhary.com)";
+const PROVIDERS = [
+  (u) => `https://image.thum.io/get/width/640/noanimate/${u}`,
+  (u) => `https://api.microlink.io/?url=${encodeURIComponent(u)}&screenshot=true&meta=false&embed=screenshot.url`,
+];
 
 export async function onRequestGet({ request, ctx }) {
   const target = new URL(request.url).searchParams.get("url") || "";
@@ -17,19 +23,22 @@ export async function onRequestGet({ request, ctx }) {
   const hit = await cache.match(key);
   if (hit) return hit;
 
-  let upstream;
-  try { upstream = await fetch(SHOT(target), { headers: { "User-Agent": "kaushal-preview" } }); }
-  catch (e) { return new Response("upstream error", { status: 502 }); }
-  if (!upstream.ok || !/^image\//.test(upstream.headers.get("Content-Type") || ""))
-    return new Response("no screenshot", { status: 502 });
-
-  const res = new Response(upstream.body, {
-    headers: {
-      "Content-Type": upstream.headers.get("Content-Type") || "image/png",
-      "Cache-Control": "public, max-age=604800, stale-while-revalidate=86400",
-      "Access-Control-Allow-Origin": "*",
-    },
-  });
-  ctx.waitUntil(cache.put(key, res.clone()));
-  return res;
+  for (const make of PROVIDERS) {
+    try {
+      const upstream = await fetch(make(target), { headers: { "User-Agent": UA } });
+      const ct = upstream.headers.get("Content-Type") || "";
+      if (upstream.ok && /^image\//.test(ct)) {
+        const res = new Response(upstream.body, {
+          headers: {
+            "Content-Type": ct,
+            "Cache-Control": "public, max-age=604800, stale-while-revalidate=86400",
+            "Access-Control-Allow-Origin": "*",
+          },
+        });
+        ctx.waitUntil(cache.put(key, res.clone()));
+        return res;
+      }
+    } catch (e) { /* try the next provider */ }
+  }
+  return new Response("no screenshot", { status: 502 });
 }
