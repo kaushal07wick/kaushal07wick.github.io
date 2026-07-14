@@ -6,5 +6,12 @@
   "assets": {
     "directory": ".",
     "binding": "ASSETS"
+  },
+  // Non-secret config lives here so a redeploy can't wipe it.
+  // The 3 SECRETS (STUDIO_PASSWORD, STUDIO_SECRET, GITHUB_TOKEN) go in the dashboard.
+  "vars": {
+    "GITHUB_OWNER": "kaushal07wick",
+    "GITHUB_REPO": "kaushal07wick.github.io",
+    "GITHUB_BRANCH": "master"
   }
 }
