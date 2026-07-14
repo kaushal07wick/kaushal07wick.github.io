@@ -152,9 +152,13 @@
 <div id="picker">
   <div class="pick-panel">
     <div class="pick-head">
-      <div><h3>Insert media</h3><p>from /images — click to drop a Markdown reference at your cursor</p></div>
-      <button class="pick-close" id="pickClose" title="Close (Esc)">×</button>
+      <div><h3>Insert media</h3><p>upload from your Mac, or click one already in /images</p></div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <button class="tool" id="uploadBtn">⬆ Upload from Mac</button>
+        <button class="pick-close" id="pickClose" title="Close (Esc)">×</button>
+      </div>
     </div>
+    <input type="file" id="fileInput" accept="image/*,video/*" style="display:none" />
     <div class="pick-grid" id="pickGrid"></div>
   </div>
 </div>
@@ -169,6 +173,7 @@
   const LOCAL = /^(127\.0\.0\.1|localhost)$/.test(location.hostname);
   const PUBLISH_URL = LOCAL ? "/cms/publish" : "/api/publish";
   const IMAGES_URL  = LOCAL ? "/cms/images"  : "/api/images";
+  const UPLOAD_URL  = LOCAL ? "/cms/upload"  : "/api/upload";
   $("envtag").textContent = LOCAL ? "local · blog cms" : "live · blog cms";
 
   function slugify(s){
@@ -248,6 +253,36 @@
   $("picker").addEventListener("click", e => { if (e.target.id === "picker") e.target.classList.remove("open"); });
   $("pickClose").addEventListener("click", () => $("picker").classList.remove("open"));
   document.addEventListener("keydown", e => { if (e.key === "Escape") $("picker").classList.remove("open"); });
+
+  // ---- upload from the Mac (native file picker → commit to /images) ----
+  const fileToBase64 = file => new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => res(String(fr.result).split(",")[1]);   // strip the data: prefix
+    fr.onerror = rej;
+    fr.readAsDataURL(file);
+  });
+  $("uploadBtn").addEventListener("click", () => $("fileInput").click());
+  $("fileInput").addEventListener("change", async e => {
+    const file = e.target.files[0]; if (!file) return;
+    if (file.size > 25 * 1024 * 1024) { alert("That file is over 25 MB — compress it first."); e.target.value = ""; return; }
+    const btn = $("uploadBtn"), label = btn.textContent;
+    btn.textContent = "uploading…"; btn.disabled = true;
+    try {
+      const content = await fileToBase64(file);
+      const r = await fetch(UPLOAD_URL, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: file.name, content }),
+      }).then(r => r.json());
+      if (!r.ok) throw new Error(r.error || "upload failed");
+      const alt = file.name.replace(/\.[^.]+$/, "").replace(/[-_]/g, " ");
+      insertAtCursor(`\n\n![${alt}](${r.path})\n\n`);
+      $("picker").classList.remove("open");
+    } catch (err) {
+      alert("Upload failed: " + err.message);
+    } finally {
+      btn.textContent = label; btn.disabled = false; e.target.value = "";
+    }
+  });
 
   // ---- load existing posts (static files, works local + hosted) ----
   function splitFrontmatter(md){

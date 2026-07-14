@@ -12,7 +12,7 @@ adds the slug to posts/index.json, and runs the regen script.
 
 After publishing: review `git status`, commit and push as usual.
 """
-import hashlib, json, re, subprocess, urllib.request
+import base64, hashlib, json, re, subprocess, urllib.request
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs, quote
@@ -113,6 +113,21 @@ class Handler(SimpleHTTPRequestHandler):
         if p.path == "/cms/draft":
             DRAFT.write_text(raw.decode("utf-8"))
             return self._json({"ok": True})
+        if p.path == "/cms/upload":
+            data = json.loads(raw or b"{}")
+            name = (data.get("name") or "").strip()
+            content = data.get("content") or ""
+            m = re.match(r"^(.*?)(\.[a-z0-9]+)$", name, re.I)
+            if not m or m.group(2).lower() not in IMG_EXT or not content:
+                return self._json({"error": "unsupported file type"}, 400)
+            base = re.sub(r"[^a-z0-9]+", "-", m.group(1).lower()).strip("-") or "file"
+            fname = base + m.group(2).lower()
+            imgs = ROOT / "images"; imgs.mkdir(exist_ok=True)
+            try:
+                (imgs / fname).write_bytes(base64.b64decode(content))
+            except Exception:
+                return self._json({"error": "write failed"}, 500)
+            return self._json({"ok": True, "path": f"/images/{fname}"})
         if p.path == "/cms/publish":
             data = json.loads(raw or b"{}")
             slug = (data.get("slug") or "").strip()
