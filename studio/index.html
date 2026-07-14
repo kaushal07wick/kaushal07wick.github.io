@@ -22,10 +22,10 @@
   header .brand em{ font-style:italic; color:var(--ac); }
   header .tag{ font-family:var(--mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); }
   header .spacer{ flex:1; }
-  select,.btn{ font-family:var(--mono); font-size:12px; }
+  select,.btn{ font-family:var(--mono); font-size:12px; white-space:nowrap; height:40px; }
   select{ appearance:none; -webkit-appearance:none; color:var(--ink); cursor:pointer;
     background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2316130d' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 13px center;
-    border:1.5px solid var(--ink); padding:8px 34px 8px 12px; transition:border-color .16s, box-shadow .16s; }
+    border:1.5px solid var(--ink); padding:0 34px 0 12px; min-width:190px; transition:border-color .16s, box-shadow .16s; }
   select:hover{ border-color:var(--ac); }
   select:focus{ outline:none; border-color:var(--ac); box-shadow:3px 3px 0 rgba(22,19,13,.12); }
   option{ background:var(--paper); color:var(--ink); }
@@ -34,7 +34,7 @@
   input[type=date]:hover::-webkit-calendar-picker-indicator{ opacity:1; }
   .btn.danger{ border-color:#b0392e; color:#b0392e; }
   .btn.danger:hover{ background:#b0392e; color:var(--paper); }
-  .btn{ border:1.5px solid var(--ink); background:var(--ink); color:var(--paper); padding:9px 18px; letter-spacing:.08em;
+  .btn{ display:inline-flex; align-items:center; justify-content:center; border:1.5px solid var(--ink); background:var(--ink); color:var(--paper); padding:0 18px; letter-spacing:.08em;
     text-transform:uppercase; cursor:pointer; transition:transform .16s cubic-bezier(.34,1.56,.5,1), background .16s, color .16s, border-color .16s, box-shadow .16s; }
   .btn:hover{ background:var(--ac); border-color:var(--ac); box-shadow:3px 3px 0 rgba(22,19,13,.2); }
   .btn:active{ transform:scale(.93); box-shadow:none; }
