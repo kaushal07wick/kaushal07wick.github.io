@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="robots" content="noindex, nofollow" />
 <title>Studio — Kaushal</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -22,7 +23,15 @@
   header .tag{ font-family:var(--mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); }
   header .spacer{ flex:1; }
   select,.btn{ font-family:var(--mono); font-size:12px; }
-  select{ background:var(--paper); border:1.5px solid var(--ink); padding:8px 12px; color:var(--ink); cursor:pointer; }
+  select{ appearance:none; -webkit-appearance:none; color:var(--ink); cursor:pointer;
+    background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2316130d' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 13px center;
+    border:1.5px solid var(--ink); padding:8px 34px 8px 12px; transition:border-color .16s, box-shadow .16s; }
+  select:hover{ border-color:var(--ac); }
+  select:focus{ outline:none; border-color:var(--ac); box-shadow:3px 3px 0 rgba(22,19,13,.12); }
+  option{ background:var(--paper); color:var(--ink); }
+  input[type=date]::-webkit-calendar-picker-indicator{ cursor:pointer; opacity:.55;
+    filter:sepia(1) saturate(6) hue-rotate(-18deg); transition:opacity .15s; }
+  input[type=date]:hover::-webkit-calendar-picker-indicator{ opacity:1; }
   .btn.danger{ border-color:#b0392e; color:#b0392e; }
   .btn.danger:hover{ background:#b0392e; color:var(--paper); }
   .btn{ border:1.5px solid var(--ink); background:var(--ink); color:var(--paper); padding:9px 18px; letter-spacing:.08em;
