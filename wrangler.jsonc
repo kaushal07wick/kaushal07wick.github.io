@@ -1,0 +1,10 @@
+{
+  // Matches the existing Worker that serves kaushalchoudhary.com.
+  "name": "kaushalchoudhary",
+  "main": "_worker.js",
+  "compatibility_date": "2026-01-01",
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS"
+  }
+}
