@@ -147,7 +147,7 @@
   function parseFrontmatter(md){
     const o = {};
     for (const line of md.split("\n")){
-      const m = line.match(/^(title|subtitle|author|date|cover)\s*:\s*(.+)$/i);
+      const m = line.match(/^(title|subtitle|author|date|cover|draft)\s*:\s*(.+)$/i);
       if (m) o[m[1].toLowerCase()] = m[2].trim();
       else if (line.startsWith("# ")) break;
     }
@@ -173,7 +173,7 @@
     const fm = parseFrontmatter(md);
     if (fm.title) document.title = fm.title + " — Kaushal";
 
-    let body = md.replace(/^(title:.*\n|subtitle:.*\n|blurb:.*\n|author:.*\n|date:.*\n|cover:.*\n)+/i, "").trim();
+    let body = md.replace(/^(title:.*\n|subtitle:.*\n|blurb:.*\n|author:.*\n|date:.*\n|cover:.*\n|draft:.*\n)+/i, "").trim();
     body = body.replace(/^#\s+.*\n+/, "");            // drop the duplicate leading H1
     const words = body.split(/\s+/).filter(Boolean).length;
     const mins = Math.max(1, Math.round(words / 220));

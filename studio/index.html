@@ -79,6 +79,51 @@
   .preview .bar .dot{ width:8px; height:8px; border-radius:50%; background:var(--ac); }
   iframe{ flex:1; width:100%; border:none; background:var(--paper); }
 
+  /* custom post dropdown (replaces the native select popup) */
+  .dropdown{ position:relative; }
+  .dd-toggle{ height:40px; min-width:210px; display:inline-flex; align-items:center; justify-content:space-between; gap:14px;
+    font-family:var(--mono); font-size:12px; color:var(--ink); background:var(--paper); border:1.5px solid var(--ink);
+    padding:0 12px; cursor:pointer; transition:border-color .16s, box-shadow .16s; }
+  .dd-toggle:hover{ border-color:var(--ac); }
+  .dropdown.open .dd-toggle{ border-color:var(--ac); box-shadow:3px 3px 0 rgba(22,19,13,.12); }
+  .dd-toggle #loadLabel{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:230px; }
+  .dd-toggle .cav{ flex:none; transition:transform .2s; }
+  .dropdown.open .dd-toggle .cav{ transform:rotate(180deg); }
+  .dd-menu{ position:absolute; top:calc(100% + 6px); right:0; min-width:100%; max-height:330px; overflow-y:auto; z-index:30;
+    background:var(--paper); border:1.5px solid var(--ink); box-shadow:8px 8px 0 rgba(22,19,13,.18); padding:5px; display:none; }
+  .dropdown.open .dd-menu{ display:block; animation:pop .18s cubic-bezier(.34,1.56,.5,1) both; }
+  .dd-item{ display:block; width:100%; text-align:left; font-family:var(--mono); font-size:12px; color:var(--ink);
+    background:transparent; border:none; padding:9px 12px; cursor:pointer; white-space:nowrap; transition:background .12s, color .12s; }
+  .dd-item:hover{ background:var(--ink); color:var(--paper); }
+  .dd-item.sel{ color:var(--ac); }
+  .dd-item.sel:hover{ color:var(--paper); }
+  .dd-item .dtag{ color:var(--muted); font-size:10px; margin-left:6px; }
+
+  .draft-toggle{ display:inline-flex; align-items:center; gap:7px; height:40px; padding:0 12px; cursor:pointer;
+    font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
+    border:1.5px solid var(--rule); transition:color .15s, border-color .15s; }
+  .draft-toggle:hover{ border-color:var(--ac); color:var(--ink); }
+  .draft-toggle input{ accent-color:var(--ac); width:15px; height:15px; cursor:pointer; }
+  .draft-toggle:has(input:checked){ color:var(--ac); border-color:var(--ac); }
+
+  /* themed dialog (replaces native alert/confirm/prompt) */
+  #modal{ position:fixed; inset:0; z-index:120; display:none; align-items:center; justify-content:center; background:rgba(22,19,13,.55); }
+  #modal.open{ display:flex; }
+  .modal-card{ width:min(430px,92vw); background:var(--paper); border:2px solid var(--ink); box-shadow:12px 12px 0 rgba(22,19,13,.22);
+    padding:28px 26px 22px; animation:pop .26s cubic-bezier(.34,1.56,.5,1) both; }
+  .modal-msg{ font-family:var(--disp); font-size:22px; line-height:1.28; color:var(--ink); white-space:pre-line; }
+  .modal-input{ width:100%; font-family:var(--mono); font-size:13px; padding:11px 13px; margin-top:16px;
+    border:1.5px solid var(--ink); background:var(--paper); color:var(--ink); outline:none; transition:border-color .18s; }
+  .modal-input[hidden]{ display:none; }
+  .modal-input:focus{ border-color:var(--ac); }
+  .modal-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:22px; }
+
+  #toast{ position:fixed; right:22px; bottom:22px; z-index:130; display:flex; flex-direction:column; gap:8px; pointer-events:none; }
+  .toast-item{ font-family:var(--mono); font-size:12px; color:var(--paper); background:var(--ink); border:1.5px solid var(--ink);
+    padding:11px 15px; box-shadow:4px 4px 0 rgba(22,19,13,.2); max-width:320px; animation:toastin .22s ease both; }
+  .toast-item.err{ background:#b0392e; border-color:#b0392e; }
+  @keyframes toastin{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:none; } }
+
   /* image picker drawer */
   #picker{ position:fixed; inset:0; background:rgba(22,19,13,.55); display:none; align-items:center; justify-content:center; z-index:20; }
   #picker.open{ display:flex; }
@@ -134,7 +179,14 @@
   <span class="brand">Kaushal <em>Studio</em></span>
   <span class="tag" id="envtag">blog cms</span>
   <span class="spacer"></span>
-  <select id="loadSel" title="Load a post to edit"><option value="">＋ New post</option></select>
+  <div class="dropdown" id="loadDD">
+    <button class="dd-toggle" id="loadToggle" type="button" title="Load a post to edit">
+      <span id="loadLabel">＋ New post</span>
+      <svg class="cav" width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="dd-menu" id="loadMenu"></div>
+  </div>
+  <label class="draft-toggle" title="Save to the repo without listing it on the site"><input type="checkbox" id="draft" /> Draft</label>
   <button class="btn ghost" id="previewBtn">Refresh preview</button>
   <button class="btn" id="publishBtn">Publish</button>
   <button class="btn danger" id="deleteBtn" style="display:none">Delete</button>
@@ -186,6 +238,18 @@
   </section>
 </main>
 
+<div id="modal">
+  <div class="modal-card">
+    <div class="modal-msg" id="modalMsg"></div>
+    <input class="modal-input" id="modalInput" hidden />
+    <div class="modal-actions">
+      <button class="btn ghost" id="modalCancel">Cancel</button>
+      <button class="btn" id="modalOk">OK</button>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
 <div id="picker">
   <div class="pick-panel">
     <div class="pick-head">
@@ -215,6 +279,39 @@
   const TITLE_URL   = LOCAL ? "/cms/title"   : "/api/title";
   $("envtag").textContent = LOCAL ? "local · blog cms" : "live · blog cms";
 
+  const esc = s => (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  // ---- themed dialogs + toasts (no native alert/confirm/prompt anywhere) ----
+  let modalResolve = null;
+  function openModal({ message, withInput = false, placeholder = "", okText = "OK", cancelText = "Cancel", danger = false }){
+    return new Promise(res => {
+      modalResolve = res;
+      $("modalMsg").textContent = message;
+      const inp = $("modalInput");
+      inp.hidden = !withInput; inp.value = ""; inp.placeholder = placeholder;
+      $("modalOk").textContent = okText; $("modalCancel").textContent = cancelText;
+      $("modalOk").classList.toggle("danger", danger);
+      $("modal").classList.add("open");
+      setTimeout(() => (withInput ? inp : $("modalOk")).focus(), 40);
+    });
+  }
+  function closeModal(val){
+    $("modal").classList.remove("open"); $("modalOk").classList.remove("danger");
+    const r = modalResolve; modalResolve = null; if (r) r(val);
+  }
+  $("modalOk").addEventListener("click", () => closeModal($("modalInput").hidden ? true : $("modalInput").value));
+  $("modalCancel").addEventListener("click", () => closeModal($("modalInput").hidden ? false : null));
+  $("modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal($("modalInput").hidden ? false : null); });
+  $("modalInput").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); closeModal($("modalInput").value); } });
+  const confirmT = (message, opts = {}) => openModal({ message, ...opts });
+  const promptT  = (message, placeholder = "") => openModal({ message, withInput: true, placeholder });
+  function toast(message, err = false){
+    const el = document.createElement("div");
+    el.className = "toast-item" + (err ? " err" : ""); el.textContent = message;
+    $("toast").appendChild(el);
+    setTimeout(() => { el.style.opacity = "0"; setTimeout(() => el.remove(), 250); }, 2600);
+  }
+
   function slugify(s){
     return (s||"").trim().toLowerCase().replace(/[^\w\s-]/g,"").replace(/[\s_]+/g,"-").replace(/-+/g,"-").replace(/^-|-$/g,"");
   }
@@ -227,6 +324,7 @@
     if ($("subtitle").value) fm.push("subtitle: " + $("subtitle").value.trim());
     if ($("blurb").value) fm.push("blurb: " + $("blurb").value.trim());
     if ($("cover").value) fm.push("cover: " + $("cover").value.trim());
+    if ($("draft").checked) fm.push("draft: true");
     fm.push("author: " + ($("author").value.trim() || "Kaushal Choudhary"));
     fm.push("date: " + ($("date").value || today()));
     return fm.join("\n") + "\n# " + ($("title").value.trim() || "Untitled") + "\n\n" + $("body").value;
@@ -243,7 +341,7 @@
     reloadPreview();
   }
   function snapshot(){
-    const data = { loadedSlug, slugDirty, body: $("body").value };
+    const data = { loadedSlug, slugDirty, draft: $("draft").checked, body: $("body").value };
     fields.forEach(id => data[id] = $(id).value);
     try { localStorage.setItem(AUTOSAVE, JSON.stringify(data)); } catch(e){}
   }
@@ -261,6 +359,7 @@
 
   fields.forEach(id => $(id).addEventListener("input", schedule));
   $("body").addEventListener("input", schedule);
+  $("draft").addEventListener("change", schedule);
   $("title").addEventListener("input", () => { if (!slugDirty) $("slug").value = slugify($("title").value); });
   $("slug").addEventListener("input", () => { slugDirty = true; });
   $("previewBtn").addEventListener("click", saveDraft);
@@ -331,7 +430,12 @@
   $("coverBtn").addEventListener("click", () => openPicker("cover"));
   $("picker").addEventListener("click", e => { if (e.target.id === "picker") e.target.classList.remove("open"); });
   $("pickClose").addEventListener("click", () => $("picker").classList.remove("open"));
-  document.addEventListener("keydown", e => { if (e.key === "Escape") $("picker").classList.remove("open"); });
+  document.addEventListener("keydown", e => {
+    if (e.key !== "Escape") return;
+    if ($("modal").classList.contains("open")) return closeModal($("modalInput").hidden ? false : null);
+    $("picker").classList.remove("open");
+    $("loadDD").classList.remove("open");
+  });
 
   // ---- upload from the Mac (native file picker → commit to /images) ----
   const fileToBase64 = file => new Promise((res, rej) => {
@@ -343,9 +447,9 @@
   async function uploadFile(file, target){
     if (!file) return;
     if (!/^(image|video)\//.test(file.type) && !/\.(png|jpe?g|gif|webp|svg|mp4|webm|mov)$/i.test(file.name || "")){
-      alert("Only images and videos."); return;
+      toast("Only images and videos.", true); return;
     }
-    if (file.size > 25 * 1024 * 1024){ alert("That file is over 25 MB — compress it first."); return; }
+    if (file.size > 25 * 1024 * 1024){ toast("That file is over 25 MB — compress it first.", true); return; }
     const prev = $("status").textContent;
     $("status").textContent = `uploading ${file.name || "image"}…`;
     try {
@@ -363,7 +467,7 @@
       }
       $("picker").classList.remove("open");
       $("status").textContent = `added ${r.path} ✓`;
-    } catch (err){ alert("Upload failed: " + err.message); $("status").textContent = prev; }
+    } catch (err){ toast("Upload failed: " + err.message, true); $("status").textContent = prev; }
   }
   $("uploadBtn").addEventListener("click", () => $("fileInput").click());
   $("fileInput").addEventListener("change", async e => { await uploadFile(e.target.files[0], pickMode); e.target.value = ""; });
@@ -409,9 +513,9 @@
 
   // ---- insert a titled link from a pasted URL (title fetched server-side) ----
   $("urlBtn").addEventListener("click", async () => {
-    const url = prompt("Paste a URL — I'll fetch its title and insert a markdown link:");
+    const url = await promptT("Paste a URL — I'll fetch its title and insert a markdown link:", "https://…");
     if (!url) return;
-    if (!/^https?:\/\//i.test(url)){ alert("Needs to start with http:// or https://"); return; }
+    if (!/^https?:\/\//i.test(url)){ toast("Needs to start with http:// or https://", true); return; }
     $("status").textContent = "fetching title…";
     try {
       const r = await fetch(TITLE_URL + "?url=" + encodeURIComponent(url)).then(r => r.json());
@@ -425,7 +529,7 @@
   function splitFrontmatter(md){
     const fm = {}; const lines = md.split("\n"); let i = 0;
     for (; i < lines.length; i++){
-      const m = lines[i].match(/^(title|subtitle|blurb|author|date|cover)\s*:\s*(.+)$/i);
+      const m = lines[i].match(/^(title|subtitle|blurb|author|date|cover|draft)\s*:\s*(.+)$/i);
       if (m) fm[m[1].toLowerCase()] = m[2].trim();
       else break;
     }
@@ -438,37 +542,62 @@
     $("title").value = fm.title || ""; $("subtitle").value = fm.subtitle || "";
     $("blurb").value = fm.blurb || ""; $("author").value = fm.author || "Kaushal Choudhary";
     $("cover").value = fm.cover || "";
+    $("draft").checked = /^(true|yes|1)$/i.test(fm.draft || "");
     $("date").value = fm.date || today(); $("slug").value = slug; $("body").value = body;
-    slugDirty = true; loadedSlug = slug; $("deleteBtn").style.display = ""; saveDraft();
+    slugDirty = true; loadedSlug = slug; $("deleteBtn").style.display = ""; setLoad(slug); saveDraft();
     dirty = false; updateWC();   // freshly loaded = clean
   }
+  // ---- custom, themed post dropdown ----
+  let POSTS = [], loadValue = "";
+  function labelFor(slug){
+    if (!slug) return "＋ New post";
+    const p = POSTS.find(x => x.slug === slug);
+    return "✎ " + (p ? p.title : slug);
+  }
+  function renderMenu(){
+    const items = [{ slug:"", title:"＋ New post", draft:false }]
+      .concat(POSTS.map(p => ({ slug:p.slug, title:"✎ " + p.title, draft:p.draft })));
+    $("loadMenu").innerHTML = items.map(it =>
+      `<button class="dd-item${it.slug === loadValue ? " sel" : ""}" data-slug="${it.slug}" type="button">${esc(it.title)}${it.draft ? '<span class="dtag">draft</span>' : ""}</button>`
+    ).join("");
+  }
+  function setLoad(slug){ loadValue = slug; $("loadLabel").textContent = labelFor(slug); renderMenu(); }
   async function refreshList(){
     let files = [];
     try { files = await fetch("/posts/index.json", { cache:"no-store" }).then(r => r.json()); } catch(e){}
-    const posts = await Promise.all(files.map(async f => {
+    POSTS = await Promise.all(files.map(async f => {
       const slug = f.replace(/\.md$/, "");
-      let title = slug;
-      try { const md = await fetch("/posts/" + f, { cache:"no-store" }).then(r => r.text());
-        title = (md.match(/^title:\s*(.+)$/im) || [])[1] || slug; } catch(e){}
-      return { slug, title };
+      let title = slug, draft = false;
+      try {
+        const md = await fetch("/posts/" + f, { cache:"no-store" }).then(r => r.text());
+        title = (md.match(/^title:\s*(.+)$/im) || [])[1] || slug;
+        draft = /^(true|yes|1)$/i.test((md.match(/^draft:\s*(.+)$/im) || [])[1] || "");
+      } catch(e){}
+      return { slug, title, draft };
     }));
-    $("loadSel").innerHTML = '<option value="">＋ New post</option>' +
-      posts.map(p => `<option value="${p.slug}">✎ ${p.title.replace(/"/g,"&quot;")}</option>`).join("");
+    setLoad(loadValue);
   }
-  $("loadSel").addEventListener("change", e => {
-    if (dirty && !confirm("You have unsaved changes. Discard them and switch?")){ e.target.value = loadedSlug; return; }
-    e.target.value ? loadPost(e.target.value) : newPost();
+  async function chooseLoad(slug){
+    if (slug === loadValue && slug) return;                    // reselect same post → no-op
+    if (dirty && !(await confirmT("You have unsaved changes.\nDiscard them and switch?", { okText:"Discard", danger:true }))) return;
+    slug ? loadPost(slug) : newPost();
+  }
+  $("loadToggle").addEventListener("click", () => $("loadDD").classList.toggle("open"));
+  $("loadMenu").addEventListener("click", e => {
+    const b = e.target.closest(".dd-item"); if (!b) return;
+    $("loadDD").classList.remove("open"); chooseLoad(b.dataset.slug);
   });
+  document.addEventListener("click", e => { if (!$("loadDD").contains(e.target)) $("loadDD").classList.remove("open"); });
   function newPost(){
     fields.forEach(id => $(id).value = "");
     $("author").value = "Kaushal Choudhary"; $("date").value = today();
-    $("body").value = ""; slugDirty = false; loadedSlug = "";
-    $("deleteBtn").style.display = "none";
+    $("body").value = ""; $("draft").checked = false; slugDirty = false; loadedSlug = "";
+    $("deleteBtn").style.display = "none"; setLoad("");
     $("status").textContent = ""; clearAutosave(); saveDraft(); dirty = false; updateWC();
   }
   $("deleteBtn").addEventListener("click", async () => {
     if (!loadedSlug) return;
-    if (!confirm(`Delete "${$("title").value.trim() || loadedSlug}"?\nThis removes the post and its page — can't be undone.`)) return;
+    if (!(await confirmT(`Delete "${$("title").value.trim() || loadedSlug}"?\nThis removes the post and its page — can't be undone.`, { okText:"Delete", danger:true }))) return;
     $("status").textContent = "deleting…";
     try {
       const res = await fetch(DELETE_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug: loadedSlug }) }).then(r => r.json());
@@ -489,10 +618,12 @@
         body: JSON.stringify({ slug, markdown: buildMarkdown() })
       }).then(r => r.json());
       if (res.ok){
+        const tag = $("draft").checked ? " · draft (unlisted)" : "";
         $("status").innerHTML = LOCAL
-          ? `published → <a href="${res.url}" target="_blank">${res.url}</a>`
-          : `committed ✓ — live in ~1 min at <a href="${res.url}" target="_blank">${res.url}</a>`;
-        loadedSlug = slug; $("deleteBtn").style.display = ""; clearAutosave(); refreshList();
+          ? `saved${tag} → <a href="${res.url}" target="_blank">${res.url}</a>`
+          : `committed${tag} ✓ — live in ~1 min at <a href="${res.url}" target="_blank">${res.url}</a>`;
+        loadedSlug = slug; $("deleteBtn").style.display = ""; clearAutosave();
+        await refreshList(); setLoad(slug);
       } else {
         $("status").textContent = "error: " + (res.error || "failed");
       }
@@ -505,8 +636,10 @@
     if (!d || (!d.title && !d.body)) return;
     fields.forEach(id => { if (id in d) $(id).value = d[id]; });
     $("body").value = d.body || "";
+    $("draft").checked = !!d.draft;
     slugDirty = !!d.slugDirty; loadedSlug = d.loadedSlug || "";
-    if (loadedSlug){ $("loadSel").value = loadedSlug; $("deleteBtn").style.display = ""; }
+    if (loadedSlug) $("deleteBtn").style.display = "";
+    setLoad(loadedSlug);
     updateWC();
     $("status").textContent = "↩ restored your last session";
   }

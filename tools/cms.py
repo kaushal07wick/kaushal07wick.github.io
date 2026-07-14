@@ -28,7 +28,7 @@ IMG_EXT = {".webp", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".mp4", ".webm", ".
 def frontmatter(md: str) -> dict:
     out = {}
     for line in md.splitlines():
-        m = re.match(r"^(title|subtitle|blurb|author|date|cover)\s*:\s*(.+)$", line, re.I)
+        m = re.match(r"^(title|subtitle|blurb|author|date|cover|draft)\s*:\s*(.+)$", line, re.I)
         if m:
             out[m.group(1).lower()] = m.group(2).strip()
         elif line.lstrip().startswith("# "):
